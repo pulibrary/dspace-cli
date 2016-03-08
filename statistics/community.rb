@@ -181,7 +181,7 @@ module Statistics
           else
             line << item << item.getHandle() << item.getName().gsub(/\s+/, ' ');
             prtcolname = true
-            DSO.parents(item).each do |p|
+            DSpace.create(item).parents.each do |p|
               line << p << p.getHandle()
               if (prtcolname) then
                 puts "NAME #{p.getName}"
@@ -333,6 +333,6 @@ module Statistics
   end
 
 end
-Statistics::Community.run()
+Statistics::mkdir .run()
 
 
