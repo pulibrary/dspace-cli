@@ -1,0 +1,44 @@
+#         "gsa-crawler (Enterprise; T3-HLS7YQP3RYWQZ; google@princeton.edu)",595,
+
+solrStatiticsServer: http://localhost:18082/solr/statistics
+verbose: true
+
+exclude_ips: [
+# princeton google apliance
+  10.6.61.26,
+# monikam.princeton.edu
+  128.112.66.66
+]
+
+all_match:  {
+  isBot: "false"
+}
+
+communities: [
+  {id: 267, name: "Princeton University Senior Theses" }
+]
+
+
+top_bitstreams: {
+  number: 20,
+  time_slot: { name: "2015/07-now", slot: '2015-07-01T00:00:00.000Z TO NOW'}
+}
+
+time_slots: [
+  { name: "2015/01", slot: '2015-01-01T00:00:00.000Z TO 2015-02-01T00:00:00.000Z'},
+  { name: "2015/02", slot: '2015-02-01T00:00:00.000Z TO 2015-03-01T00:00:00.000Z'},
+  { name: "2015/03", slot: '2015-03-01T00:00:00.000Z TO 2015-04-01T00:00:00.000Z'},
+  { name: "2015/04", slot: '2015-04-01T00:00:00.000Z TO 2015-05-01T00:00:00.000Z'},
+  { name: "2015/05", slot: '2015-05-01T00:00:00.000Z TO 2015-06-01T00:00:00.000Z'},
+  { name: "2015/06", slot: '2015-06-01T00:00:00.000Z TO 2015-07-01T00:00:00.000Z'},
+  { name: "2015/07", slot: '2015-07-01T00:00:00.000Z TO 2015-08-01T00:00:00.000Z'},
+  { name: "2015/08", slot: '2015-08-01T00:00:00.000Z TO 2015-09-01T00:00:00.000Z'},
+  { name: "2015/09", slot: '2015-09-01T00:00:00.000Z TO 2015-10-01T00:00:00.000Z'},
+  { name: "2015/10", slot: '2015-10-01T00:00:00.000Z TO 2015-11-01T00:00:00.000Z'},
+  { name: "2015/11", slot: '2015-11-01T00:00:00.000Z TO 2015-12-01T00:00:00.000Z'},
+  { name: "2015/12", slot: '2015-12-01T00:00:00.000Z TO 2016-01-01T00:00:00.000Z'},
+  { name: "2016/01", slot: '2016-01-01T00:00:00.000Z TO 2016-02-01T00:00:00.000Z'},
+  { name: "2016/02", slot: '2016-02-01T00:00:00.000Z TO 2016-03-01T00:00:00.000Z'},
+  { name: "2016/03", slot: '2016-03-01T00:00:00.000Z TO 2016-04-01T00:00:00.000Z'}
+]
+

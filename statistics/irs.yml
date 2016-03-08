@@ -1,0 +1,34 @@
+#         "gsa-crawler (Enterprise; T3-HLS7YQP3RYWQZ; google@princeton.edu)",595,
+
+solrStatiticsServer: http://localhost:18082/solr/statistics
+dspaceHome: /Users/monikam/DSpaces/installs/pri_productions
+verbose: true
+
+exclude_ips: [
+# princeton google apliance
+  10.6.61.26,
+# monikam.princeton.edu
+  128.112.66.66
+]
+
+all_match:  {
+  isBot: "false"
+}
+
+communities: [
+  {id: 46, name: "Industrial Relations Section" }
+]
+
+
+top_bitstreams: {
+  number: 20,
+  time_slot: { name: "2014/07-now", slot: '2014-07-01T00:00:00.000Z TO NOW'}
+}
+
+time_slots: [
+  { name: "1000/01-2015/10/10", slot: '1000-01-01T00:00:00.000Z TO NOW'},
+  { name: "2015/10/10-2015/10/11", slot: '2015-10-10T00:00:00.000Z TO 2015-10-11:00:00.000Z'},
+  { name: "2015/10/11-2015/10/12", slot: '2015-10-11T00:00:00.000Z TO 2015-10-12:00:00.000Z'},
+  { name: "2015/10/12-2015/10/13", slot: '2015-10-12T00:00:00.000Z TO 2015-10-13:00:00.000Z'}
+]
+
