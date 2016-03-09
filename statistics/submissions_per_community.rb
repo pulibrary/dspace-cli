@@ -18,6 +18,11 @@ while (i = items.next()) do
         submissions[bucket][year] ||= {}
         submissions[bucket][year][month] ||= 0
         submissions[bucket][year][month] += 1
+        submissions[bucket][year]['total'] ||= 0
+        submissions[bucket][year]['total'] += 1
+        submissions[bucket]['total'] ||= {'total' => 0}
+        submissions[bucket]['total']['total'] += 1
+        print '.'
       end
     else
       $stderr.puts "Item #{i}  in community #{community} without a handle"
@@ -26,6 +31,7 @@ while (i = items.next()) do
     $stderr.puts "Item #{i} 'dc.date.accessioned' value = '#{date}'"
   end
 end
+print "\n"
 
 puts ["Year", "Month", "#Items", "Community"].join("\t")
 submissions.keys.sort.each do |bucket|
