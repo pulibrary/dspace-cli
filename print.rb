@@ -6,7 +6,7 @@ options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} [-d]  handle.."
 
-  opts.on("-v", "--[no-]verbose", "Printe detais") do |v|
+  opts.on("-v", "--[no-]verbose", "Print details") do |v|
     options[:details] = v
   end
 end
