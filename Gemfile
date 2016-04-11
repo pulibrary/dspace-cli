@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gem 'jrdspace'
 
 gem "highline"
+gem "lumberjack"
 gem 'http'
 gem 'json'
 gem 'rack'
