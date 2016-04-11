@@ -27,8 +27,6 @@ puts "\nlogin as  #{account}"
 
 puts "\nlogging action to  #{log_file}"
 
-ask 'ctr-c to abort'
-
 require 'dspace'
 DSpace.load
 DSpace.login(account)
@@ -52,6 +50,7 @@ items.each do |i|
           if (doit) then
             i.setMetadataSingleValue(set_field[0], set_field[1], set_field[2], nil, set_value)
             logger.info "ITEM.#{i.getID} #{i.getHandle} setting #{set_field.inspect}"
+            i.update
           end
         end
       end
@@ -59,6 +58,4 @@ items.each do |i|
   end
 end
 
-ask 'commit or ctr-c to abort'
-logger.info "commiting changes"
 DSpace.commit
