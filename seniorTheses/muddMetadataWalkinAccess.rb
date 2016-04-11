@@ -6,7 +6,7 @@ account = "monikam"
 
 log_file = "#{ENV['DSPACE_HOME']}/log/muddWalking.log"
 
-year = 2015
+year = 2016
 year_metadata_field = "pu.date.classyear"
 group_name = "SrTheses_Bitstream_Read_Princeton"
 group_name = "SrTheses_Bitstream_Read_Mudd"
