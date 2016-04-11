@@ -3,7 +3,7 @@ require 'dspace'
 DSpace.load
 
 year = 2015
-items = DSO.findByMetadataValue("pu.date.classyear", year)
+items = DSpace.findByMetadataValue("pu.date.classyear", year)
 
 hitems = items.select { |i| i.is_archived }
 
