@@ -41,6 +41,9 @@ docker build -t dspace-cli .
 docker save -o dspace-cli.docker  dspace-cli 
 docker load -i dspace-cli.docker
 
+@VMs: 
+docker run  -it --name dspace-cli   -v '/dspace:/dspace' -u 67381    dspace-cli
+
 docker run  -it --name dspace-cli   -v '/dspace:/dspace'  dspace-cli
 docker run  -it --name dspace-cli   -v '/Users/monikam/DSpaces/installs/updatespace:/dspace'  dspace-cli
 docker run  -it --name dspace-cli   -v '/Users/monikam/DSpaces/installs/updatespace:/dspace'  -u dspace dspace-cli
