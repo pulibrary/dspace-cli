@@ -12,7 +12,7 @@ DSpace.load
 puts "continue with #{year} ?"
 ask 'ctr-c to abort'
 
-com = DSO.fromString(handle)
+com = DSpace.fromString(handle)
 colls = com.getCollections
 
 
