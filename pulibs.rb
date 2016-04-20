@@ -1,6 +1,6 @@
-#!/usr/bin/env jruby  -I modules
+#!/usr/bin/env jruby 
 require "highline/import"
-require "modules/collection"
+require_relative "modules/collection"
 
 grant = '690-1011'
 netid = 'monikam';

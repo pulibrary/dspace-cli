@@ -1,0 +1,42 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.4.0)
+    builder (3.2.2)
+    domain_name (0.5.20160310)
+      unf (>= 0.0.5, < 1.0.0)
+    highline (1.7.8)
+    http (1.0.4)
+      addressable (~> 2.3)
+      http-cookie (~> 1.0)
+      http-form_data (~> 1.0.1)
+      http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
+    http-form_data (1.0.1)
+    http_parser.rb (0.6.0-java)
+    jar (0.0.1)
+    jrdspace (0.0.5)
+      jar
+      json
+    json (1.8.3-java)
+    lumberjack (1.0.10)
+    rack (1.6.4)
+    rsolr (1.1.1)
+      builder (>= 2.1.2)
+    unf (0.1.4-java)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  highline
+  http
+  jrdspace
+  json
+  lumberjack
+  rack
+  rsolr
+
+BUNDLED WITH
+   1.11.2

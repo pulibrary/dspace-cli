@@ -1,4 +1,4 @@
-#!/usr/bin/env jruby  -I lib -I utils
+#!/usr/bin/env jruby  
 require "highline/import"
 
 year = 2016

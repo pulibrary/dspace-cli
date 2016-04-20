@@ -1,4 +1,4 @@
-#!/usr/bin/env jruby -I lib
+#!/usr/bin/env jruby 
 require "highline/import"
 require 'dspace'
 

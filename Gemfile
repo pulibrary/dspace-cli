@@ -6,6 +6,7 @@ gem 'jrdspace'
 
 gem "highline"
 gem "lumberjack"
+gem "xml-simple"
 gem 'http'
 gem 'json'
 gem 'rack'
