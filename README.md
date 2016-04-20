@@ -72,7 +72,6 @@ docker load -i dspace-cli.docker
 
 @ with given user id 
 docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli -u 67381 dspace-cli bash
-docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli -u 67381 dspace-cli bash
 
 # leave containers running by Ctrl-C Ctrl-D out of bash 
 docker exec  -it dspace-cli  bash

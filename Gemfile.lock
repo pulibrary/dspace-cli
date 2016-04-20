@@ -16,7 +16,7 @@ GEM
     http-form_data (1.0.1)
     http_parser.rb (0.6.0-java)
     jar (0.0.1)
-    jrdspace (0.0.5)
+    jrdspace (0.0.6)
       jar
       json
     json (1.8.3-java)
@@ -25,6 +25,7 @@ GEM
     rsolr (1.1.1)
       builder (>= 2.1.2)
     unf (0.1.4-java)
+    xml-simple (1.1.5)
 
 PLATFORMS
   java
@@ -37,6 +38,7 @@ DEPENDENCIES
   lumberjack
   rack
   rsolr
+  xml-simple
 
 BUNDLED WITH
    1.11.2
