@@ -41,41 +41,37 @@ There is a Docker image on docker hub, but I do not promise to keep it up with t
 If you want to add your own scripts or do changes to the scripts here, you need to build your own image. 
 
 ## Build and run your own image 
-```
-cd into the cloned code directory 
 
-# build an image and name it dspace-cli 
-docker build -t dspace-cli .
+    cd into the cloned code directory 
 
-# run a container based on the image 
-# this maps the local /dspace diretory onto  /dspace in the container 
-# it also maps the current directory on the host to /dspace/cli in the container 
-# it then starts the given jruby script, eg netid/create.rb 
-docker run -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli netid/create.rb
+    # build an image and name it dspace-cli 
+    docker build -t dspace-cli .
 
-# to run the inertace dspace console 
-docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli idspace
+    # run a container based on the image 
+    # this maps the local /dspace diretory onto  /dspace in the container 
+    # it also maps the current directory on the host to /dspace/cli in the container 
+    # it then starts the given jruby script, eg netid/create.rb 
+    docker run -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli netid/create.rb
 
-# to connect with a bash shell 
-# to run the inertace dspace console 
-docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli 
-# once the shell starts you can run any of the scripts interactively, for example  
-> ./print.rb handel1 handle2 handle3
-```
+    # to run the inertace dspace console 
+    docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli idspace
+
+    # to connect with a interactive bash shell 
+    docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli 
+    # once the shell starts you can run any of the scripts interactively, for example  
+    > ./print.rb handel1 handle2 handle3 
 
 
 ## Miscellaneous docker commands 
 
-```
-docker save -o dspace-cli.docker  dspace-cli 
-docker load -i dspace-cli.docker
+    docker save -o dspace-cli.docker  dspace-cli 
+    docker load -i dspace-cli.docker
 
-@ with given user id 
-docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli -u 67381 dspace-cli bash
+    @ with given user id 
+    docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli -u 67381 dspace-cli bash
 
-# leave containers running by Ctrl-C Ctrl-D out of bash 
-docker exec  -it dspace-cli  bash
-```
+    # leave containers running by Ctrl-C Ctrl-D out of bash  then restart 
+    docker exec  -it dspace-cli  bash
 
 # Write your Own 
 
