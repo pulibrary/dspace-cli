@@ -15,7 +15,7 @@ def print_members(p)
   DSpace.create(p).group_names.each { |n| puts "\t#{n}"}
 end
 
-p = DEperson.find(netid);
+p = DEPerson.find(netid);
 raise "no such eperson" if p.nil?
 print_members(p);
 

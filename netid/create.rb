@@ -15,7 +15,7 @@ if (doit == "Y") then
   DSpace.load
   DSpace.login(admin)
 
-  p = DEperson.create(netid, first, last, netid + "@princeton.edu")
+  p = DEPerson.create(netid, first, last, netid + "@princeton.edu")
   doit = ask "commit ? (Y/N) "
   if (doit == "Y")
     DSpace.commit

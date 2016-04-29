@@ -11,7 +11,7 @@ end
 DSpace.load
 DSpace.login(ENV['USER']) 
 
-p = DEperson.find(netid);
+p = DEPerson.find(netid);
 raise "no such eperson" if p.nil?
 
 if (pwd.nil?) then
