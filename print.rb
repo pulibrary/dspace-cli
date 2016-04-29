@@ -11,6 +11,15 @@ parser = OptionParser.new do |opts|
   end
 end
 
+def obj_print( obj )
+  d = DSpace.fromString(obj)
+  if (d) then
+    puts JSON.pretty_generate(details ? DSpace.create(d).report : DSpace.create(d).dso_report)
+  else
+    $stderr.puts "ERROR: no such object #{obj}"
+  end
+end
+
 begin
   parser.parse!
   details = options[:details]
@@ -18,12 +27,7 @@ begin
   DSpace.load
 
   ARGV.each do |obj|
-    d = DSpace.fromString(obj)
-    if (d) then
-      puts JSON.pretty_generate(details ? DSpace.create(d).report : DSpace.create(d).dso_report)
-    else
-      $stderr.puts "ERROR: no such object #{obj}"
-    end
+    obj_print(obj)
   end
 rescue Exception => e
   puts e.message;
