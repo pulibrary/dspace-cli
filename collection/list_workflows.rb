@@ -50,6 +50,6 @@ begin
     list_workflows(obj)
   end
 rescue Exception => e
-puts e.message;
-puts parser.help();
+  puts e.message;
+  puts parser.help();
 end
