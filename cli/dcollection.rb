@@ -1,5 +1,9 @@
 class DCollection
 
+  def workflow_name(postfix)
+    "#{@obj.getName}_#{postfix.upcase}"
+  end
+
   def find_or_create_workflow_group(step)
     step = step.upcase
     if (step.start_with?("STEP_")) then
@@ -7,13 +11,13 @@ class DCollection
       i = parts[1].to_i
       group = @obj.getWorkflowGroup(i)
       if group.nil?  then
-        group = DGroup.find_or_create("#{@obj.getName}_#{step}")
+        group = DGroup.find_or_create(workflow_name(step))
         @obj.setWorkflowGroup(i, group)
       end
     elsif (step == "SUBMIT") then
       @obj.createSubmitters();
+      name_submitter_group
       group = @obj.getSubmitters
-      self.name_submitter_group
     end
     @obj.update
     group
@@ -25,7 +29,7 @@ class DCollection
       group = @obj.getWorkflowGroup(step)
       if (group) then
         name = group.getName
-        new_name = "#{colname}_STEP_#{step}"
+        new_name = self.workflow_name(step)
         if (name != new_name) then
           puts "rename group #{name} -> #{new_name}"
           group.setName(new_name)
@@ -41,7 +45,7 @@ class DCollection
     group = @obj.getSubmitters
     if (group) then
       name = group.getName
-      new_name = "#{colname}_SUBMIT"
+      new_name = workflow_name("SUBMIT")
       if (name != new_name) then
         puts "rename group #{name} -> #{new_name}"
         group.setName(new_name)
