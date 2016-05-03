@@ -12,7 +12,7 @@ class Symplectic
   def self.submissions_reassign_destination(collection, col_candidates)
     java_import org.dspace.content.WorkspaceItem
 
-    workflows = DSpace.create(collection).workflows
+    workflows = DWorkflowItem.findAll(collection)
     workflows.each do |flow|
       item = flow.item
       # work only on items that are not owned and not part of a WorkspaceItem

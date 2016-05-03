@@ -4,22 +4,21 @@ require "highline/import"
 require 'dspace'
 require 'cli/dcommunity'
 require 'cli/dcollection'
-
 options = {}
 parser = OptionParser.new do |opts|
-  opts.banner = "Usage: #{__FILE__} handle.."
+  opts.banner = "Usage: #{__FILE__} handle (step_1, step_2, step_3, submit)*"
 end
-
 
 begin
   parser.parse!
-  raise "must give at least one collection/community parameter" if ARGV.empty?
+  raise "must give at collection/community parameter and at least one workflow step" if ARGV.length < 2
 
   DSpace.load
-
-  ARGV.each do |str|
-    dso = DSpace.fromString(str)
-    DSpace.create(dso).name_submitter_group.name_workflow_groups
+  DSpace.login ENV['USER']
+  handle = ARGV.shift
+  dso = DSpace.create(DSpace.fromString(handle))
+  ARGV.each do |step|
+    dso.find_or_create_workflow_group(step)
   end
 
   doit = ask "commit ? (Y/N) "
