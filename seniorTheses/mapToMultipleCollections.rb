@@ -63,4 +63,4 @@ logger.info("SUMMARY processed #{narchived} items out of #{nitems} items")
 logger.info("SUMMARY added #{nmapped} collection mappings")
 logger.info("SUMMARY encountered problems on #{nerror} items")
 
-#DSpace.commit
+DSpace.commit
