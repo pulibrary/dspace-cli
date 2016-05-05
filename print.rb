@@ -11,7 +11,7 @@ parser = OptionParser.new do |opts|
   end
 end
 
-def obj_print( obj )
+def obj_print( obj, details )
   d = DSpace.fromString(obj)
   if (d) then
     puts JSON.pretty_generate(details ? DSpace.create(d).report : DSpace.create(d).dso_report)
@@ -27,7 +27,7 @@ begin
   DSpace.load
 
   ARGV.each do |obj|
-    obj_print(obj)
+    obj_print(obj, details)
   end
 rescue Exception => e
   puts e.message;
