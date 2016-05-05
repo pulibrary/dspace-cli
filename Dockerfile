@@ -17,6 +17,7 @@ WORKDIR /tmp
 #RUN wget ${GIT_URL}/${GIT_DIR}/${GIT_BRANCH}/Gemfile
 ADD Gemfile .
 RUN bundle install
+RUN bundle update
 
 WORKDIR /dspace-cli
 CMD bash
