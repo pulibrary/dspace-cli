@@ -57,11 +57,10 @@ items.each do |i|
     logger.error "exception when processing item #{i.to_s}"
     logger.error e.inspect
     nerror += 1
-  ensure
-    logger.info("SUMMARY processed #{narchived} items out of #{nitems} items")
-    logger.info("SUMMARY added #{nmapped} collection mappings")
-    logger.error("SUMMARY encountered problems on #{nerror} items")
   end
 end
+logger.info("SUMMARY processed #{narchived} items out of #{nitems} items")
+logger.info("SUMMARY added #{nmapped} collection mappings")
+logger.info("SUMMARY encountered problems on #{nerror} items")
 
-DSpace.commit
+#DSpace.commit
