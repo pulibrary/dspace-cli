@@ -1,0 +1,4 @@
+#!/bin/tcsh 
+set u = `id -u`
+set echo 
+docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli -u $u dspace-cli bash
