@@ -54,4 +54,14 @@ class DCollection
     end
     self
   end
+
+  def getBitstreams(bundleName = "ORIGINAL")
+    bits = []
+    iter = @obj.getItems
+    while (i = iter.next) do
+      bits += DSpace.create(i).getBitstreams(bundleName)
+    end
+    bits
+  end
+
 end

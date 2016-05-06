@@ -27,4 +27,13 @@ class DCommunity
   def find_or_create_workflow_group(step)
     @obj.getCollections.collect { |col| DSpace.create(col).find_or_create_workflow_group(step) }
   end
+
+  def getBitstreams(bundleName = "ORIGINAL")
+    bits = []
+    @obj.getCollections.each do |col|
+      bits += DSpace.create(col).getBitstreams(bundleName)
+    end
+    bits
+  end
+
 end
