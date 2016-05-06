@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 #gem 'jrdspace', :git => 'https://github.com/akinom/dspace-jruby.git'
 #gem 'jrdspace', :path => '/Users/monikam/DSpaces/srcs/scripts/dspace-jruby'
-gem 'jrdspace'
+gem 'jrdspace', '>= 0.0.8'
 
 gem "highline"
 gem "lumberjack"
