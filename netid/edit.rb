@@ -23,7 +23,7 @@ if (who.nil?) then
     who = ask "want to add to same groups as another user ? [return/netid] "
 end
 
-  o = DEperson.find(who);
+  o = DEPerson.find(who);
   raise "no such eperson" if o.nil?
   print_members(o);
   pgroups = DSpace.create(p).groups
