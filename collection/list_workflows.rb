@@ -22,6 +22,12 @@ def flow_to_hash(flow)
 end
 
 
+def print_flows(dso)
+  DWorkflowItem.findAll(dso).each do |flow|
+    puts flow_to_hash(flow).inspect
+  end
+end
+
 begin
   parser.parse!
   raise "must give at least one collection/community parameter" if ARGV.empty?
@@ -31,9 +37,7 @@ begin
   ARGV.each do |str|
     dso = DSpace.fromString(str)
     puts "# #{dso}"
-    DWorkflowItem.findAll(dso).each do |flow|
-      puts flow_to_hash(flow).inspect
-    end
+    print_flows(dso)
     puts ""
   end
 rescue Exception => e

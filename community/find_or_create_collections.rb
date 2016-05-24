@@ -9,20 +9,27 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} community file_with_collection_names"
 end
 
+def create_collections(com, file_name)
+  name_file = File.new(file_name, "r")
+  dcom = DSpace.create(com)
+  name_file.readlines.each do |name|
+    col = dcom.find_or_create_collection_by_name(name.strip)
+    puts "collection #{col.getName}\tin  #{DSpace.create(col).parents.collect { |p| p.getName }}"
+  end
+end
+
 begin
   parser.parse!
   raise "must give community and file name" if ARGV.length != 2
 
   com_name = ARGV[0]
-  name_file = File.new(ARGV[1], "r")
+  file_name = ARGV[1]
 
   DSpace.load
   DSpace.login ENV['USER']
   com = DSpace.create(DSpace.fromString(com_name))
-  name_file.readlines.each do |name|
-    col = com.find_or_create_collection_by_name(name.strip)
-    puts "collection #{col.getName}\tin  #{DSpace.create(col).parents.collect { |p| p.getName }}"
-  end
+
+  create_collections(com, file_name)
 
   doit = ask "commit ? (Y/N) "
   if (doit == "Y") then
