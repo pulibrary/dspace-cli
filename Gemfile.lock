@@ -6,7 +6,7 @@ GEM
     domain_name (0.5.20160310)
       unf (>= 0.0.5, < 1.0.0)
     highline (1.7.8)
-    http (2.0.0)
+    http (2.0.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 1.0.1)
@@ -15,10 +15,6 @@ GEM
       domain_name (~> 0.5)
     http-form_data (1.0.1)
     http_parser.rb (0.6.0-java)
-    jar (0.0.1)
-    jrdspace (0.0.8)
-      jar
-      json
     json (1.8.3-java)
     lumberjack (1.0.10)
     rack (1.6.4)
@@ -33,7 +29,6 @@ PLATFORMS
 DEPENDENCIES
   highline
   http
-  jrdspace (>= 0.0.8)
   json
   lumberjack
   rack
@@ -41,4 +36,4 @@ DEPENDENCIES
   xml-simple
 
 BUNDLED WITH
-   1.11.2
+   1.12.3

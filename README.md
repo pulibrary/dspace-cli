@@ -42,7 +42,9 @@ If you want to add your own scripts or do changes to the scripts here, you need 
 
 ## Build and run your own image 
 
-    cd into the cloned code directory 
+    # cd into the cloned code directory for thsi repo 
+    # clone dspace-jruby 
+    git clone https://github.com/akinom/dspace-jruby
 
     # build an image and name it dspace-cli 
     docker build -t dspace-cli .
@@ -54,7 +56,7 @@ If you want to add your own scripts or do changes to the scripts here, you need 
     docker run -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli netid/create.rb
 
     # to run the inertace dspace console 
-    docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli idspace
+    docker run -it -v '/dspace:/dspace' -v $PWD:/dspace-cli dspace-cli dspace-jruby/bin/idspace 
 
     # to connect with a interactive bash shell 
     docker run -it -v '/dspace:/dspace' -v `pwd`:/dspace-cli dspace-cli 
