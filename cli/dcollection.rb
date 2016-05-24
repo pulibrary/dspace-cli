@@ -1,7 +1,7 @@
 class DCollection
 
   def workflow_name(postfix)
-    "#{@obj.getName}_#{postfix.upcase}"
+    "#{@obj.getName}_#{postfix.to_s.upcase}"
   end
 
   def find_or_create_workflow_group(step)
