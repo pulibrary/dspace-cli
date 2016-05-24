@@ -17,6 +17,8 @@ logger.info "START select #{year_metadata_field}=#{year} in #{root}"
 logger.info "START login as  #{account}"
 
 require 'dspace'
+require 'cli/ditem'
+
 DSpace.load
 DSpace.login(account)
 java_import org.dspace.core.Constants
@@ -45,6 +47,7 @@ items.each do |i|
         else
           logger.info("ITEM #{i.getHandle}: mapping to '#{map_to_col.getName}'")
           map_to_col.addItem(i)
+          DSpace.create(i).index(true)
           nmapped += 1
         end
       else
