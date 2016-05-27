@@ -3,7 +3,7 @@ require 'yaml';
 require 'faker';
 require 'dspace'
 
-test_data_file = "testdata.yml";
+test_data_file = "genTestData.yml";
 
 def generate(file)
   test_data = YAML.load_file(file)
@@ -18,7 +18,7 @@ def generate(file)
       if (collections) then
         collections.each do |col|
           coll = create_collections(parent, col["name"])
-          puts "created in #{parent.getName}\t#{coll.getHandle}\t#{coll.getName}\t"
+          puts "created in #{parent.getName},#{col["name"]}\t#{coll.getHandle}\t#{coll.getName}\t"
           n = col["nitems"] || 0
           n.times do
             md = fake_metadata
@@ -50,6 +50,7 @@ def create_collections(parent, name)
   new_col.setMetadata("name", name)
   new_col.update
   parent.addCollection(new_col)
+  puts "created #{col.getHandle} #{col.getName}"
   return new_col;
 end
 
@@ -97,71 +98,14 @@ def init_dspace
   java_import org.dspace.content.Collection
   java_import org.dspace.content.Community
   java_import org.dspace.content.Item
-
-  admin_user = DGroup.find(DGroup::ADMIN_ID).getMembers()[0]
-  puts "Using user account: #{admin_user.getEmail()}"
-  DSpace.context.setCurrentUser(admin_user)
+  DSpace.login(ENV['USER'])
 end
 
-
-def export(file)
-  test_data = YAML.load_file(file)
-  test_data["communities"].each do |comm|
-    parent_name = comm["name"];
-    if parent_name then
-      dir = parent_name.gsub(/ /, "_")
-      puts "---"
-      puts "echo 'exporting #{parent_name}'"
-      puts "mkdir -p #{dir}"
-      puts "cd #{dir}"
-      i = 0;
-      DCommunity.findAll(parent_name).each do |com|
-        com.getCollections.each do |col|
-         dir = col.getName.gsub(/ /, '_')
-         puts "mkdir -p #{dir}"
-         puts "$DSPACE_HOME/bin/dspace export -t COLLECTION -i #{col.getHandle} -d #{dir} -n 1 -m"
-         i = i + 1000;
-        end
-      end
-      puts "cd .."
-    end
-  end
+def doit(test_data_file)
+init_dspace
+generate(test_data_file)
+DSpace.commit
 end
-
-def import(file)
-  test_data = YAML.load_file(file)
-  test_data["communities"].each do |comm|
-    parent_name = comm["name"];
-    if parent_name then
-      dir = parent_name.gsub(/ /, "_")
-      puts "---"
-      puts "echo 'importing #{parent_name}' from #{dir}"
-      puts "cd #{dir}"
-      i = 0;
-      DCommunity.findAll(parent_name).each do |com|
-        com.getCollections.each do |col|
-          dir = col.getName.gsub(/ /, '_')
-          puts "echo 'importing #{col.getName}' from #{dir}"
-          puts "$DSPACE_HOME/bin/dspace import -c #{col.getHandle} -s #{dir} -e $EPERSON  -a -m #{dir}/mapfile "
-        end
-      end
-      puts "cd .."
-    end
-  end
-end
-if (false) then
-  init_dspace
-  generate(test_data_file)
-  DSpace.commit
-else
-  init_dspace
-  export(test_data_file)
-
-  import(test_data_file)
-end
-
-#md =  fake_metadata
-
 
 
 

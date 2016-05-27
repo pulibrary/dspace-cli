@@ -1,0 +1,52 @@
+communities: [
+{
+  name: "Multi Media",
+  collections: [
+    { name: "Reality Squared" }
+  ]
+},
+{
+  name: "Doctoral Dissertations",
+  collections: [
+    { name: 'Anthropology', nitems: 67 },
+    { name: 'Architecture School', nitems: 56 },
+    { name: 'Art and Archaeology', nitems: 30 },
+    { name: 'Astrophysical Sciences', nitems: 65 },
+    { name: 'Biology', nitems: 65 },
+    { name: 'Chemistry', nitems: 21 },
+    { name: 'Comparative Literature', nitems: 3 },
+    { name: 'Computer Science', nitems: 87 },
+    { name: 'East Asian Studies', nitems: 19 },
+    { name: 'Ecology and Evolutionary Biology', nitems: 30 },
+    { name: 'Economics', nitems: 65 },
+    { name: 'Electrical Engineering', nitems: 34 },
+    { name: 'Engineering and Applied Science', nitems: 34 },
+    { name: 'English', nitems: 21 },
+    { name: 'French and Italian', nitems: 30 },
+    { name: 'Geosciences', nitems: 65 },
+    { name: 'German', nitems: 87 },
+    { name: 'History', nitems: 87 },
+    { name: 'Mathematics', nitems: 30 },
+    { name: 'MechanicalEngineering', nitems: 19 },
+    { name: 'Modern Languages', nitems: 67 },
+    { name: 'Molecular Biology', nitems: 21 },
+    { name: 'Music', nitems: 30 },
+    { name: 'Near Eastern Studies', nitems: 65 },
+    { name: 'Operations Research', nitems: 65 },
+    { name: 'Oriental Studies', nitems: 67 },
+    { name: 'Philosophy', nitems: 34 },
+    { name: 'Physics', nitems: 30 },
+    { name: 'Politics', nitems: 19 },
+    { name: 'Psychology', nitems: 30 },
+    { name: 'Religion', nitems: 30 },
+    { name: 'Romance Languages and Literatures', nitems: 65 },
+    { name: 'Slavic Languages and Literature', nitems: 30 },
+    { name: 'Sociology', nitems: 21 },
+    { name: 'Spanish and Portuguese Languages and Cultures', nitems: 67 },
+    { name: 'Statistics', nitems: 30 },
+    { name: 'Theater', nitems: 34 }
+  ]
+}
+
+]
+
