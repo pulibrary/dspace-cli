@@ -4,19 +4,13 @@ require "highline/import"
 year = 2016
 schema, element, qualifier = ['pu', 'date', 'classyear']
 handle = '88435/dsp019c67wm88m'
-
-
 require 'dspace'
 DSpace.load
 
 puts "continue with #{year} ?"
 ask 'ctr-c to abort'
 
-com = DSpace.fromString(handle)
-colls = com.getCollections
-
-
-colls.each do |col|
+DSpace.fromString(handle).getCollections.each do |col|
   template = col.get_template_item
   if (template) then
     puts "#{col.getHandle} template item #{template} set #{year}"
@@ -26,7 +20,6 @@ colls.each do |col|
   else
     puts "#{col.getHandle} has no template item: #{col.getName}"
   end
-
 end
 
 DSpace.commit

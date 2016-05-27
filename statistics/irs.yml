@@ -5,7 +5,7 @@ dspaceHome: /Users/monikam/DSpaces/installs/pri_productions
 verbose: true
 
 exclude_ips: [
-# princeton google apliance
+# princeton google appliance
   10.6.61.26,
 # monikam.princeton.edu
   128.112.66.66
