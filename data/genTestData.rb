@@ -3,7 +3,7 @@ require 'yaml';
 require 'faker';
 require 'dspace'
 
-test_data_file = "genTestData.yml";
+test_data_file = "data/genTestData.yml";
 
 def generate(file)
   test_data = YAML.load_file(file)
@@ -23,6 +23,7 @@ def generate(file)
           n.times do
             md = fake_metadata
             item = DItem.install(coll, md)
+            DSpace.create(item).index(true)
             puts "created in #{parent.getName}\t#{coll.getHandle}\t#{coll.getName}\th=#{item.getHandle()} #{item.getName}"
           end
         end
@@ -50,7 +51,7 @@ def create_collections(parent, name)
   new_col.setMetadata("name", name)
   new_col.update
   parent.addCollection(new_col)
-  puts "created #{col.getHandle} #{col.getName}"
+  puts "created #{new_col.getHandle} #{new_col.getName}"
   return new_col;
 end
 
@@ -67,7 +68,7 @@ def fake_metadata
 
   metadata['dc.title'] = Faker::Book.title
   metadata['dc.publisher'] =  Faker::Book.publisher
-  metadata['dc.date.issued'] = Faker::Date.between("1/1/2000", DateTime.now).to_s
+  metadata['dc.date.issued'] = Faker::Date.between("6/1/2010", DateTime.now).to_s
   #journal =  Faker::Commerce.department;
   journal = metadata['dc.title'].split[0]
   if ( 0 == rand(1)) then

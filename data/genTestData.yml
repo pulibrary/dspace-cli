@@ -46,7 +46,48 @@ communities: [
     { name: 'Statistics', nitems: 30 },
     { name: 'Theater', nitems: 34 }
   ]
+},
+{
+  name: "Senior Thesis",
+  collections: [
+    { name: 'Anthropology', nitems: 12 },
+    { name: 'Architecture School', nitems: 56 },
+    { name: 'Art and Archaeology', nitems: 5 },
+    { name: 'Astrophysical Sciences', nitems: 3 },
+    { name: 'Biology', nitems: 34 },
+    { name: 'Chemistry', nitems: 15 },
+    { name: 'Comparative Literature', nitems: 3 },
+    { name: 'Computer Science', nitems: 120 },
+    { name: 'East Asian Studies', nitems: 3 },
+    { name: 'Ecology and Evolutionary Biology', nitems: 1 },
+    { name: 'Economics', nitems: 89 },
+    { name: 'Electrical Engineering', nitems: 12 },
+    { name: 'Engineering and Applied Science', nitems: 8 },
+    { name: 'English', nitems: 21 },
+    { name: 'French and Italian', nitems: 10 },
+    { name: 'Geosciences', nitems: 4 },
+    { name: 'German', nitems: 12 },
+    { name: 'History', nitems: 23 },
+    { name: 'Mathematics', nitems: 21 },
+    { name: 'MechanicalEngineering', nitems: 3 },
+    { name: 'Modern Languages', nitems: 1 },
+    { name: 'Molecular Biology', nitems: 3 },
+    { name: 'Music', nitems: 7 },
+    { name: 'Near Eastern Studies', nitems: 5 },
+    { name: 'Operations Research', nitems: 6 },
+    { name: 'Oriental Studies', nitems: 7 },
+    { name: 'Philosophy', nitems: 9 },
+    { name: 'Physics', nitems: 1 },
+    { name: 'Politics', nitems: 4 },
+    { name: 'Psychology', nitems: 4 },
+    { name: 'Religion', nitems: 5 },
+    { name: 'Romance Languages and Literatures', nitems: 4 },
+    { name: 'Slavic Languages and Literature', nitems: 2 },
+    { name: 'Sociology', nitems: 12 },
+    { name: 'Spanish and Portuguese Languages and Cultures', nitems: 6 },
+    { name: 'Statistics', nitems: 18 },
+    { name: 'Theater', nitems: 2 }
+  ]
 }
-
 ]
 
