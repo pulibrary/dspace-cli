@@ -1,7 +1,6 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
 require 'optparse'
 require 'dspace'
-require "highline/import"
 
 require "cli/dcommunity"
 require "cli/dcollection"
