@@ -10,7 +10,7 @@ class DCollection
       parts = step.split("_")
       i = parts[1].to_i
       group = @obj.getWorkflowGroup(i)
-      if group.nil?  then
+      if group.nil? then
         group = DGroup.find_or_create(workflow_name(step))
         @obj.setWorkflowGroup(i, group)
       end
@@ -64,53 +64,49 @@ class DCollection
     bits
   end
 
-  class DCollection
+  def copy(name, parent)
+    raise "must give non nil parent community" if parent.nil? || parent.getType != DSpace::COMMUNITY
+    name = name.strip();
 
-    def copy(name, parent)
-      raise "must give non nil parent community" if parent.nil? || parent.geType != DSpace::COMMUNITY
-      name = name.strip();
+    puts "copying\t\t#{@obj} #{@obj.getName()}"
+    puts "copying into\t#{parent} #{parent.getName()}"
+    puts "naming it \t'#{name}'"
 
-      puts "copying\t\t#{@obj} #{@obj.getName()}"
-      puts "copying into\t#{parent} #{parent.getName()}"
-      puts "naming it \t'#{name}'"
+    new_col = DCollection.create(name, parent)
+    puts "Created #{new_col.getHandle()}"
 
-      new_col = DCollection.create(name, parent)
-      puts "Created #{new_col.getHandle()}"
+    group = @obj.getSubmitters();
+    if (group) then
+      new_group = new_col.createSubmitters
+      copy_group(group, new_group)
+    end
 
-      group = @obj.getSubmitters();
+    [1, 2, 3].each do |i|
+      group = @obj.getWorkflowGroup(i);
       if (group) then
-        new_group = new_col.createSubmitters
+        new_group = new_col.createWorkflowGroup(i)
         copy_group(group, new_group)
       end
-
-      [1, 2, 3].each do |i|
-        group = @obj.getWorkflowGroup(i);
-        if (group) then
-          new_group = new_col.createWorkflowGroup(i)
-          copy_group(group, new_group)
-        end
-      end
-
-      puts "default authorization left in place";
-
-      new_col.update()
-      return new_col
     end
 
-    private
-    def copy_group(from, to)
-      puts "create group #{to.getName()} based on #{from.getName()}"
-      sub_groups = from.getMemberGroups()
-      sub_groups.each do |g|
-        puts "#{to.getName()}: add #{g.getName()}"
-        to.addMember(g);
-      end
-      from.getMembers().each do |g|
-        puts "#{to.getName()}: add #{g.getName()}"
-        to.addMember(g);
-      end
-      to.update
-    end
+    puts "default authorization left in place";
+
+    new_col.update()
+    return new_col
   end
 
+  private
+  def copy_group(from, to)
+    puts "create group #{to.getName()} based on #{from.getName()}"
+    sub_groups = from.getMemberGroups()
+    sub_groups.each do |g|
+      puts "#{to.getName()}: add #{g.getName()}"
+      to.addMember(g);
+    end
+    from.getMembers().each do |g|
+      puts "#{to.getName()}: add #{g.getName()}"
+      to.addMember(g);
+    end
+    to.update
+  end
 end

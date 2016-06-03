@@ -1,9 +1,8 @@
 #!/usr/bin/env jruby 
 require "highline/import"
-require_relative "modules/collection"
+require "cli"
 
-template_hdl = '88435/dsp018c97kq48z';
-
+netid = 'monikam';
 name = ask "Collection Name "; 
 name = name.strip; 
 
@@ -24,39 +23,39 @@ hdl:  '88435/dsp01kh04dp74g'
 puts "Available Parent Collections"
 i = 0; choices.each do |c|  
     puts "#{i}: #{c[:name]}";  
-    i = i +1
+    i += 1
 end
 ci = ask "Which collection ? "; 
 parent = choices[ci.to_i][:hdl]
 
 require 'dspace'
-require 'cli/dcollection'
-
 DSpace.load()
+DSpace.login netid
 
-puts parent_coll = DSpace.fromString(parent)
-puts template_coll  = DSpace.fromString(template_hdl)
+parent_coll = DSpace.fromString(parent)
+template_coll  = DSpace.fromString('88435/dsp018c97kq48z')
 
 puts "Name:\n\t#{name}";  
 puts "Parent:\n\t#{parent_coll.getName}"; 
 puts "Template Colection:\n\t#{template_coll.getName}\n\tin #{template_coll.getParentObject().getName}"; 
 yes = ask "do you want to create ? [Y/N] "
-if (yes[0] == 'Y') then
+if (yes[0] == 'Y') then 
     options =  {
-        template_coll: template_coll,
-        parent_handle: parent_coll,
+        netid: netid, 
+        template_coll: template_coll.getHandle(),
+        parent_handle: parent_coll.getHandle(), 
         name: name 
     };
-    DSpace.login(ENV['USER'])
-    newcol = DSpace.create(template_col).copy(name, parent_coll)
-
+    puts parent_coll
+    new_col = DSpace.create(template_coll).copy(name, parent_coll)
     DSpace.commit
     puts "Committed #{new_col.getHandle()}"
     puts "If restricted access: set 'DEFAULT_BITSTREAM_READ' to Princetion_IPs"
     puts "add to dspace/config/input-forms.xml"
     puts '   <name-map collection-handle="' + new_col.getHandle + '" form-name="digpubs_serials"/>'
     puts "commit message"
-    puts '   add ' + new_col.getHandle + 'to  form-name="digpubs_serials"'
+    puts '   add ' + new_col.getHandle + ' to  form-name="digpubs_serials"'
+
 end
 
 
