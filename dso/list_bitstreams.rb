@@ -2,9 +2,7 @@
 require 'optparse'
 require 'dspace'
 
-require "cli/dcommunity"
-require "cli/dcollection"
-require "cli/ditem"
+require "cli"
 
 options = {}
 parser = OptionParser.new do |opts|
@@ -19,6 +17,14 @@ def bitstream_to_hash(bit)
           "parents" => DSpace.create(bit).parents.collect{ |p| p.getHandle }}
 end
 
+def doit(str)
+  dso = DSpace.fromString(str)
+  puts "# #{dso}"
+  DSpace.create(dso).bitstreams.each do |bit|
+    puts bitstream_to_hash(bit)
+  end
+  puts ""
+end
 
 begin
   parser.parse!
@@ -27,12 +33,7 @@ begin
   DSpace.load
 
   ARGV.each do |str|
-    dso = DSpace.fromString(str)
-    puts "# #{dso}"
-    DSpace.create(dso).getBitstreams.each do |bit|
-      puts bitstream_to_hash(bit)
-    end
-    puts ""
+    doit(str)
   end
 rescue Exception => e
   puts e.message;

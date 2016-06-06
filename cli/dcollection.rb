@@ -55,11 +55,11 @@ class DCollection
     self
   end
 
-  def getBitstreams(bundleName = "ORIGINAL")
+  def bitstreams(bundleName = "ORIGINAL")
     bits = []
     iter = @obj.getItems
     while (i = iter.next) do
-      bits += DSpace.create(i).getBitstreams(bundleName)
+      bits += DSpace.create(i).bitstreams(bundleName)
     end
     bits
   end
@@ -75,14 +75,14 @@ class DCollection
     new_col = DCollection.create(name, parent)
     puts "Created #{new_col.getHandle()}"
 
-    group = @obj.getSubmitters();
+    group = @obj.getSubmitters
     if (group) then
       new_group = new_col.createSubmitters
       copy_group(group, new_group)
     end
 
     [1, 2, 3].each do |i|
-      group = @obj.getWorkflowGroup(i);
+      group = @obj.getWorkflowGroup(i)
       if (group) then
         new_group = new_col.createWorkflowGroup(i)
         copy_group(group, new_group)

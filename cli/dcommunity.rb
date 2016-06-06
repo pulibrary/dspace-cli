@@ -28,10 +28,10 @@ class DCommunity
     @obj.getCollections.collect { |col| DSpace.create(col).find_or_create_workflow_group(step) }
   end
 
-  def getBitstreams(bundleName = "ORIGINAL")
+  def bitstreams(bundleName = "ORIGINAL")
     bits = []
     @obj.getCollections.each do |col|
-      bits += DSpace.create(col).getBitstreams(bundleName)
+      bits += DSpace.create(col).bitstreams(bundleName)
     end
     bits
   end
