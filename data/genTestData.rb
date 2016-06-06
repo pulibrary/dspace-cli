@@ -2,57 +2,62 @@
 require 'yaml';
 require 'faker';
 require 'dspace'
+require 'cli/ditem'
 
 test_data_file = "data/genTestData.yml";
 
+def recreate_community(comm_name)
+  DCommunity.all.each do |c|
+    if c.getName == comm_name then
+      puts "delete community #{comm_name}"
+      c.delete()
+    end
+  end
+  return DCommunity.create(comm_name)
+end
+
 def generate(file)
-  test_data = YAML.load_file(file)
+  test_data = load_file(file)
+  puts test_data
   test_data["communities"].each do |comm|
     parent_name = comm["name"];
-    if parent_name then
-      puts "zap_community #{parent_name}"
-      zap_community(parent_name)
-      parent = create_community(parent_name)
-      puts "created #{parent.getHandle}\t#{parent.getName}"
-      collections = comm["collections"];
-      if (collections) then
-        collections.each do |col|
-          coll = create_collections(parent, col["name"])
-          puts "created in #{parent.getName},#{col["name"]}\t#{coll.getHandle}\t#{coll.getName}\t"
-          n = col["nitems"] || 0
-          n.times do
-            md = fake_metadata
-            item = DItem.install(coll, md)
-            DSpace.create(item).index(true)
-            puts "created in #{parent.getName}\t#{coll.getHandle}\t#{coll.getName}\th=#{item.getHandle()} #{item.getName}"
-          end
-        end
+    parent = recreate_community(parent_name)
+    puts "created #{parent.getHandle}\t#{parent.getName}"
+    comm["collections"].each do |col|
+      coll = DCollection.create(col["name"], parent)
+      puts "created in #{parent.getName} #{coll.getHandle} #{coll.getName}"
+      col["nitems"].times do
+        md = fake_metadata
+        item = DItem.install(coll, md)
+        DSpace.create(item).index(true)
+        puts "created in #{parent.getName}\t#{coll.getHandle}\t#{coll.getName}\th=#{item.getHandle()} #{item.getName}"
       end
     end
   end
 end
 
-def zap_community(comm_name)
-  DCommunity.findAll(comm_name).each do |c|
-    c.delete();
+def load_file(file)
+  test_data = YAML.load_file(file)
+  error, comi = [0, 0]
+  test_data["communities"].each do |comm|
+    if (comm["name"] || "").empty? then
+      $stderr.puts "Community #{comi} has no name"
+      error += 1
+    else
+      comm["collections"] ||= []
+      colli = 0;
+      comm['collections'].each do |col|
+        if (col["name"] || "").empty? then
+          $stderr.puts "Collection #{colli} in Community #{comi} has no name"
+          error += 1
+        else
+          col["nitems"] ||= 0
+        end
+      end
+      comi += 1
+    end
   end
-end
-
-def create_community(comm_name)
-  parent = Community.create(nil, DSpace.context)
-  parent.setMetadata("name", comm_name)
-  parent.update
-  DSpace.commit
-  return parent
-end
-
-def create_collections(parent, name)
-  new_col = Collection.create(DSpace.context)
-  new_col.setMetadata("name", name)
-  new_col.update
-  parent.addCollection(new_col)
-  puts "created #{new_col.getHandle} #{new_col.getName}"
-  return new_col;
+  return (error == 0) ? test_data : {"communities" => []}
 end
 
 def fake_metadata
@@ -67,11 +72,11 @@ def fake_metadata
   metadata['dc.type'] = 'Article';
 
   metadata['dc.title'] = Faker::Book.title
-  metadata['dc.publisher'] =  Faker::Book.publisher
+  metadata['dc.publisher'] = Faker::Book.publisher
   metadata['dc.date.issued'] = Faker::Date.between("6/1/2010", DateTime.now).to_s
   #journal =  Faker::Commerce.department;
   journal = metadata['dc.title'].split[0]
-  if ( 0 == rand(1)) then
+  if (0 == rand(1)) then
     journal = "Journal of " + journal
   else
     journal = journal + " Journal";
@@ -94,20 +99,19 @@ def fake_metadata
   return metadata
 end
 
-def init_dspace
+def doit(test_data_file)
   DSpace.load()
   java_import org.dspace.content.Collection
   java_import org.dspace.content.Community
   java_import org.dspace.content.Item
   DSpace.login(ENV['USER'])
+
+  generate(test_data_file)
+  #DSpace.commit
 end
 
-def doit(test_data_file)
-init_dspace
-generate(test_data_file)
-DSpace.commit
-end
 
+doit(test_data_file)
 
 
 
