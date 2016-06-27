@@ -11,8 +11,7 @@ DSpace.load
 fromString = '88435/dsp019c67wm88m'
 
 com = DSpace.fromString(fromString)
-colls = com.getCollections
-colls.each do |col|
+com.getCollections.each do |col|
   puts "#{col.toString} #{col.getName}"
   File.open(col.toString + ".xml", 'w') do |out|
     items = col.items
