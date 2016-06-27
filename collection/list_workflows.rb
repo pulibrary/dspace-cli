@@ -10,21 +10,36 @@ end
 
 def flow_to_hash(flow)
   item = flow.getItem
-  itemData = DSpace.create(item).getMetaDataValues
-  author_title = itemData.select { |f, v| ["dc.contributor.author", "dc.title"].include?(f) }
-  itemDataStrs = author_title.collect { |f, v| "#{f}=#{v}" }.sort
+  metaData = DSpace.create(item).getMetaDataValues
+  mdHsh = {}
+  metaData.each do |k,v|
+    mdHsh[k.fullName] ||= []
+    mdHsh[k.fullName] << v
+  end
   return {"submit_to" => flow.getCollection.getHandle,
           "flowId" => flow.getID,
           "itemId" => item.getID,
           "state" => flow.getState,
-          "owner" => DSpace.toString(flow.getOwner),
-          "itemData" => itemDataStrs.join(",")}
+          "owner" =>  DSpace.inspect(flow.getOwner),
+          "metaData" => mdHsh}
 end
 
 
 def print_flows(dso)
   DWorkflowItem.findAll(dso).each do |flow|
-    puts flow_to_hash(flow).inspect
+    hsh = flow_to_hash(flow)
+    hsh.each do |k,v|
+      if (k == "metaData") then
+        puts k
+        v.keys.sort.each do |mk|
+          mv = v[mk]
+          puts "\t#{mk}\t#{mv.collect { |s| s.slice(0,120) }.join('; ')}"
+        end
+      else
+        puts "#{k.inspect}\t#{v.inspect}"
+      end
+    end
+    puts ""
   end
 end
 
