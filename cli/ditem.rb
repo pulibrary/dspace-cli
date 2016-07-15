@@ -1,6 +1,6 @@
 class DItem
 
-  def index(force_update)
+def index(force_update)
     java_import org.dspace.discovery.SolrServiceImpl
     idxService = DSpace.getIndexService()
     idxService.indexContent(DSpace.context, @obj, force_update)

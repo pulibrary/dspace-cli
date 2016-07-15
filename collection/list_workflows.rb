@@ -2,6 +2,7 @@
 require 'optparse'
 require 'dspace'
 require "highline/import"
+require 'cli/dmetadata'
 
 options = {}
 parser = OptionParser.new do |opts|
@@ -11,11 +12,7 @@ end
 def flow_to_hash(flow)
   item = flow.getItem
   metaData = DSpace.create(item).getMetaDataValues
-  mdHsh = {}
-  metaData.each do |k,v|
-    mdHsh[k.fullName] ||= []
-    mdHsh[k.fullName] << v
-  end
+  mdHsh = DMetadataField.arrayToHash metaData
   return {"submit_to" => flow.getCollection.getHandle,
           "flowId" => flow.getID,
           "itemId" => item.getID,
@@ -24,6 +21,12 @@ def flow_to_hash(flow)
           "metaData" => mdHsh}
 end
 
+def print_metadata(hsh)
+  hsh.keys.sort.each do |mk|
+    mv = hsh[mk]
+    puts "\t#{mk}\t#{mv.collect { |s| s.slice(0,60) }.join('; ')}"
+  end
+end
 
 def print_flows(dso)
   DWorkflowItem.findAll(dso).each do |flow|
@@ -31,10 +34,7 @@ def print_flows(dso)
     hsh.each do |k,v|
       if (k == "metaData") then
         puts k
-        v.keys.sort.each do |mk|
-          mv = v[mk]
-          puts "\t#{mk}\t#{mv.collect { |s| s.slice(0,120) }.join('; ')}"
-        end
+        print_metadata(v)
       else
         puts "#{k.inspect}\t#{v.inspect}"
       end
