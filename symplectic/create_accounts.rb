@@ -6,27 +6,20 @@ DSpace.load
 DSpace.login ENV['USER']
 puts "\n"
 
-com_name =  'All Content'
-com = DSpace.findByMetadataValue('dc.title', com_name, DConstants::COMMUNITY)[0]
-puts "no such community #{com_name}" unless com
-puts "adding collections to #{com.getName} #{com.getHandle}"
-
-filename = 'symplectic/departments.txt'
-puts "reading collections from #{filename}"
-
-collNames = com.getCollections.collect { |c| c.getName }
+filename = 'symplectic/accounts.txt'
+puts "reading accounts from #{filename}"
 
 f = File.open(filename, "r")
-f.each_line do |name|
-  name = name.chop
-  if  collNames.include?(name)
-    puts "exists #{name}"
+f.each_line do |line|
+  netid, first, last = line.chop.split
+  #puts ['netid', netid, 'first', first, 'last', last].join "\t"
+  if DEPerson.find(netid)
+    puts "exists #{netid}"
   else
-    puts "CREATE #{name}"
-    DCollection.create(name, com)
+    p = DEPerson.create(netid, first, last, netid + "@princeton.edu")
+    puts "created #{p.getEmail}  #{p.getFullName}"
   end
 end
-
 
 doit = ask "commit ? (Y/N) "
 if (doit == "Y") then

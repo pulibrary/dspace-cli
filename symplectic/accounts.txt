@@ -1,42 +1,11 @@
-Anthropology
-Architecture
-Art and Archaeology
-Astrophysical Sciences
-Center for African American Studies
-Chemical and Biological Engineering
-Chemistry
-Civil And Environmental Engineering
-Classics
-Comparative Literature
-Computer Science
-East Asian Studies
-Ecology and Evolutionary Biology
-Economics
-Electrical Engineering
-Engineering and Applied Science
-English
-French and Italian
-Geosciences
-German
-History
-History of Science
-Lewis Center for the Arts
-Mathematics
-Mechanical and Aerospace Engineering
-Molecular Biology
-Music
-Near Eastern Studies
-Operations Research and Financial Engineering
-Philosophy
-Physics
-Politics
-Princeton Neuroscience Institute
-Program in Gender and Sexuality Studies
-Psychology
-Religion
-Slavic Languages and Literatures
-Sociology
-Spanish and Portuguese Languages and Cultures
-The Council of the Humanities
-University Center for Human Values
-Woodrow Wilson School
+wdressel	Willow	Dressel
+symplectic  S   Symplectic
+rbivens	Wayne	Bivens-Tatum
+jdonatie	Joann	Donatiello
+yl7	Yuan	Li
+oar	OAR	Service-Account
+monikam Monika	Mevenkamp
+monikasu	Monika	MevenkampSU
+ratliff	Mark	Ratliff
+ratliffsu	Mark	RatliffSU
+nnero	Neil	Nero
