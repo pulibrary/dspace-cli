@@ -26,7 +26,6 @@ com.getCollections.each do |col|
     g.addMember(all_groups)
     g.update
   end
-  break
 end
 
 doit = ask "commit ? (Y/N) "

@@ -1,0 +1,50 @@
+Administrator,monikam@princeton.edu
+Administrator,ratliff@princeton.edu
+Administrator,monikam+symplectic@princeton.edu
+Administrator,admin@princeton.edu
+Anthropology_3,rbivens@princeton.edu
+Computer Science_3,oar@princeton.edu
+Computer Science_3,wdressel@princeton.edu
+Ecology and Evolutionary Biology_3,abaruzzi@princeton.edu
+Lewis-Sigler Institute for Integrative Genomics_3,abaruzzi@princeton.edu
+Molecular Biology_3,abaruzzi@princeton.edu
+Philosophy_3,rbivens@princeton.edu
+Population Research_3,jdonatie@princeton.edu
+Princeton Environmental Institute_3,abaruzzi@princeton.edu
+Religion_3,rbivens@princeton.edu
+Sociology_3,jdonatie@princeton.edu
+Psychology_3,nnero@princeton.edu
+Chemistry_3,nnero@princeton.edu
+Symplectic_Receivables_2,monikasu@princeton.edu
+See_All_Tasks,monikam@princeton.edu
+See_All_Tasks,yl7@princeton.edu
+Electrical Engineering_3,wdressel@princeton.edu
+Engineering and Applied Science_3,wdressel@princeton.edu
+Mechanical and Aerospace Engineering_3,wdressel@princeton.edu
+Operations Research and Financial Engineering_3,wdressel@princeton.edu
+Chemical and Biological Engineering_3,wdressel@princeton.edu
+Civil and Environmental Engineering_3,wdressel@princeton.edu
+Computer Science_3,wdressel@princeton.edu
+Anthropology_2,rbivens@princeton.edu
+Computer Science_2,oar@princeton.edu
+Computer Science_2,wdressel@princeton.edu
+Ecology and Evolutionary Biology_2,abaruzzi@princeton.edu
+Lewis-Sigler Institute for Integrative Genomics_2,abaruzzi@princeton.edu
+Molecular Biology_2,abaruzzi@princeton.edu
+Philosophy_2,rbivens@princeton.edu
+Population Research_2,jdonatie@princeton.edu
+Princeton Environmental Institute_2,abaruzzi@princeton.edu
+Religion_2,rbivens@princeton.edu
+Sociology_2,jdonatie@princeton.edu
+Psychology_2,nnero@princeton.edu
+Chemistry_2,nnero@princeton.edu
+Symplectic_Receivables_2,monikasu@princeton.edu
+See_All_Tasks,monikam@princeton.edu
+See_All_Tasks,yl7@princeton.edu
+Electrical Engineering_2,wdressel@princeton.edu
+Engineering and Applied Science_2,wdressel@princeton.edu
+Mechanical and Aerospace Engineering_2,wdressel@princeton.edu
+Operations Research and Financial Engineering_2,wdressel@princeton.edu
+Chemical and Biological Engineering_2,wdressel@princeton.edu
+Civil and Environmental Engineering_2,wdressel@princeton.edu
+Computer Science_2,wdressel@princeton.edu
