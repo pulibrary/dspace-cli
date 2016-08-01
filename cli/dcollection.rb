@@ -11,7 +11,7 @@ class DCollection
       i = parts[1].to_i
       group = @obj.getWorkflowGroup(i)
       if group.nil? then
-        group = DGroup.find_or_create(workflow_name(step))
+        group = DGroup.find_or_create(workflow_name(i.to_s))
         @obj.setWorkflowGroup(i, group)
       end
     elsif (step == "SUBMIT") then

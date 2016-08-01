@@ -1,28 +1,33 @@
 #!/usr/bin/env jruby
 require "highline/import"
 require 'dspace'
+require 'cli/dcollection'
 
 DSpace.load
 DSpace.login ENV['USER']
+puts "\n"
 
-filename = 'symplectic/departments.txt'
-puts "reading collections from #{filename}"
-com = DSpace.findByMetadataValue('dc.title', 'All Content', DConstants::COMMUNITY)[0]
-puts "adding collections to #{com.getName} #{com.getHandle}"
+com_name =  'All Content'
+com = DSpace.findByMetadataValue('dc.title', com_name, DConstants::COMMUNITY)[0]
+puts "no such community #{com_name}" unless com
 
-collNames = com.getCollections.collect { |c| c.getName }
+all_groups_name = 'See_All_Tasks'
+all_groups = DGroup.find(all_groups_name)
+puts "no such group #{all_groups_name}" unless all_groups
+puts "adding workflows steps 2,3 to collections in #{com.getName} #{com.getHandle}"
+puts "adding group #{all_groups.getName} to step 2,3 "
+puts ""
 
-f = File.open(filename, "r")
-f.each_line do |name|
-  name = name.chop
-  if  collNames.include?(name)
-    puts "exists #{name}"
-  else
-    puts "CREATE #{name}"
-    DCollection.create(name, com)
+com.getCollections.each do |col|
+  dcol = DSpace.create(col)
+  [2, 3].each do |step|
+    g = dcol.find_or_create_workflow_group("step_#{step}")
+    puts "#{col.getName} : #{g.getName}"
+    g.addMember(all_groups)
+    g.update
   end
+  break
 end
-
 
 doit = ask "commit ? (Y/N) "
 if (doit == "Y") then
