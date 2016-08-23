@@ -12,11 +12,8 @@ group_name = "SrTheses_Bitstream_Read_Princeton"
 group_name = "SrTheses_Bitstream_Read_Mudd"
 
 set_field = %w(dc rights accessRights)
-set_value = 'Walk-in Access. ' +
-    'This thesis can only be viewed on computer terminals at the ' +
-    '<a href="http://www.princeton.edu/~mudd">Mudd Manuscript Library</a>. ' +
-    'For more information or to order a copy contact ' +
-    '<a href="mailto:mudd@princeton.edu">mudd@princeton.edu</a>.'
+set_value ='Walk-in Access. This thesis can only be viewed on computer terminals at the ' +
+    '<a href="http://mudd.princeton.edu">Mudd Manuscript Library</a>. '
 
 puts 'set metadata value '
 puts "     #{set_field} to '#{set_value}'"
