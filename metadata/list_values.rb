@@ -10,11 +10,10 @@ parser = OptionParser.new do |opts|
 end
 
 def doit(str)
-  puts str
   dsos = DSpace.findByMetadataValue(str, nil, DConstants::ITEM)
   vals = []
   dsos.each  {  |dso|  vals += dso.getMetadataByMetadataString(str).collect { |v| v.value }  }
-  vals.uniqu
+  vals.uniq
 end
 
 begin
@@ -24,7 +23,7 @@ begin
   DSpace.load
 
   ARGV.each do |str|
-    doit(str)
+    puts [str, doit(str)].join "\t";
   end
 rescue Exception => e
   puts e.message;
