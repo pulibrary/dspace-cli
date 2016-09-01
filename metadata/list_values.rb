@@ -9,11 +9,13 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} fully_qualified_metadata.."
 end
 
-def doit(str)
-  dsos = DSpace.findByMetadataValue(str, nil, DConstants::ITEM)
-  vals = []
-  dsos.each  {  |dso|  vals += dso.getMetadataByMetadataString(str).collect { |v| v.value }  }
-  vals.uniq
+def doit(metadata_field)
+  puts ['field', 'id', 'handle', 'value'].join("\t")
+  dsos = DSpace.findByMetadataValue(metadata_field, nil, DConstants::ITEM)
+  dsos.each  do  |dso|
+    vals = dso.getMetadataByMetadataString(metadata_field).collect { |v| v.value }
+    puts [metadata_field, dso.getID, dso.getHandle.nil? ? "null" : dso.getHandle, vals  ].join("\t")
+  end
 end
 
 begin
@@ -23,7 +25,7 @@ begin
   DSpace.load
 
   ARGV.each do |str|
-    puts [str, doit(str)].join "\t";
+    doit(str);
   end
 rescue Exception => e
   puts e.message;
