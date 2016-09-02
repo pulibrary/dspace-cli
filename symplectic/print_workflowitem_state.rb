@@ -1,8 +1,9 @@
 #!/usr/bin/env jruby
-require "highline/import"
 require 'dspace'
+require "cli/ditem.rb"
 
 def print_unarchived
+  java_import org.dspace.workflow.WorkflowItem;
   DItem.allUnarchived.each do |i|
     inflow = (WorkflowItem.findByItem(DSpace.context, i).nil? ? "not in" : "in") + " workflow"
     dept = i.getMetadataFirstValue('pu', 'author', 'department', nil) || 'department-not-crosswalked'
