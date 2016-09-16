@@ -333,6 +333,6 @@ module Statistics
   end
 
 end
-Statistics::mkdir .run()
+Statistics::Community.run()
 
 
