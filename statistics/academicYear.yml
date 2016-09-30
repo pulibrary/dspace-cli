@@ -15,7 +15,8 @@ all_match:  {
 }
 
 communities: [
-  {id: 267, name: "Princeton University Senior Theses" }
+#  {id: 267, name: "Princeton University Senior Theses" }
+  {id: 67, name: "Princeton University Doctoral Dissertations" }
 ]
 
 
