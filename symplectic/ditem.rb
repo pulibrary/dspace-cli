@@ -6,7 +6,8 @@ class DItem
     java_import org.dspace.storage.rdbms.DatabaseManager
     sql = "SELECT PID FROM SYMPLECTIC_PIDS WHERE ITEM_ID = #{@obj.getID}";
     tri = DatabaseManager.queryTable(DSpace.context, "SYMPLECTIC_PIDS", sql)
-    return tri.next().getStringColumn("PID")
+    n =  tri.next()
+    (n.nil?) ? nil : n.getStringColumn("PID")
   end
 
   def self.findBySymplecticId sid
