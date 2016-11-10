@@ -11,24 +11,51 @@ DSpace.load
 fromString = '88435/dsp019c67wm88m'
 
 com = DSpace.fromString(fromString)
-com.getCollections.each do |col|
-  puts "#{col.toString} #{col.getName}"
-  File.open(col.toString + ".xml", 'w') do |out|
-    items = col.items
-    ihash = []
-    while (i = items.next)
-      h = {}
-      h[:title] = i.getMetadataByMetadataString("dc.title").collect { |v| v.value }
-      h[:author] = i.getMetadataByMetadataString("dc.contributor.author").collect { |v| v.value }
-      h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect { |v| v.value }
-      h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }
-      h[:department] = i.getMetadataByMetadataString("pu.department").collect { |v| v.value }
-      h[:url] = i.getMetadataByMetadataString("dc.identifier.uri").collect { |v| v.value }
-      ihash << h
+
+def all_xml
+  com.getCollections.each do |col|
+    puts "#{col.toString} #{col.getName}"
+    File.open(col.toString + ".xml", 'w') do |out|
+      items = col.items
+      ihash = []
+      while (i = items.next)
+        h = {}
+        h[:title] = i.getMetadataByMetadataString("dc.title").collect { |v| v.value }
+        h[:author] = i.getMetadataByMetadataString("dc.contributor.author").collect { |v| v.value }
+        h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect { |v| v.value }
+        h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }
+        h[:department] = i.getMetadataByMetadataString("pu.department").collect { |v| v.value }
+        h[:url] = i.getMetadataByMetadataString("dc.identifier.uri").collect { |v| v.value }
+        ihash << h
+      end
+      colurl = "http://arks.princeton.edu/ark:/#{col.getHandle()}"
+      out.puts XmlSimple.xml_out({:name => col.getName, :url => colurl, :item => ihash}, :root_name => 'collection')
     end
-    colurl = "http://arks.princeton.edu/ark:/#{col.getHandle()}"
-    out.puts XmlSimple.xml_out({ :name => col.getName, :url => colurl, :item => ihash}, :root_name => 'collection')
   end
 end
+
+def year_csv(year, fields = nil)
+  fields ||= ["dc.contributor.author", "dc.contributor.advisor", 'dc.date.created', 'pu.department', "dc.contributor", 'pu.embargo.terms', 'dc.title', 'dc.description.abstract']
+  items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+  ihash= []
+  items.each do |i|
+      next unless i.getHandle
+      h = { 'internal-id' => i }
+      fields.each do |f|
+        h[f] = i.getMetadataByMetadataString(f).collect { |v| v.value }.join("||")
+      end
+      ihash << h
+    end
+    csv_out(ihash, ['internal-id'] + fields)
+end
+
+def csv_out(ihash, fields)
+  puts fields.join("\t")
+  ihash.each do |h|
+    puts fields.collect{ |f| h[f]}.join("\t").gsub(/\n/, ' ').gsub(/\r/, ' ')
+  end
+end
+
+year_csv(2016)
 
 
