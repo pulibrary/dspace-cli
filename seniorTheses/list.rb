@@ -49,6 +49,12 @@ def year_csv(year, fields = nil)
     csv_out(ihash, ['internal-id'] + fields)
 end
 
+def year_handles(year)
+  items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+  h = items.collect { |i| i.getHandle }
+  puts h.join("\n")
+end
+
 def csv_out(ihash, fields)
   puts fields.join("\t")
   ihash.each do |h|
@@ -56,6 +62,6 @@ def csv_out(ihash, fields)
   end
 end
 
-year_csv(2016)
+year_handles(2016)
 
 
