@@ -20,7 +20,7 @@ url = ask 'symplectic publication-url ' unless url
 puts "# using #{url}";
 
 
-puts ['ITEM', 'SymplecticID', 'Citation'].join "\t"
+puts ['ITEM', 'ItemID', 'SymplecticID', 'Citation'].join "\t"
 jsp_url =  DConfig.get('dspace.url') + "/handle/"
 DItem.all.each do |i|
   di = DSpace.create(i)
@@ -46,7 +46,7 @@ DItem.all.each do |i|
   citation = select_citations[0]["content"]
 
   # print table entry
-  puts [jsp_url + i.getHandle, sid, citation].join "\t"
+  puts [jsp_url + i.getHandle, i.getID, sid, citation].join "\t"
 end
 
 
