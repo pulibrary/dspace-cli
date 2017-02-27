@@ -16,6 +16,8 @@ p = DEPerson.create(netid, first, last, netid + "@princeton.edu")
 puts "Create    #{[p.getNetid, p.getFullName, p.getEmail].join(", ")} ?"
 if "Y" ==  ask("Yes or No (Y/N) ") then
   DSpace.commit
+else
+  DSpace.context_renew
 end
 
 
