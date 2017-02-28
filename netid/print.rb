@@ -3,6 +3,11 @@ require 'dspace'
 
 DSpace.load
 
+def print_active
+  can = DEPerson.all.select { |p| p.canLogIn }
+  print can.collect { |p| p.getEmail }.sort.join ", "
+end
+
 def print_all
   DEPerson.all.collect { |p| p.getEmail }.sort.each do |e|
     print_netid e, false
