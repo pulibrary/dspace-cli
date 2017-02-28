@@ -13,29 +13,29 @@ fromString = '88435/dsp019c67wm88m'
 com = DSpace.fromString(fromString)
 
 def year_csv(year)
-  size, sizeBytes, handle, col, fname, klass = ['filesize MB', 'filesize B', 'handle', 'collection', 'filename', 'year']
+  handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
   items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
   ihash= []
   items.each do |i|
     next unless i.getHandle
-    DSpace.create(i).bitstreams.each do |b|
+    nAuth = i.getMetadataByMetadataString("dc.contributor.author").length
+    if (nAuth > 1)
       h = {handle => i.getHandle}
       h[col] = i.getParentObject.getName
       h[klass] = year
-      h[fname] = b.getName
-      h[size] = (1.0 * b.getSize) / (1024 * 1024)
-      h[sizeBytes] = b.getSize
+      h[nAuthor] = nAuth
+      h[embargo] = i.getMetadataByMetadataString("pu.embargo.terms").collect { |v| v.value }
       ihash << h
     end
   end
 
-  csv_out(ihash, ['filesize MB', 'filesize B', 'year', 'handle', 'collection', 'filename'])
+  csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
 end
 
 def csv_out(ihash, fields)
   puts fields.join("\t")
   ihash.each do |h|
-    puts fields.collect{ |f| h[f]}.join("\t").gsub(/\n/, ' ').gsub(/\r/, ' ')
+    puts fields.collect { |f| h[f] }.join("\t").gsub(/\n/, ' ').gsub(/\r/, ' ')
   end
 end
 
