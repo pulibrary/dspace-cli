@@ -62,6 +62,8 @@ def csv_out(ihash, fields)
   end
 end
 
-year_handles(2016)
-
+#year_handles(2016)
+def year_items(year)
+items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+end
 
