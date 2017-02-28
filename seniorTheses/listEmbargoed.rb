@@ -12,21 +12,20 @@ fromString = '88435/dsp019c67wm88m'
 
 com = DSpace.fromString(fromString)
 
-def year_csv(year)
+def embargoed_csv(com)
   handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
-  items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+  items = DSpace.findByMetadataValue('pu.embargo.terms', nil, nil)
   ihash= []
   items.each do |i|
     next unless i.getHandle
+    next unless DSpace.create(i).parents.index(com)
     nAuth = i.getMetadataByMetadataString("dc.contributor.author").length
-    if (nAuth > 1)
-      h = {handle => i.getHandle}
-      h[col] = i.getParentObject.getName
-      h[klass] = year
-      h[nAuthor] = nAuth
-      h[embargo] = i.getMetadataByMetadataString("pu.embargo.terms").collect { |v| v.value }
-      ihash << h
-    end
+    h = {handle => i.getHandle}
+    h[col] = i.getParentObject.getName
+    h[klass] = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }
+    h[nAuthor] = nAuth
+    h[embargo] = i.getMetadataByMetadataString("pu.embargo.terms").collect { |v| v.value }
+    ihash << h
   end
 
   csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
@@ -39,7 +38,7 @@ def csv_out(ihash, fields)
   end
 end
 
-year_csv(2016)
-year_csv(2015)
+embargoed_csv(com)
+
 
 
