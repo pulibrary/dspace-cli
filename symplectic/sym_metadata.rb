@@ -38,7 +38,7 @@ DItem.all.each do |i|
   xmlfile.close
   puts ["# process ", fname, i , sid].join("\t")
   # apply style sheet to symplectic xml
-  metadata_xml = `cd $DSPACE_HOME//config/crosswalks/symplectic/; xsltproc symplectic_xwalks_dspace_example_default.xsl #{fname} `
+  metadata_xml = `cd $DSPACE_HOME/config/crosswalks/symplectic/; xsltproc symplectic_xwalks_dspace_example_default.xsl #{fname} `
 
   #  et citation from metadata_xml
   fields = XmlSimple.xml_in(metadata_xml)["field"]
