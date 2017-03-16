@@ -8,25 +8,24 @@ DSpace.context_renew
 DSpace.login ENV['USER']
 
 
-
 def doit(title)
-  item = get_item title
-  if item.nil?
-    puts " no such item on the repo/workflow  ..."
-  else
-    puts [item.getID, "archived:", item.isArchived, item.getName].join("\t")
-    di = DSpace.create(item)
-    di.retract
-    y = ask("commit changes ? (yes/no) ")
-    if (y == 'yes')
-      DSpace.commit
-    end
+  items = DSpace.findByMetadataValue('dc.title', title, DConstants::ITEM)
+  raise 'multiple matched items' if items.length > 1
+  raise 'no matched items' if items.length < 1
+  item = items[0]
+
+  puts [item.getID, "archived:", item.isArchived, item.getName].join("\t")
+  puts "Workflow State " + item.getMetadataByMetadataString('pu.workflow.state').collect { |v| v.value }.join(", ")
+  di = DSpace.create(item)
+  di.retract
+  y = ask("commit changes ? (yes/no) ")
+  if (y == 'yes')
+    DSpace.commit
   end
 end
 
 def get_item(title)
-  items = DSpace.findByMetadataValue('dc.title', title, DConstants::ITEM)
-  return items[0]
+
 end
 
 class DItem
