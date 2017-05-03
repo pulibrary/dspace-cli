@@ -21,6 +21,6 @@ def print_netid netid, groups
   else
     props = []
   end
-  puts "EPERSON.#{p.getEmail}\t#{p.getNetid}\t" + props.join("\t")
+  puts "EPERSON.#{p.getEmail}\t#{p.getNetid}\t" + props.sort.join("\t")
 end
 
