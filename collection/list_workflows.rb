@@ -10,13 +10,14 @@ parser = OptionParser.new do |opts|
 end
 
 def flow_to_hash(flow)
+  java_import org.dspace.workflow.WorkflowManager;
   item = flow.getItem
   metaData = DSpace.create(item).getMetaDataValues
   mdHsh = DMetadataField.arrayToHash metaData
   return {"submit_to" => flow.getCollection.getHandle,
           "flowId" => flow.getID,
           "itemId" => item.getID,
-          "state" => flow.getState,
+          "state" => [flow.getState, WorkflowManager.getWorkflowText(flow.getState)],
           "owner" =>  DSpace.inspect(flow.getOwner),
           "metaData" => mdHsh}
 end
