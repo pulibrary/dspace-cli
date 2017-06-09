@@ -174,7 +174,7 @@ module Statistics
             STDERR.puts "Can't find BITSTREAM.#{c_to_i}"
             break
           end
-          line = [i, community_name, n, bitstream];
+          line = [i, community_name, n, bitstream.getName]
           item = bitstream.getParentObject();
           if (item.nil?) then
             STDERR.puts "Bitstream #{bitstream} has no parent"
