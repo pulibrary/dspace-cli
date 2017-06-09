@@ -4,7 +4,7 @@ solrStatiticsServer: http://localhost:18082/solr/statistics
 verbose: true
 
 exclude_ips: [
-# princeton google apliance
+# princeton google appliance
   10.6.61.26,
 # monikam.princeton.edu
   128.112.66.66,
@@ -120,6 +120,7 @@ time_slots: [
 ]
 
 communities: [
+  { id: 346,   name: 'Princeton Plasma Physics Laboratory' },
   { id: 67  ,  name: "Princeton University Doctoral Dissertations" },
   { id: 267 ,  name: "Princeton University Senior Theses" },
   { id: 86  ,  name: "Faculty Publications" },
