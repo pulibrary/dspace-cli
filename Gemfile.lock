@@ -18,7 +18,7 @@ GEM
     http-form_data (1.0.1)
     http_parser.rb (0.6.0-java)
     i18n (0.7.0)
-    json (1.8.3-java)
+    json (2.1.0-java)
     lumberjack (1.0.10)
     rack (1.6.4)
     rsolr (1.1.1)
