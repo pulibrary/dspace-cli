@@ -14,12 +14,8 @@ def move_item(h, new_owner)
     cur = item.getOwningCollection
     if (cur != new_owner)
       puts [item.getHandle, "MOVE"].join("\t")
-      new_owner.addItem(item)
-      cur.removeItem(item)
-      item.setOwningCollection(new_owner)
+      item.move(cur, new_owner, false)
       item.update
-      cur.update
-      new_owner.update
     else
       puts [item.getHandle, "ALREADY at new Loc"].join("\t")
     end
