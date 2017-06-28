@@ -15,7 +15,7 @@ fromString = '88435/dsp019c67wm88m'
 com = DSpace.fromString(fromString)
 
 def year_csv(year)
-  size, handle, col, fname, klass, has_embargo, policies = ['filesize MB', 'handle', 'collection', 'filename', 'year', 'embargo?', "policies"]
+  size, handle, col, fname, klass, elift, eterm, policies = ['filesize MB', 'handle', 'collection', 'filename', 'year', 'lift', 'term', "policies..."]
 
   items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
   handles = items.select{ |i| i.getHandle }.collect{ |i| i.getHandle }
@@ -24,27 +24,26 @@ def year_csv(year)
   handles.each do |h|
     i = DSpace.fromString h
     DSpace.create(i).bitstreams.each do |b|
-      h =  report_on(b)
+      h =  report_on(b, fname, size, policies)
       h[klass] = year
       h[handle] = i.getHandle
       h[col] = i.getParentObject.getName
-      h[has_embargo] = (nil == i.getMetadata('pu.embargo.lift')) ? '----' : i.getMetadata('pu.embargo.lift')
+      h[elift] = (nil == i.getMetadata('pu.embargo.lift')) ? '----' : i.getMetadata('pu.embargo.lift')
+      h[eterm] = (nil == i.getMetadata('pu.embargo.terms')) ? '----' : i.getMetadata('pu.embargo.terms')
       ihash << h
       break
     end
     n = n + 1
-    if (n == 200) then
+    if (n == 10) then
       DSpace.reload
       n = 0
     end
-
   end
 
-  csv_out(ihash, [size, klass, handle, col, fname, has_embargo, policies])
+  csv_out(ihash, [size, klass, handle, col, fname, elift, eterm, policies])
 end
 
-def report_on(b)
-  size, handle, col, fname, klass, has_embargo, policies = ['filesize MB', 'handle', 'collection', 'filename', 'year', 'embargo?', "policies"]
+def report_on(b, fname, size, policies)
   h = {}
   h[fname] = b.getName
   h[size] = (1.0 * b.getSize) / (1024 * 1024)
@@ -77,11 +76,8 @@ end
 
 
 if true then
-  year_csv(2013)
-  year_csv(2014)
+  #year_csv(2014)
   year_csv(2015)
-  year_csv(2016)
-#year_csv(2015)
 end
 
 
