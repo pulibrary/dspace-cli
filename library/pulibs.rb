@@ -6,13 +6,7 @@ netid = 'monikam';
 name = ask "Collection Name "; 
 name = name.strip; 
 
-choices = [{ 
-name: 'Monographic reports and papers (Access Limited to Princeton)',
-hdl:  '88435/dsp01bg257f09p'
-}, {
-name: 'Monographic reports and papers (Publicly Accessible)',
-hdl: '88435/dsp016q182k16g'
-}, {
+choices = [ {
 name: 'Serials and series reports (Access Limited to Princeton)',
 hdl: '88435/dsp01r781wg06f'
 }, {
@@ -46,7 +40,7 @@ if (yes[0] == 'Y') then
         parent_handle: parent_coll.getHandle(), 
         name: name 
     };
-    puts parent_coll
+    puts ["PARENT", parent_coll, "\tTEMPLATE",template_coll].join "\t"
     new_col = DSpace.create(template_coll).copy(name, parent_coll)
     DSpace.commit
     puts "Committed #{new_col.getHandle()}"
