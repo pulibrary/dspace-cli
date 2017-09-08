@@ -65,7 +65,8 @@ class DCollection
   end
 
   def copy(name, parent)
-    raise "must give non nil parent community" if parent.nil? || parent.getType != DConstants::COMMUNITY
+    raise "must give non nil parent community" if parent.nil?
+    raise "parent must be a community" if parent.getType != DConstants::COMMUNITY
     name = name.strip();
 
     puts "copying\t\t#{@obj} #{@obj.getName()}"
