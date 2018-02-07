@@ -8,8 +8,10 @@ puts ["Handle", "Year", "READ_restriction",  "Bitstream Name",].join "\t"
   mudds = DSpace.findByGroupPolicy(group_name, DConstants::READ, DConstants::BITSTREAM)
   mudds.each do |b|
     i = b.getParentObject
-    year = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }.join(",")
-    puts [i.getHandle, year, group_name, b.getName].join "\t"
+    year = i.getMetadataByMetadataString("pu.date.classyear")[0].value.to_i
+    if (year > 2015) then
+      puts [i.getHandle, year, group_name, b.getName].join "\t"
+    end
   end
 
 end
