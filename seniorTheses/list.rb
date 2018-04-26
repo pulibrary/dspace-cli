@@ -45,6 +45,9 @@ def all_year_hsh(year)
       h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect { |v| v.value }
       h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }
       h[:department] = i.getMetadataByMetadataString("pu.department").collect { |v| v.value }
+      h[:authorid] = i.getMetadataByMetadataString("pu.contributor.authorid").collect { |v| v.value }
+      h[:advisorid] = i.getMetadataByMetadataString("pu.contributor.advisorid").collect { |v| v.value }
+      h[:certificate] = i.getMetadataByMetadataString("pu.certificate").collect { |v| v.value }
       h[:url] = i.getMetadataByMetadataString("dc.identifier.uri").collect { |v| v.value }
       cols[i.getParentObject] = [] unless cols[i.getParentObject]
       cols[i.getParentObject] << h
@@ -101,3 +104,9 @@ def year_items(year)
 items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
 end
 
+
+
+# print xml files for all submission from given year
+# all_xml_year(2017)
+# create INVENTORY with :
+# fgrep department *xml | sort -u | sed 's/<[/]department>//' | sed 's/.department.//' > INVENTORY
