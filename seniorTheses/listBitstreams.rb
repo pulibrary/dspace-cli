@@ -15,8 +15,8 @@ fromString = '88435/dsp019c67wm88m'
 com = DSpace.fromString(fromString)
 
 def year_csv(year)
-  size, item_id, bitstream_id, handle, col, fname, klass, elift, eterm, walkin, walk_msg, policies =
-      ['filesize MB', 'item_id', 'bitstream_id', 'handle', 'collection', 'filename', 'year', 'lift', 'term', 'walkin', 'rights_msg', "policies..."]
+  size, size_MB, item_id, bitstream_id, handle, col, fname, klass, elift, eterm, walkin, walk_msg, policies =
+      ['filesize', 'filesize MB', 'item_id', 'bitstream_id', 'handle', 'collection', 'filename', 'year', 'lift', 'term', 'walkin', 'rights_msg', "policies..."]
 
   items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
   handles = items.select{ |i| i.getHandle }.collect{ |i| i.getHandle }
@@ -26,6 +26,7 @@ def year_csv(year)
     i = DSpace.fromString h
     DSpace.create(i).bitstreams.each do |b|
       h =  report_on(b, bitstream_id, fname, size, policies)
+      h[size_MB] = (1.0 * h[size]) / (1024 * 1024)
       h[klass] = year
       h[item_id] = i.getID
       h[handle] = i.getHandle
@@ -36,7 +37,6 @@ def year_csv(year)
       h[elift] = (nil == i.getMetadata('pu.embargo.lift')) ? '---- -- --' : i.getMetadata('pu.embargo.lift')
       h[eterm] = (nil == i.getMetadata('pu.embargo.terms')) ? '---- -- --' : i.getMetadata('pu.embargo.terms')
       ihash << h
-      break
     end
     n = n + 1
     if (n == 10) then
@@ -45,14 +45,14 @@ def year_csv(year)
     end
   end
 
-  csv_out(ihash, [item_id, klass, handle, elift, eterm, walkin, walk_msg, policies])
+  csv_out(ihash, [size, size_MB, klass, handle, elift, eterm, walkin, fname])
 end
 
 def report_on(b, id, fname, size, policies)
   h = {}
   h[id] = b.getID
   h[fname] = b.getName
-  h[size] = (1.0 * b.getSize) / (1024 * 1024)
+  h[size] = b.getSize()
   h[policies] = get_policies(b)
   return h
 end
@@ -83,7 +83,7 @@ end
 
 if true then
   #year_csv(2014)
-  year_csv(2020)
+  year_hash(2015)
 end
 
 

@@ -12,9 +12,9 @@ fromString = '88435/dsp019c67wm88m'
 
 com = DSpace.fromString(fromString)
 
-def year_csv(year)
+def pu_walkin()
   handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
-  items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+  items = DSpace.findByMetadataValue('pu.mudd.walkin', nil, nil)
   ihash= []
   items.each do |i|
     next unless i.getHandle
@@ -39,7 +39,6 @@ def csv_out(ihash, fields)
   end
 end
 
-year_hash(2016)
-year_hash(2015)
+pu_walkin()
 
 

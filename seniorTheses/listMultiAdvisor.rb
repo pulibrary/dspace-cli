@@ -42,7 +42,7 @@ def csv_out(ihash, fields)
 end
 
 #year_csv(2017)
-year_csv(2016)
-year_csv(2015)
+year_hash(2016)
+year_hash(2015)
 
 
