@@ -38,16 +38,19 @@ end
 def print_metadata(hsh, prefix="")
   hsh.keys.sort.each do |mk|
     mv = hsh[mk]
-    puts "#{prefix}\t#{mk}\t#{mv.collect {|s| _format_value_str(s)}.join(";\n#{prefix}\t\t ")}"
+    puts "#{prefix}\t#{mk}\t#{mv.collect {|s| _format_value(s)}.join(";\n#{prefix}\t\t ")}"
   end
 end
 
-def _format_value_str(s)
-  if (s) then
-    s.gsub('\n', '').slice(0, 120)
-  else
-    ''
+def _format_value(s)
+  if (s.is_a? String) then
+    if s then
+      return s.gsub(/[\r\n]+/m, " | ").slice(0, 120)
+    else
+      return ''
+    end
   end
+  return s
 end
 
 def print_item(item, pref= "")
