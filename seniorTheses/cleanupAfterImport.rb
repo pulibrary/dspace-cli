@@ -158,11 +158,55 @@ def mapToCollectionBasedOncertificateProgram()
   $logger.info("SUMMARY encountered problems on #{nerror} items")
 end
 
+
+def departmentEqualsCertificate()
+  setLogger("#{ENV['DSPACE_HOME']}/log/departmentEqualsCertificate.log")
+
+# colmap - maps shortened collection's name to collection pointers
+  colmap = {}; DSpace.fromString($root).collections.each {|c| colmap[shortColectionName(c)] = c}
+
+# go over all archived items with the given year_metadata_value equal to $year
+# and compare department value with certificate value
+  nitems, narchived, nerror = 0, 0, 0;
+  items = getClassYearItems
+  items.each do |i|
+    begin
+      nitems += 1
+      if i.archived? then
+        # add i to all collections indicated in its pu.department value IF collection is not already in that collection
+        narchived += 1
+        dept_vals = i.getMetadata("pu", "department", nil, "*")
+        if (dept_vals.length > 1) then
+          $logger.warn "#{i.to_s}  has multiple department values"
+        end
+        cert_vals = i.getMetadata("pu", "certificate", nil, "*")
+        $logger.info "#{dept_vals.inspect}\t\t#{cert_vals.inspect}"
+        for dep in dept_vals do
+          for c in cert_vals do
+            if (c.value == dep.value) then
+              $logger.error "#{i.getHandle}  in #{i.getOwningCollection().getName()} #{dep} == #{c}"
+              nerror += 1
+            else
+              $logger.info "#{i.getHandle}  in #{i.getOwningCollection().getName()} #{dep} NOT #{c}"
+            end
+          end
+        end
+      end
+    rescue Exception => e
+      $logger.error "exception when processing item #{i.to_s}"
+      $logger.error e.inspect
+      nerror += 1
+    end
+  end
+  $logger.info("SUMMARY processed #{narchived} items out of #{nitems} items")
+  $logger.info("SUMMARY encountered problems on #{nerror} items")
+end
+
+
 #compareDepartmentMetadataWithOwningCollection(true)
 #DSpace.commit
 #compareDepartmentMetadataWithOwningCollection(false)
 
 #fixNullAbstract()
 #
-fixNullAbstract
-DSpace.commit
+departmentEqualsCertificate
