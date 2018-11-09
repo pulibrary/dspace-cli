@@ -135,7 +135,9 @@ end
 
 fields = ['ID', 'handle', 'klass', "dc.contributor.author", 'pu.department', 'dc.date.accessioned',
           'bit_groups', 'pu.embargo.lift', 'pu.embargo.terms',  'pu.mudd.walkin', 'dc.rights.accessRights']
-for year in [2013] do
+
+fields = ['ID', 'handle', 'klass', 'dc.date.issued', 'dc.date.created', 'dc.date.accessioned', "dc.contributor.author"]
+for year in [2016] do
   csv_out(year_hash(year, fields), fields)
 end
 # print xml files for all submission from given year
