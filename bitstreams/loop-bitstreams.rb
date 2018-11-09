@@ -1,20 +1,22 @@
 require 'dspace'
 DSpace.load
 
-def update_pdfs(item)
+def work_bitstreams(item)
+  ditem = DSpace.create(item)
+  prefix = ditem.parents().reverse.collect { |p| p.getHandle }.join(" > ")
   for b in DSpace.create(item).bitstreams('ORIGINAL') do
-    puts "ITEM: #{item.getHandle()}.ORIGINAL.#{b.getName()}"
+    puts "#{prefix} > #{item.getHandle()}.ORIGINAL.#{b.getName()}"
   end
 end
 
 def loop_bitstreams(dso)
   if (dso.getType == DConstants::ITEM) then
-    update_pdfs(dso)
+    work_bitstreams(dso)
   else
     if (dso.getType == DConstants::COLLECTION) then
       iter =  dso.getItems
       while (itm = iter.next()) do
-        update_pdfs(itm)
+        work_bitstreams(itm)
       end
     else
       dcom =  DSpace.create(dso)
