@@ -6,7 +6,7 @@ DSpace.load
 DSpace.login ENV['USER']
 puts "\n"
 
-com_name =  'All Content'
+com_name =  'All'
 com = DSpace.findByMetadataValue('dc.title', com_name, DConstants::COMMUNITY)[0]
 puts "no such community #{com_name}" unless com
 puts "adding collections to #{com.getName} #{com.getHandle}"
