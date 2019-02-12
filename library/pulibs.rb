@@ -45,9 +45,7 @@ if (yes[0] == 'Y') then
     DSpace.commit
     puts "Committed #{new_col.getHandle()}"
     puts "If restricted access: set 'DEFAULT_BITSTREAM_READ' to Princetion_IPs"
-    puts "run " 
-    puts "../../git_library_collection.sh"
-    puts "to add to dspace/config/input-forms.xml"
+    puts 'add to input-forms'
     puts '   <name-map collection-handle="' + new_col.getHandle + '" form-name="digpubs_serials"/>'
 
 end
