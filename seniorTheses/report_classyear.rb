@@ -1,8 +1,7 @@
 #!/usr/bin/env jruby  
-require 'xmlsimple'
+require 'highline'
 require 'dspace'
 
-DSpace.load
 
 def report(year)
   puts ["Collection", "Year", "Status", "#Bistreams", "Formats", "Item", "Authors", "Advisors", "Title"].join("\t")
@@ -34,5 +33,9 @@ def print_item(item)
   puts vals.join("\t").gsub("\n", " " ).gsub("\r", " " )
 end
 
-
-report(2016)
+if (ARGV.length != 1) then
+  puts "provide classyear parameter"
+  exit(1)
+end
+DSpace.load
+report(ARGV[0])
