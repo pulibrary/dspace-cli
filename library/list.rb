@@ -17,10 +17,7 @@ end
 
 def listAllItems(com)
   puts tsv_title
-  colls = com.getCollections()
-  com.getSubcommunities.each do |sub|
-    colls = colls + sub.getCollections()
-  end
+  colls = com.getAllCollections()
   colls.each do |col|
     iter = col.items
     while (iter.hasNext)
