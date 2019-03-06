@@ -4,9 +4,6 @@ require 'dspace'
 
 DSpace.load
 
-#postgres
-# fromString = "COMMUNITY.145"
-
 # dataspace
 fromString = '88435/dsp019c67wm88m'
 
@@ -14,24 +11,29 @@ com = DSpace.fromString(fromString)
 
 def all_xml
   com.getCollections.each do |col|
-    puts "#{col.toString} #{col.getName}"
-    File.open(col.toString + ".xml", 'w') do |out|
-      items = col.items
-      ihash = []
-      while (i = items.next)
-        h = {}
-        h[:title] = i.getMetadataByMetadataString("dc.title").collect {|v| v.value}
-        h[:author] = i.getMetadataByMetadataString("dc.contributor.author").collect {|v| v.value}
-        h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect {|v| v.value}
-        h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect {|v| v.value}
-        h[:department] = i.getMetadataByMetadataString("pu.department").collect {|v| v.value}
-        h[:url] = i.getMetadataByMetadataString("dc.identifier.uri").collect {|v| v.value}
-        ihash << h
-      end
-      colurl = "http://arks.princeton.edu/ark:/#{col.getHandle()}"
-      out.puts XmlSimple.xml_out({:name => col.getName, :url => colurl, :item => ihash}, :root_name => 'collection')
-    end
+    one_xml(col)
   end
+end
+
+def one_xml(col)
+  puts "#{col.toString} #{col.getName}"
+  File.open(col.toString + ".xml", 'w') do |out|
+    items = col.items
+    ihash = []
+    while (i = items.next)
+      h = {}
+      h[:title] = i.getMetadataByMetadataString("dc.title").collect {|v| v.value}
+      h[:author] = i.getMetadataByMetadataString("dc.contributor.author").collect {|v| v.value}
+      h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect {|v| v.value}
+      h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect {|v| v.value}
+      h[:department] = i.getMetadataByMetadataString("pu.department").collect {|v| v.value}
+      h[:url] = i.getMetadataByMetadataString("dc.identifier.uri").collect {|v| v.value}
+      ihash << h
+    end
+    colurl = "http://arks.princeton.edu/ark:/#{col.getHandle()}"
+    out.puts XmlSimple.xml_out({:name => col.getName, :url => colurl, :item => ihash}, :root_name => 'collection')
+  end
+
 end
 
 def all_year_hsh(year)
@@ -74,12 +76,8 @@ def col_hsh_print(hsh)
   end
 end
 
-def all_xml_year(year)
-  col_hsh_print(all_year_hsh(year))
-end
-
 def bit_groups(i)
-  DSpace.create(i).bitstreams().collect{ |b| DSpace.create(b).policies() }.flatten.collect{|p| p[:group]}.uniq
+  DSpace.create(i).bitstreams().collect {|b| DSpace.create(b).policies()}.flatten.collect {|p| p[:group]}.uniq
 end
 
 def year_hash(year, fields = nil)
@@ -99,9 +97,9 @@ def year_hash(year, fields = nil)
         h[f] = bit_groups(i)
       elsif (f != 'ID') then
         vals = i.getMetadataByMetadataString(f).collect {|v| v.value}
-        vals = vals.collect { |v| v.gsub(/\..*/, '') }  if (f == 'pu.mudd.walkin')
+        vals = vals.collect {|v| v.gsub(/\..*/, '')} if (f == 'pu.mudd.walkin')
         h[f] = vals
-       end
+      end
     end
     ihash << h
   end
@@ -123,24 +121,33 @@ end
 
 def prefixed_csv_out(ihash, fields)
   ihash.each do |h|
-      prefixed = fields.collect {|f| "#{f}=#{h[f]}" }
-      puts prefixed.join("\t").gsub(/\n/, ' ').gsub(/\r/, ' ')
+    prefixed = fields.collect {|f| "#{f}=#{h[f]}"}
+    puts prefixed.join("\t").gsub(/\n/, ' ').gsub(/\r/, ' ')
   end
 end
 
-#year_handles(2016)
-def year_items(year)
-  items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
+
+# -- call one of these to generate report
+
+def year_csv(year)
+
+  fields = ['ID', 'handle', 'klass', "dc.contributor.author", 'pu.department', 'dc.date.accessioned',
+            'bit_groups', 'pu.embargo.lift', 'pu.embargo.terms', 'pu.mudd.walkin', 'dc.rights.accessRights']
+
+  fields = ['ID', 'handle', 'klass', 'dc.date.issued', 'dc.date.created', 'dc.date.accessioned', "dc.contributor.author"]
+  for year in [2016] do
+    csv_out(year_hash(year, fields), fields)
+  end
 end
 
-fields = ['ID', 'handle', 'klass', "dc.contributor.author", 'pu.department', 'dc.date.accessioned',
-          'bit_groups', 'pu.embargo.lift', 'pu.embargo.terms',  'pu.mudd.walkin', 'dc.rights.accessRights']
-
-fields = ['ID', 'handle', 'klass', 'dc.date.issued', 'dc.date.created', 'dc.date.accessioned', "dc.contributor.author"]
-for year in [2016] do
-  csv_out(year_hash(year, fields), fields)
+def all_xml_year(year)
+  col_hsh_print(all_year_hsh(year))
 end
-# print xml files for all submission from given year
-# all_xml_year(2017)
-# create INVENTORY with :
-# fgrep department *xml | sort -u | sed 's/<[/]department>//' | sed 's/.department.//' > INVENTORY
+
+def col_xml(handle)
+  col = DSpace.fromString(handle)
+  one_xml(col)
+end
+
+
+col_xml('88435/dsp01fx719m510')
