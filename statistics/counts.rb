@@ -2,8 +2,8 @@
 require 'dspace'
 
 DSpace.load
-
 puts  ["Community", "Collection", "Count", "Community Name", "Collection Name"].join("\t")
+total = 0
 comms = DCommunity.all;
 comms.each do |cm|
    colls = cm.get_all_collections
@@ -15,5 +15,7 @@ comms.each do |cm|
        count = count + 1;
      end
      puts  [cm.getHandle(), c.getHandle, count, cm.getName, c.getName()].join("\t")
+	 total = total + count
    end
 end
+puts  ['*', '*', total, '*', 'TOTAL'].join("\t")
