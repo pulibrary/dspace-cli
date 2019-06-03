@@ -16,6 +16,7 @@ def all_year_hsh(year)
       h = {}
       h[:title] = i.getMetadataByMetadataString("dc.title").collect { |v| v.value }
       h[:author] = i.getMetadataByMetadataString("dc.contributor.author").collect { |v| v.value }
+      h[:authorid] = i.getMetadataByMetadataString("pu.contributor.authorid").collect { |v| v.value }
       h[:advisor] = i.getMetadataByMetadataString("dc.contributor.advisor").collect { |v| v.value }
       h[:classyear] = i.getMetadataByMetadataString("pu.date.classyear").collect { |v| v.value }
       h[:department] = i.getMetadataByMetadataString("pu.department").collect { |v| v.value }
@@ -41,4 +42,4 @@ def all_xml_year(year)
   col_hsh_print(all_year_hsh(year))
 end
 
-all_xml_year(2010) 
+all_xml_year(2018) 
