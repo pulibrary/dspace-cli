@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+# implemented in Java edu.princeton.dspace.GroupCmd
+# see  also operations/princeton_library/submitter_list
+#
 require 'dspace'
 DSpace.load()
 
