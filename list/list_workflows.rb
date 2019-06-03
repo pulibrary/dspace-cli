@@ -25,7 +25,12 @@ end
 def print_metadata(hsh)
   hsh.keys.sort.each do |mk|
     mv = hsh[mk]
-    puts "\t#{mk}\t#{mv.collect { |s| s.slice(0,60) }.join('; ')}"
+    if mv.nil? then
+      puts "\t#{mk}\tnil"
+    else
+      puts "\t#{mk}\t#{mv.collect { |s| s.slice(0,60) }.join('; ')}"
+    end
+
   end
 end
 
@@ -44,6 +49,11 @@ def print_flows(dso)
   end
 end
 
+def print_collection_flows(hdl)
+  dso = DSpace.fromString(hdl)
+  puts "# #{dso}"
+  print_flows(dso)
+end
 begin
   parser.parse!
   raise "must give at least one collection/community parameter" if ARGV.empty?
@@ -51,8 +61,7 @@ begin
   DSpace.load
 
   ARGV.each do |str|
-    dso = DSpace.fromString(str)
-    puts "# #{dso}"
+    print_collection_flows(str)
     print_flows(dso)
     puts ""
   end
