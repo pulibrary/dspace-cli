@@ -1,4 +1,5 @@
 #!/usr/bin/env jruby
+# # list accesioned and depositor info for all archived items in  '88435/dsp01g732d9019'
 require 'dspace'
 
 DSpace.load
