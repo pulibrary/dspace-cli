@@ -14,25 +14,26 @@ def loop_year(year)
   dsos = DSpace.findByMetadataValue('pu.date.classyear', year, DConstants::ITEM)
   n = 0
   dsos.each do |d|
-    do_one(d)
-    n = n + 1
+    n = n  + do_one(d)
   end
   puts "#items #{n}"
 end
 
 def do_one(item)
-  created = item.getMetadataByMetadataString("dc.date.created")[0].value
-  issued = item.getMetadataByMetadataString("dc.date.issued")
-  if issued.length >= 1 then
-    issued = issued[0].value
-  else
-    item.setMetadataSingleValue('dc', "date", "issued", '*', created)
-    item.update
-    issued = 'NEW:' + item.getMetadataByMetadataString("dc.date.issued")[0].value
+  if not item.isArchived  then
+    issued = item.getMetadataByMetadataString("dc.date.issued")
+    if issued.length >= 1 then
+      puts [item.getID(), issued[0]].join("\t")
+      puts "should delete"
+      item.clearMetadata('dc', 'date', 'issued', '*')
+      item.update
+    else
+      puts [item.getID(), 'no issued'].join("\t")
+    end
+    return 1
   end
-  puts [item.getID(), created, issued].join("\t")
+  return 0
 end
-
 
 loop_year(2019)
 # DSpace.commit
