@@ -1,4 +1,6 @@
-#!/usr/bin/env jruby  
+#!/usr/bin/env jruby
+# OBSOSLETE - now that we import from thesis central
+# API packages already cobtain the correct class year
 require "highline/import"
 
 year = 2016
