@@ -1,26 +1,27 @@
 #!/usr/bin/env jruby
-# OBSOSLETE - now that we import from thesis central
-# API packages already cobtain the correct class year
+# chngae collection names such that
+# 1) those ending in '-'old_year   are changedtoe d int '-'new_year
+# 2) those ending in old_year   are changed to end in  old_year-new_year
+#
+# script asks for confirmation before commiting changes
 require "highline/import"
 
-year = 2016
-schema, element, qualifier = ['pu', 'date', 'classyear']
+old_year = '2018'
+new_year = '2019'
 handle = '88435/dsp019c67wm88m'
 require 'dspace'
 DSpace.load
-
-puts "continue with #{year} ?"
-ask 'ctr-c to abort'
+DSpace.login ENV['USER']
 
 DSpace.fromString(handle).getCollections.each do |col|
-  template = col.get_template_item
-  if (template) then
-    puts "#{col.getHandle} template item #{template} set #{year}"
-    template.setMetadataSingleValue(schema, element, qualifier, nil, year.to_s)
-    template.update_metadata
-    template.update
+  name = col.getName.strip
+  if name.end_with? old_year then
+    name = name.chomp("-" + old_year) + ("-" + new_year)
+    col.setMetadataSingleValue('dc', 'title', nil, '*', name)
+    puts "#{col.getHandle} changing to  #{col.getName}"
+    col.update
   else
-    puts "#{col.getHandle} has no template item: #{col.getName}"
+    puts "#{col.getHandle} keeping      #{col.getName}"
   end
 end
 
