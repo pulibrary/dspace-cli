@@ -3,11 +3,10 @@
 # 1) those ending in '-'old_year   are changedtoe d int '-'new_year
 # 2) those ending in old_year   are changed to end in  old_year-new_year
 #
-# script asks for confirmation before commiting changes
 require "highline/import"
 
-old_year = '2018'
-new_year = '2019'
+old_year = '2016'
+new_year = '2017'
 handle = '88435/dsp019c67wm88m'
 require 'dspace'
 DSpace.load
