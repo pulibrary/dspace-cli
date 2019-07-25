@@ -29,7 +29,7 @@ set the DSPACE_HOME environment variable to point to the installation directory 
 
 run a scripts
 ```
-bundle exec script_file
+dspace script_file
 ```
 
 Scripts either prompt for input or have a --help option 

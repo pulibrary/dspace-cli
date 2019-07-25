@@ -1,0 +1,2 @@
+#!/bin/tcsh 
+jruby  -I  ../dspace-jruby/lib $*
