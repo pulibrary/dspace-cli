@@ -27,7 +27,7 @@ bundle install
 
 set the DSPACE_HOME environment variable to point to the installation directory of your DSpace repository 
 
-run a scripts
+run a scripts - works only in this directory 
 ```
 dspace script_file
 ```
