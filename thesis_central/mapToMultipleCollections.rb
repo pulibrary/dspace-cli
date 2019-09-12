@@ -1,13 +1,13 @@
 #!/usr/bin/env jruby
-require 'lumberjack'
+require 'lumberjack'; 
 
-account = "monikam"
+account = "dspadmin"
 
-log_file = "#{ENV['DSPACE_HOME']}/log/map2Collections.log"
+log_file = "#{ENV['DSPACE_HOME']}/log/map2Collections-#{$$}.log"
 $logger = Lumberjack::Logger.new("#{log_file}", :buffer_size => 0) # Open a new log file with INFO level
 $logger.level = :debug
 puts "DEBUG logging action to  #{log_file}"
-
+puts ""
 
 $logger.info "START login as  #{account}"
 
@@ -57,7 +57,7 @@ def map_all(year)
 
   root = "88435/dsp019c67wm88m"
   colmap = make_colmap(root)
-  $logger.debug colmap.keys.inspect
+  $logger.debug "colmap.keys" + colmap.keys.inspect
 
   narchived, nmapped, nerror = 0, 0, 0;
   items = DSpace.findByMetadataValue('pu.date.classyear', year, DConstants::ITEM)
@@ -100,4 +100,4 @@ def test()
 end
 
 
-map_all(2018)
+map_all(2019)
