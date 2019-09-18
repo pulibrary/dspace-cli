@@ -19,11 +19,14 @@ DSpace.login(account)
 java_import org.dspace.core.Constants
 
 def shortColectionName(c)
+  # chop off year range after comma
   c.getName.split(',')[0]
 end
 
 
 def map_to_cert_collections(i, colmap)
+  # add item to collections matchingitems pu.certificate metadata value(s)  if not previously added
+  # log which action was taken
   nmapped, nerror = 0, 0
   if i.archived? then
     owners = i.getCollections
@@ -35,6 +38,7 @@ def map_to_cert_collections(i, colmap)
         else
           $logger.info("ITEM #{i.getHandle}: mapping to '#{map_to_col.getName}'")
           map_to_col.addItem(i)
+          # update solr index for item
           DSpace.create(i).index(true)
           nmapped = 1
         end
@@ -48,17 +52,18 @@ def map_to_cert_collections(i, colmap)
 end
 
 def make_colmap(root)
+  # build hash of short collections names to collection handles
   collections = DSpace.fromString(root).collections
   colmap = {}; collections.each {|c| colmap[shortColectionName(c)] = c}
   return colmap
 end
 
 def map_all(year)
-
   root = "88435/dsp019c67wm88m"
   colmap = make_colmap(root)
   $logger.debug "colmap.keys" + colmap.keys.inspect
 
+  # go over all archived items in Senior THesis collection that have a class year metadata equal to year
   narchived, nmapped, nerror = 0, 0, 0;
   items = DSpace.findByMetadataValue('pu.date.classyear', year, DConstants::ITEM)
   items.each do |i|
