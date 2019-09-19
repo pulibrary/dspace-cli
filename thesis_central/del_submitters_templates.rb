@@ -1,3 +1,5 @@
+# when transitioning to importing from Thesis Central
+# we removed the item tameplates from all collections
 require 'cli/dspace.rb'
 DSpace.load
 

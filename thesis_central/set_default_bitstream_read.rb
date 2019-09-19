@@ -1,3 +1,5 @@
+# when transitioning to importing from Thesis Central
+# we had to set the default bitstream policy of all collections SrTheses_Bitstream_Read_Mudd'
 require 'cli/dspace.rb'
 DSpace.load
 
