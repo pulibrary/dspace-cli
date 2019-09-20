@@ -3,11 +3,7 @@ require 'dspace'
 
 DSpace.load
 
-#postgres
-# fromString = "COMMUNITY.145"
-
-# dataspace
-
+# adjust handle 
 fromString = '88435/dsp019c67wm88m'
 
 com = DSpace.fromString(fromString)
