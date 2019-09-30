@@ -48,7 +48,7 @@ def fix_bad_department(dept)
 end
 
 
-del_bad_department dept
+del_bad_department_department dept
 fix_bad_department dept
 #DSpace.commit
 
