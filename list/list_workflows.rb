@@ -62,7 +62,6 @@ begin
 
   ARGV.each do |str|
     print_collection_flows(str)
-    print_flows(dso)
     puts ""
   end
 rescue Exception => e
