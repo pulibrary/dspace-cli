@@ -25,6 +25,7 @@ GEM
       builder (>= 2.1.2)
     unf (0.1.4-java)
     xml-simple (1.1.5)
+    yard (0.9.25)
 
 PLATFORMS
   java
@@ -38,6 +39,7 @@ DEPENDENCIES
   rack
   rsolr
   xml-simple
+  yard
 
 BUNDLED WITH
    1.12.3
