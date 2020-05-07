@@ -1,8 +1,13 @@
 require 'dspace'
 DSpace.load
 
+# Class modeling a Bitstream for a given Item
+# @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/content/Bitstream.java
 class DBitstream
 
+  # Retrieve all DSpace Items larger than a certain number of bytes
+  # @param num [Integer]
+  # @return [Array<org.dspace.content.Object>]
   def self.listBiggerThan(num)
     java_import org.dspace.storage.rdbms.DatabaseManager
     sql = 'SELECT  BITSTREAM_ID, SIZE_BYTES from BITSTREAM '

@@ -1,8 +1,12 @@
 require 'dspace'
 DSpace.load
 
+# Class modeling a Bitstream
+# @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/content/Bitstream.java
 class DBitstream
 
+  # Retrieve all Bitstreams without metadata related to these in the database
+  # @return [Array<org.dspace.content.Object>]
   def self.allWithoutMetadata()
     java_import org.dspace.storage.rdbms.DatabaseManager
     sql = 'SELECT  DISTINCT(BITSTREAM_ID)  from BITSTREAM ' +

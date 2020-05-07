@@ -1,5 +1,7 @@
 class DItem
 
+  # Retrieve all DSpace items which have not been fully ingested into the system
+  # @return [Array<org.dspace.content.DSpaceObject>]
   def self.allUnarchived
     java_import org.dspace.storage.rdbms.DatabaseManager
 
@@ -13,6 +15,9 @@ class DItem
     return dsos
   end
 
+  # Forces the Solr discovery service to reindex a DSpace Object
+  # @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/discovery/SolrServiceImpl.java#L201
+  # @param force_update [Boolean] whether or not to overwrite an existing Solr entry for the object
   def index(force_update)
     java_import org.dspace.discovery.SolrServiceImpl
     idxService = DSpace.getIndexService()
