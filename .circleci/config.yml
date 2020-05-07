@@ -1,0 +1,26 @@
+version: 2.1
+jobs:
+  documentation:
+    working_directory: ~/dspace-cli
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: Set JRuby version to 9.1.7.0
+          command: |
+            rvm install cli-9.1.7.0
+            echo . $(rvm cli-9.1.7.0 do rvm env --path) >> $BASH_ENV
+      - run:
+          name: Install bundler
+          command: gem install -v 1.10.6 bundler
+      - run:
+          name: Install the dependencies
+          command: bundle install
+      - run:
+          name: Build the YARD documentation
+          command: bundle exec yardoc
+workflows:
+  ci:
+    jobs:
+      - documentation
