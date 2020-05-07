@@ -1,9 +1,14 @@
-# dpace-cli 
+# DSpace-CLI
 
-This repo contains command line sripts that report on as well as modify the content of a [DSpace](http://dspace.org/) instance.
-Scripts are impemented with the help of the [jrdspace gem](https://github.com/akinom/dspace-jruby).
+[![CircleCI](https://circleci.com/gh/pulibrary/dspace-cli.svg?style=svg)](https://circleci.com/gh/pulibrary/dspace-cli)
+[![Inch
+CI](https://inch-ci.org/github/pulibrary/dspace-cli.svg?branch=master)](https://inch-ci.org/github/pulibrary/dspace-cli)
 
-Most of scripts here are actively used at Princeton University; some are tailored to the specific Princeton needs. 
+This repo contains command line scripts that report on as well as modify the content of a [DSpace](http://dspace.org/) instance. **Please be aware that this Gem is no longer actively maintained.**
+
+Scripts are implemented with the help of the [DSpace JRuby repository](https://github.com/pulibrary/dspace-jruby).
+
+Most of scripts here are actively used at the Princeton University Library; some are tailored to the specific Princeton needs. 
 
 
 ## Installation
@@ -11,7 +16,7 @@ Most of scripts here are actively used at Princeton University; some are tailore
 ### Prerequisite
  * JRuby  [Get Started](http://jruby.org/getting-started)
  * Package Manager  [Bundler](http://bundler.io/)
- * a working [DSPACE installation](https://github.com/DSpace/DSpace)
+ * a working [DSPACE installation](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.3 releases.**
  * optional - but useful [RVM](https://rvm.io/)
 
 ### Installation 
@@ -44,7 +49,7 @@ If you want to add your own scripts or do changes to the scripts here, you need 
 
     # cd into the cloned code directory for thsi repo 
     # clone dspace-jruby 
-    git clone https://github.com/akinom/dspace-jruby
+    git clone https://github.com/pulibrary/dspace-jruby
 
     # build an image and name it dspace-cli 
     docker build -t dspace-cli .
@@ -77,5 +82,4 @@ If you want to add your own scripts or do changes to the scripts here, you need 
 
 # Write your Own 
 
-Have a look at the [jrdspace gem](https://github.com/akinom/dspace-jruby). 
-Feel free to send an email to  [akinom](https://github.com/akinom) if you ned help or find bugs. 
+Have a look at the [DSpace JRuby repository](https://github.com/pulibrary/dspace-jruby). 
