@@ -224,8 +224,8 @@ module Statistics
 
     # Query the Solr core for statistics on a given community
     # @param community [Hash]
-    # @options community [String] query the query for Solr
-    # @options community [String] name the of the Solr core
+    # @option community [String] query the query for Solr
+    # @option community [String] name the of the Solr core
     # @param type [Hash]
     # @param timeRange [String] a timestamp for Solr facet queries
     # @param facet_field [String] the Solr field for faceting
