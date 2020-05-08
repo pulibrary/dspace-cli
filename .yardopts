@@ -1,1 +1,21 @@
---no-private --protected cli/**/*rb admin/**/*rb bitstreams/**/*rb collection/**/*rb community/**/*rb dso/**/*rb group/**/*rb item/**/*rb item_move.rb library/**/*rb list/**/*rb metadata/**/*rb netid/**/*rb pppl/**/*rb print.rb seniorTheses/**/*rb statistics/**/*rb symplectic/**/*rb thesis_central/**/*rb xmllist_collections.rb
+--no-private --protected \
+  cli/**/*rb \
+  admin/**/*rb \
+  bitstreams/**/*rb \
+  collection/**/*rb \
+  community/**/*rb  \
+  dso/**/*rb \
+  group/**/*rb \
+  item/**/*rb \
+  item_move.rb \
+  library/**/*rb \
+  list/**/*rb \
+  metadata/**/*rb \
+  netid/**/*rb \
+  pppl/**/*rb \
+  print.rb \
+  seniorTheses/**/*rb \
+  statistics/**/*rb \
+  symplectic/**/*rb \
+  thesis_central/**/*rb \
+  xmllist_collections.rb
