@@ -1,4 +1,4 @@
-# @abstract Decorator pattern for org.dspace.content.DSpaceObject instances
+# Decorator for org.dspace.content.Collection instances
 class DCollection
 
   # Generate the name of the workflow database table
