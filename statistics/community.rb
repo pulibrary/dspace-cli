@@ -222,6 +222,13 @@ module Statistics
 
     private
 
+    # Query the Solr core for statistics on a given community
+    # @param community [Hash]
+    # @options community [String] query the query for Solr
+    # @options community [String] name the of the Solr core
+    # @param type [Hash]
+    # @param timeRange [String] a timestamp for Solr facet queries
+    # @param facet_field [String] the Solr field for faceting
     def getStatsFor(community, type, timeRange, facet_field)
       query = @solrCoreBase +
           "/select?" +
