@@ -1,5 +1,6 @@
 require 'dspace'
 
+# Module providing procedures for interfacing with the DSpace kernel
 module DSpace
   # Class modeling the configuration for the DSpace installation
   class Config

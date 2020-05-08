@@ -1,3 +1,5 @@
+# Class modeling the org.dspace.context.MetadataField
+# @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/content/MetadataField.java
 class DMetadataField
 
   # Generate a Hash from an Array of field values keyed by the full name of the metdata field

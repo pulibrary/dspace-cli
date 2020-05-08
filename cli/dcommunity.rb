@@ -1,4 +1,5 @@
-
+# Class decorating the Community Java Class
+# @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/content/Community.java
 class DCommunity
 
   # Find a child collection by its name

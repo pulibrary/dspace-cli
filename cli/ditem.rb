@@ -1,3 +1,5 @@
+# Class modeling procedures for org.dspace.content.Item objects
+# @see https://github.com/DSpace/DSpace/blob/dspace-5.3/dspace-api/src/main/java/org/dspace/content/Item.java
 class DItem
 
   # Retrieve all DSpace items which have not been fully ingested into the system
