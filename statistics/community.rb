@@ -7,15 +7,30 @@ require 'optparse'
 
 require 'dspace'
 
+# Module providing procedures and Classes for generating reports for DSpace usage statistics
 module Statistics
 
+  # Class modeling Community reports
   class Community
     DSpaceObjectTypes = { "bitstream" => {"type" => 0, "bundleName" => "ORIGINAL"},
                          "item" => {"type" => 2},
                          "collection" => {"type" => 3},
                          "community" => {"type" => 4}};
 
-
+    # Constructor
+    # @param options [Hash] arguments for the constructor structure in a Hash
+    # @option options [String] communities
+    # @option options [Array<String>] exclude_ips a blacklist of IP addressed to exclude in the report
+    # @option options [String] solrStatiticsServer the URL for the Solr Core used by DSpace for indexing collection statistics
+    # @option options [Array<Hash>] time_slots
+    # @option time_slots [Array<Hash>] slot a formatted timestamp range for Solr queries
+    # @option time_slots [Array<Hash>] name the name of the Solr Document field containing the timestamp (for the query)
+    # @option options [Hash] top_bitstreams the number of most accessed bitstreams (i. e. downloads) in DSpace
+    # @option top_bitstreams [String] number the number of top results (defaults to 10)
+    # @option top_bitstreams [String] time_slot the timestamp range within which the number of downloads should be retrieved
+    # @option options [Boolean] verbose the verbosity level of the reporting
+    # @option options [String] dspaceHome the file-system path to the DSpace installation directory
+    # @note please see the Solr documentation for timestamp faceting queries: http://archive.apache.org/dist/lucene/solr/ref-guide/apache-solr-ref-guide-4.10.pdf
     def initialize(options)
       communities = options['communities'];
       raise "mising communities " unless communities and not communities.empty?
@@ -70,10 +85,15 @@ module Statistics
 
     end
 
+    # Determines whether or not verbose logging has been enabled
+    # @return [Boolean]
     def verbose?
       return @verbose
     end
 
+    # Generate a report for collection and write it to a tab-separated value file
+    # This simply reports the parent community name, the collection ID, the collection Handle, the type of resource, and the time range in which the collection was visited by users
+    # @param outfile [IO] the file handler or stream to the report file
     def collection_counts(outfile)
       print_basic_report_info(outfile)
       if (@verbose) then
@@ -149,6 +169,9 @@ module Statistics
       end
     end
 
+    # Generate a report for bitstream downloads within all collections and write it to a tab-separated value file
+    # This report the top, community name, the number of downloads, the bitstream ID, the item ID, the item handle, the item name, the parent collection id, the collection handle, the collection name, and the time range in which these downloads were recorded
+    # @param outfile [IO] the file handler or stream to the report file
     def top_bitstreams(outfile)
       print_basic_report_info(outfile)
       max = @top_bitstreams['number'];
@@ -199,6 +222,13 @@ module Statistics
 
     private
 
+    # Query the Solr core for statistics on a given community
+    # @param community [Hash]
+    # @option community [String] query the query for Solr
+    # @option community [String] name the of the Solr core
+    # @param type [Hash]
+    # @param timeRange [String] a timestamp for Solr facet queries
+    # @param facet_field [String] the Solr field for faceting
     def getStatsFor(community, type, timeRange, facet_field)
       query = @solrCoreBase +
           "/select?" +

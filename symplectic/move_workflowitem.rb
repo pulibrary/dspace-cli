@@ -8,7 +8,15 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} source_col_handle destination_parent "
 end
 
+# Class modeling the procedures implemented for managing DSpace Items which are synchronized from Symplectic Elements
 class Symplectic
+
+  # For a given Collection, find all associated WorkflowItems created by Symplectic Elements, and assign these to different Collections using a list of Collection names
+  # @note the name of the Collection into which the WorkflowItem is being moved is found in the pubs.organisational-group metadata field
+  # @note pubs.organisational-group is managed by Symplectic Elements, and the configuration in Elements provides a mapping between these field values and DSpace Collection names
+  # @see http://dspace.2283337.n4.nabble.com/Push-Symplectic-articles-to-multiple-collections-td4681200.html
+  # @param collection [org.dspace.content.Collection]
+  # @param col_candidates [Array<String>] the list of Collection names
   def self.submissions_reassign_destination(collection, col_candidates)
     java_import org.dspace.content.WorkspaceItem
 
@@ -32,6 +40,10 @@ class Symplectic
     end
   end
 
+  # Update the associated Collection for a WorkflowItem
+  # @param flow [org.dspace.workflow.WorkflowItem] the WorkflowItem being updated
+  # @param dest [org.dspace.content.Collection] the new Collection containing the WorkflowItem
+  # @raise [StandardError]
   def self.item_in_workflow_set_collection(flow, dest)
     java_import org.dspace.storage.rdbms.DatabaseManager
 
