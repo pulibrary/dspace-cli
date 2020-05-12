@@ -4,7 +4,7 @@ class DCommunity
 
   # Find a child collection by its name
   # @param name [String]
-  # @return [Array<org.dspace.content.DSpaceObject>]
+  # @return [org.dspace.content.DSpaceObject]
   def find_collection_by_name(name)
     @obj.getCollections.select { |c| c.getName == name  }[0]
   end
