@@ -1,3 +1,7 @@
+# UNFINISHED
+# 
+# This script appears like it was abandoned while testing.
+
 require 'dspace'
 DSpace.load
 
