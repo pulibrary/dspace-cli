@@ -4,3 +4,5 @@ jr_dspace
 
 .yardoc/
 doc/
+
+.DS_Store

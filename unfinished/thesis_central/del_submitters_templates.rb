@@ -1,3 +1,7 @@
+# UNFINISHED
+# 
+# This script appears like it was abandoned mid-development.
+
 require 'cli/dspace.rb'
 DSpace.load
 

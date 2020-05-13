@@ -1,4 +1,12 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib 
+
+# UNFINISHED
+# 
+# This script would fail on running. The year_hash function is called at the end
+# but is not defined. Presumably this is a copy and paste error, but since it's
+# a slip-up that suggests it hasn't been run for a while, perhaps it deserves
+# closer review.
+
 require 'xmlsimple'
 require 'dspace'
 

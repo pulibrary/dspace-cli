@@ -1,4 +1,9 @@
 #!/usr/bin/env jruby 
+
+# UNFINISHED
+# 
+# Add to "list" dir, add CLI options
+
 require 'dspace'
 
 DSpace.load

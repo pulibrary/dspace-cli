@@ -1,4 +1,10 @@
 #!/usr/bin/env jruby
+
+# UNFINISHED
+# 
+# Place this file in the "list" dir as "list_groups.rb" and appropriately
+# configure a CLI
+
 require 'dspace'
 
 DSpace.load

@@ -1,4 +1,12 @@
 #!/usr/bin/env jruby  
+
+# UNFINISHED
+# 
+# This script would fail on running. The year_hash function is called at the end
+# but is not defined. Presumably this is a copy and paste error, but since it's
+# a slip-up that suggests it hasn't been run for a while, perhaps it deserves
+# closer review.
+
 require 'xmlsimple'
 require 'dspace'
 
@@ -13,23 +21,25 @@ fromString = '88435/dsp019c67wm88m'
 com = DSpace.fromString(fromString)
 
 def year_csv(year)
-  handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
+  handle, col, klass, nAdvisor, nAdvisor2, embargo = ['handle', 'collection', 'year', '#advisor', '#advisor2', 'embargo']
   items = DSpace.findByMetadataValue('pu.date.classyear', year, nil)
   ihash= []
   items.each do |i|
     next unless i.getHandle
-    nAuth = i.getMetadataByMetadataString("dc.contributor.author").length
-    if (nAuth > 1)
+    nAdv = i.getMetadataByMetadataString("dc.contributor.advisor").length
+    nAdv2 = i.getMetadataByMetadataString("dc.contributor").length
+    if (nAdv + nAdv2 > 1)
       h = {handle => i.getHandle}
       h[col] = i.getParentObject.getName
       h[klass] = year
-      h[nAuthor] = nAuth
+      h[nAdvisor] = nAdv
+      h[nAdvisor2] = nAdv2
       h[embargo] = i.getMetadataByMetadataString("pu.embargo.terms").collect { |v| v.value }
       ihash << h
     end
   end
 
-  csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
+  csv_out(ihash, [nAdvisor, nAdvisor2, embargo, klass, handle, col])
 end
 
 def csv_out(ihash, fields)
@@ -39,6 +49,7 @@ def csv_out(ihash, fields)
   end
 end
 
+#year_csv(2017)
 year_hash(2016)
 year_hash(2015)
 

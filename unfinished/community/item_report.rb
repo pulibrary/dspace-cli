@@ -1,3 +1,9 @@
+# UNFINISHED
+# 
+# If worthwhile, place this file under the "list" dir, and allow cli input for
+# community, along the lines of "list_items_in_collection.rb". Otherwise, this
+# file isn't very useful unless one manually plugs in a community.
+
 require 'dspace'
 
 DSpace.load

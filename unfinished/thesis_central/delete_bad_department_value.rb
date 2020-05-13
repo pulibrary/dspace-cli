@@ -1,3 +1,8 @@
+# UNFINISHED
+# 
+# This script appears like it was left in the middle of debugging. All functionality
+# has been commented out and replaced with print statements.
+
 require 'cli'
 
 DSpace.load

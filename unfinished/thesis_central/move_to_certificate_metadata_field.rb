@@ -1,3 +1,7 @@
+# UNFINISHED
+# 
+# This script was left as plaintext, and it's not prepared for general use. 
+
 require 'dspace'
 require 'cli'
 
