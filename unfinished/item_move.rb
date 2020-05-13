@@ -1,6 +1,8 @@
 #!/usr/bin/env jruby
 
-# BEWARE:: not fully tested
+# UNFINISHED
+# 
+# Comment left by monika: "BEWARE:: not fully tested"
 
 require 'dspace'
 require "highline/import"
