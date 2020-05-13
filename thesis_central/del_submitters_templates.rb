@@ -1,5 +1,7 @@
-# when transitioning to importing from Thesis Central
-# we removed the item tameplates from all collections
+# UNFINISHED
+#
+# This script appears like it was abandoned mid-development.
+
 require 'cli/dspace.rb'
 DSpace.load
 
