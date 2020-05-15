@@ -2,10 +2,11 @@
 require "highline/import"
 require 'dspace'
 require 'symplectic/ditem'
+require 'cli/dconstants'
 
 DSpace.load
 DSpace.context_renew
-DSpace.login ENV['USER']
+DSpace.login DConstants::LOGIN
 
 $dspace_url = 'http://oar-dev.princeton.edu'
 $symplectic_url = 'https://oaworkflow-dev.princeton.edu'

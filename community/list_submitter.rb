@@ -1,10 +1,15 @@
 #!/usr/bin/env jruby  
 require 'dspace'
+require 'cli/dconstants'
 
 DSpace.load
 
-# adjust handle 
-fromString = '88435/dsp019c67wm88m'
+#postgres
+# fromString = "COMMUNITY.145"
+
+# dataspace
+
+fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 com.getCollections.collect do |col|
@@ -12,5 +17,3 @@ com.getCollections.collect do |col|
   submitters = g ? g.getMembers : []
   puts "#{col.getName}\n\t#{submitters.collect { |s| s.getName }.join("\n\t")}"
 end
-
-

@@ -4,10 +4,11 @@
 # 2) those ending in old_year   are changed to end in  old_year-new_year
 #
 require "highline/import"
+require 'cli/dconstants'
 
-old_year = '2016'
-new_year = '2017'
-handle = '88435/dsp019c67wm88m'
+year = 2016
+schema, element, qualifier = ['pu', 'date', 'classyear']
+handle = DConstants::SENIOR_THESIS_HANDLE
 require 'dspace'
 DSpace.load
 DSpace.login ENV['USER']
@@ -25,4 +26,3 @@ DSpace.fromString(handle).getCollections.each do |col|
 end
 
 DSpace.commit
-

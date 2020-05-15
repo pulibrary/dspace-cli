@@ -1,10 +1,11 @@
 #!/usr/bin/env jruby
 require 'lumberjack'
+require 'cli/dconstants'
 
-$root = "88435/dsp019c67wm88m"
-$year = 2018
+$root = DConstants::SENIOR_THESIS_HANDLE
+$year = DConstants::DEFAULT_YEAR
 $year_metadata_field = "pu.date.classyear"
-$account = "monikam"
+$account = DConstants::LOGIN
 
 require 'dspace'
 require 'cli/ditem'

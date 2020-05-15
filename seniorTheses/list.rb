@@ -1,11 +1,12 @@
 #!/usr/bin/env jruby  
 require 'xmlsimple'
 require 'dspace'
+require 'cli/dconstants'
 
 DSpace.load
 
 # dataspace
-fromString = '88435/dsp019c67wm88m'
+fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 

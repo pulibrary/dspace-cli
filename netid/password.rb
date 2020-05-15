@@ -1,6 +1,7 @@
 #!/usr/bin/env jruby 
 require "highline/import"
 require 'dspace'
+require 'cli/dconstants'
 
 netid, pwd = ARGV
 
@@ -9,7 +10,7 @@ if (netid.nil?) then
 end
 
 DSpace.load
-DSpace.login(ENV['USER']) 
+DSpace.login DConstants::LOGIN
 
 p = DEPerson.find(netid);
 raise "no such eperson" if p.nil?

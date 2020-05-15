@@ -4,11 +4,12 @@
 #
 require 'dspace'
 require "highline/import"
+require 'cli/dconstants'
 
 DSpace.load()
 DSpace.context_renew
 
-name = "Lib_DigPubs_Submitters"
+name = DConstants::SUBMITTERS_NAME
 group = DGroup.find(name)
 
 while (true) do
@@ -28,7 +29,7 @@ end
 
 yes = ask "Commit ? (Y/N)"
 if (yes[0] == 'Y') then
-    DSpace.login(ENV['USER'])
+    DSpace.login DConstants::LOGIN
     group.update()
     DSpace.commit
 end

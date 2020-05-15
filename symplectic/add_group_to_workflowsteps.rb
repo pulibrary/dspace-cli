@@ -2,9 +2,10 @@
 require "highline/import"
 require 'dspace'
 require 'cli/dcollection'
+require 'cli/dconstants'
 
 DSpace.load
-DSpace.login ENV['USER']
+DSpace.login DConstants::LOGIN
 puts "\n"
 
 com_name =  'All'

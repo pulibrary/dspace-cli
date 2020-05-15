@@ -1,5 +1,6 @@
 #!/usr/bin/env jruby 
 require "highline/import"
+require 'cli/dconstants'
 require 'dspace'
 
 netid, first, last = ARGV
@@ -7,7 +8,7 @@ netid = ask("enter netid ") unless netid
 first = ask("first name  ") unless first
 last = ask("last name  ") unless last
 
-admin = ENV["USER"]
+admin = DConstants::LOGIN
 puts "Logging in as: #{admin}"
 
 DSpace.load

@@ -1,7 +1,8 @@
 #!/usr/bin/env jruby
-require 'lumberjack'; 
+require 'lumberjack'
+require 'cli/dconstants'
 
-account = "dspadmin"
+account = DConstants::LOGIN
 
 log_file = "#{ENV['DSPACE_HOME']}/log/map2Collections-#{$$}.log"
 $logger = Lumberjack::Logger.new("#{log_file}", :buffer_size => 0) # Open a new log file with INFO level
@@ -95,7 +96,7 @@ def map_all(year)
 end
 
 def test()
-  root = "88435/dsp019c67wm88m"
+  root = DConstants::SENIOR_THESIS_HANDLE
   colmap = make_colmap(root)
   i = DSpace.fromString('88435/dsp01gb19f854b')
 
@@ -105,4 +106,4 @@ def test()
 end
 
 
-map_all(2019)
+map_all(DConstants::DEFAULT_YEAR)
