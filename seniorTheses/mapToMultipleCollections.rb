@@ -1,15 +1,16 @@
 #!/usr/bin/env jruby
 require 'lumberjack'
+require 'cli/dconstants'
 
-account = "monikam"
+account = DConstants::LOGIN
 
 log_file = "#{ENV['DSPACE_HOME']}/log/map2Collections.log"
 logger = Lumberjack::Logger.new("#{log_file}", :buffer_size => 0) # Open a new log file with INFO level
 logger.level = :info
 puts "DEBUG logging action to  #{log_file}"
 
-root = "88435/dsp019c67wm88m"
-year = 2018
+root = DConstants::SENIOR_THESIS_HANDLE
+year = DConstants::DEFAULT_YEAR
 year_metadata_field = "pu.date.classyear"
 
 logger.info "START select #{year_metadata_field}=#{year} in #{root}"

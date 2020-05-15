@@ -1,11 +1,12 @@
 #!/usr/bin/env jruby 
 require "highline/import"
+require 'cli/dconstants'
 
-netid = 'monikam';
+netid = DConstants::LOGIN
 name = ask "Collection Name "; 
 name = name.strip;
 
-parent = '88435/dsp019c67wm88m'
+parent = DConstants::SENIOR_THESIS_HANDLE
 
 require 'dspace'
 DSpace.load()

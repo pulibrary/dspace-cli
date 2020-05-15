@@ -1,8 +1,10 @@
 #!/usr/bin/env jruby  -I lib -I utils
 require 'dspace'
+require 'cli/dconstants'
+
 DSpace.load
 
-year = 2016
+year = DConstants::DEFAULT_YEAR
 items = DSpace.findByMetadataValue("pu.date.classyear", year, nil)
 
 hitems = items.select { |i| i.is_archived }

@@ -1,5 +1,6 @@
 require 'dspace'
 require "highline/import"
+require 'cli/dconstants'
 
 
 DSpace.load
@@ -13,7 +14,7 @@ def doit
   if not p then
     puts "no such account #{netid}"
   else
-    DSpace.login ENV["USER"]
+    DSpace.login DConstants::LOGIN
     create_tasks p
     if "Y" == ask( "Commit changes: Yes or No (Y/N) ") then
       DSpace.commit

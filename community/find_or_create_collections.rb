@@ -3,6 +3,7 @@ require 'optparse'
 require "highline/import"
 require 'dspace'
 require 'cli/dcommunity'
+require 'cli/dconstants'
 
 options = {}
 parser = OptionParser.new do |opts|
@@ -26,7 +27,7 @@ begin
   file_name = ARGV[1]
 
   DSpace.load
-  DSpace.login ENV['USER']
+  DSpace.login DConstants::LOGIN
   com = DSpace.create(DSpace.fromString(com_name))
 
   create_collections(com, file_name)

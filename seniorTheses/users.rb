@@ -1,5 +1,6 @@
 #!/usr/bin/env jruby  
 require 'dspace'
+require 'cli/dconstants'
 
 DSpace.load
 
@@ -8,7 +9,7 @@ DSpace.load
 
 # dataspace
 
-fromString = '88435/dsp019c67wm88m'
+fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 com.getCollections.collect do |col|
