@@ -1,5 +1,13 @@
+##
+# This class extends DCollection from the dspace jruby gem for Princeton-specific
+# functionality.
+# @see https://github.com/pulibrary/dspace-jruby
 class DCollection
-
+  ##
+  # Create string for workflow naming convention (mainly for private use) 
+  #
+  # @param postfix [String]
+  # @return [String] 
   def workflow_name(postfix)
     "#{@obj.getName}_#{postfix.to_s.upcase}"
   end
@@ -55,6 +63,11 @@ class DCollection
     self
   end
 
+  ##
+  # Return all bitstreams within the collection.
+  #
+  # @param bundleName [String] 
+  # @return [Array<org.dspace.content.Bitstream>] an array of Bitstream objects.
   def bitstreams(bundleName = "ORIGINAL")
     bits = []
     iter = @obj.getItems
