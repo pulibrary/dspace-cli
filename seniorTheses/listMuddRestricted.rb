@@ -1,9 +1,11 @@
 #!/usr/bin/env jruby
 require 'dspace'
+require 'cli/dconstants'
+
 DSpace.load
 
 
-after_year = 2016
+after_year = DConstants::DEFAULT_YEAR
 
 puts ["Handle", "Year", "Mudd", "READ_group",  "Bitstream Name",].join "\t"
 

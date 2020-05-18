@@ -1,14 +1,15 @@
 #!/usr/bin/env jruby 
 require "highline/import"
 require "cli"
+require 'cli/dconstants'
 
-netid = 'monikam';
+netid = DConstants::LOGIN
 name = ask "Collection Name "; 
 name = name.strip; 
 
 choices = [ {
-name: 'Princeton University Undergraduate Senior Theses',
-hdl: '88435/dsp019c67wm88m'
+    name: 'Princeton University Undergraduate Senior Theses',
+    hdl: DConstants::SENIOR_THESIS_HANDLE
 }]
 
 puts "Parent Collections"

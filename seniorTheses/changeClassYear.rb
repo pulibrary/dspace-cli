@@ -1,9 +1,10 @@
 #!/usr/bin/env jruby  
 require "highline/import"
+require 'cli/dconstants'
 
 year = 2016
 schema, element, qualifier = ['pu', 'date', 'classyear']
-handle = '88435/dsp019c67wm88m'
+handle = DConstants::SENIOR_THESIS_HANDLE
 require 'dspace'
 DSpace.load
 

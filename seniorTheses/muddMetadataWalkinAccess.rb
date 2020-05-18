@@ -1,8 +1,9 @@
 #!/usr/bin/env jruby
 require "highline/import"
 require 'lumberjack'
+require 'cli/dconstants'
 
-account = "monikam"
+account = DConstants::LOGIN
 
 log_file = "#{ENV['DSPACE_HOME']}/log/muddWalking.log"
 

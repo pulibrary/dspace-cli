@@ -1,10 +1,11 @@
 require 'irb/completion'
 require 'dspace'
+require 'cli/dconstants'
 
 DSpace.load
 
 
-hdl = '88435/dsp01pz50gz45g'
+hdl = DConstants::PPPL_HANDLE
 def rec_members(group)
   gmems = group.getMemberGroups
   mems = gmems.collect{|g| g} + group.getMembers.collect {|m| m}

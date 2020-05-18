@@ -3,6 +3,7 @@ require 'yaml';
 require 'faker';
 require 'dspace'
 require 'cli/ditem'
+require 'cli/dconstants'
 
 test_data_file = "data/genTestData.yml";
 
@@ -104,7 +105,7 @@ def doit(test_data_file)
   java_import org.dspace.content.Collection
   java_import org.dspace.content.Community
   java_import org.dspace.content.Item
-  DSpace.login(ENV['USER'])
+  DSpace.login DConstants::LOGIN
 
   generate(test_data_file)
   #DSpace.commit

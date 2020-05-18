@@ -1,8 +1,9 @@
 #!/usr/bin/env jruby 
 require "highline/import"
 require "cli"
+require 'cli/dconstants'
 
-netid = 'monikam';
+netid = DConstants::LOGIN
 name = ask "Collection Name "; 
 name = name.strip; 
 

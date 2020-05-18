@@ -1,9 +1,10 @@
 #!/usr/bin/env jruby
 require "highline/import"
 require 'dspace'
+require 'cli/dconstants'
 
 DSpace.load
-DSpace.login ENV['USER']
+DSpace.login DConstants::LOGIN
 puts "\n"
 
 filename = 'symplectic/group_members.txt'

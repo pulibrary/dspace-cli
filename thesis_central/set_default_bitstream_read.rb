@@ -1,15 +1,17 @@
 require 'cli/dspace.rb'
+require 'cli/dconstants'
+
 DSpace.load
 
 java_import org.dspace.eperson.Group
 
 
-DSpace.login 'monikam'
+DSpace.login DConstants::LOGIN
 
 def doit()
   mudd = Group.findByName(DSpace.context, 'SrTheses_Bitstream_Read_Mudd');
 
-  com = DSpace.fromString('88435/dsp019c67wm88m')
+  com = DSpace.fromString(DConstants::SENIOR_THESIS_HANDLE)
   for col in com.getCollections
     p  =  get_policies(col, 9)[0]
     p.setGroup mudd

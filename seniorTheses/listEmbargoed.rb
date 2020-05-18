@@ -2,13 +2,15 @@
 require 'xmlsimple'
 require 'dspace'
 
+require 'cli/dconstants'
+
 #DSpace.load
 
 #postgres
 # fromString = "COMMUNITY.145"
 
 # dataspace
-fromString = '88435/dsp019c67wm88m'
+fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 
