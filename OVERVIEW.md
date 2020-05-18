@@ -12,7 +12,7 @@ as such:
 1. dspace-cli (JRuby)
 1. `tcsh` scripts (These typically wrap either the dspace-cli procedures, custom JRuby procedures, or the DSpace Java CLI)
 1. dspace-jruby (Underlying JRuby API)
-1. DSpace Java CLI (From DSpace core)
+1. [DSpace Java CLI (from DSpace core)](https://wiki.lyrasis.org/display/DSDOC5x/Command+Line+Operations)
 
 It should please be noted that these were originally developed in order to
 extend the functionality and behavior for the DSpace Java CLI. In an attempt to
