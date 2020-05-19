@@ -1,10 +1,17 @@
+# Print out all bitstreams that don't have metadata
+
 require 'dspace'
+
 DSpace.load
 
+# TODO: Add this class method to cli/dbitstream.rb
 class DBitstream
 
+  # get all bitstreams ids that don't have metadata
   def self.allWithoutMetadata()
     java_import org.dspace.storage.rdbms.DatabaseManager
+
+    # Get all unique bistream ids where there metadatavalues are null
     sql = 'SELECT  DISTINCT(BITSTREAM_ID)  from BITSTREAM ' +
           ' LEFT JOIN METADATAVALUE ' +
           ' ON BITSTREAM.BITSTREAM_ID = METADATAVALUE.RESOURCE_ID ' +
@@ -17,8 +24,10 @@ class DBitstream
       tri.close
       return dsos
   end
+
 end
 
+# given bitstreams, print tabulated data
 def print_bitstream(d)
   item = d.getParentObject()
   return if item.nil?
@@ -26,6 +35,7 @@ def print_bitstream(d)
   puts ([d.getID, handle, year] + DSpace.create(d).parents()).join("\t")
 end
 
+# Print out all bitstreams that don't have metadata
 def doit()
   dsos = DBitstream.allWithoutMetadata
   dsos.each do |d|
