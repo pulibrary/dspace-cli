@@ -1,4 +1,9 @@
 #!/usr/bin/env jruby 
+
+# This is a complicated script that walks you through either adding 
+#   a given netid to the same groups as another user, or removing a user from
+#   a group.
+
 require "highline/import"
 require 'dspace'
 
@@ -10,6 +15,8 @@ end
 
 DSpace.load
 
+# TODO: This naming convention is misleading. This prints the groups of which
+#   the given person is a member.
 def print_members(p)
   puts p.getNetid + ":"
   DSpace.create(p).groups.each { |g| puts "\t#{g.getName}" }

@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Use find_or_create_workflow_group functionality from the cli directory using
+#   the handle provided on the command line
+
 require 'optparse'
 require "highline/import"
 require 'dspace'

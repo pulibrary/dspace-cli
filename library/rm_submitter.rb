@@ -3,6 +3,8 @@ require 'dspace'
 require "highline/import"
 require 'cli/dconstants'
 
+# Command line wrapper for removeMember method, specific to the Submitters handle.
+
 DSpace.load()
 DSpace.context_renew
 
@@ -14,7 +16,7 @@ while (true) do
   if (netid != "") then
     m = DEPerson.find(netid)
     if (m) then
-        puts ['removing', name, m.getEmail, m.canLogIn ? "Can Login" : "can't Login", m.getFullName].join "\t\t"
+        puts ['removing', name, m.getEmail, m.canLogIn ? "Can Login" : "Can't Login", m.getFullName].join "\t\t"
         group.removeMember(m)
     else
       puts "no such eperson"

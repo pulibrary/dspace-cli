@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby 
+
+# Reset password of given netid
+
 require "highline/import"
 require 'dspace'
 require 'cli/dconstants'

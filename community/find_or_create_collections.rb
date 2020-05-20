@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Given a filename with a list of collection names, create new collections into 
+#   the given community handle
+
 require 'optparse'
 require "highline/import"
 require 'dspace'
@@ -10,6 +14,7 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} community file_with_collection_names"
 end
 
+# Create a collection into community "com" for each line in file
 def create_collections(com, file_name)
   name_file = File.new(file_name, "r")
   dcom = DSpace.create(com)

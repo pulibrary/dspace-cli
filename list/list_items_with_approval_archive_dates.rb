@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+# List specially marked items with provenance formats listed below.
+
 require 'time'
 require 'dspace'
 

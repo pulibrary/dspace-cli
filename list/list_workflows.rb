@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+# Print workflows from given DSO handle
+
 require 'optparse'
 require 'dspace'
 require "highline/import"
@@ -9,6 +12,7 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} run handle.."
 end
 
+# TODO: Add .to_h method to our DWorkFlowItem.rb
 def flow_to_hash(flow)
   java_import org.dspace.workflow.WorkflowManager;
   item = flow.getItem
