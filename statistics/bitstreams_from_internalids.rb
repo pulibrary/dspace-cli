@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Given a bitstream's internal ID from command line, print the matching bitstream's info
+
 require 'dspace'
 
 DSpace.load
@@ -6,7 +9,9 @@ java_import org.dspace.storage.rdbms.TableRow
 java_import org.dspace.storage.rdbms.DatabaseManager
 java_import org.dspace.core.Constants
 
+# QUESTION: What is the difference between Internal IDs and a normal ID?
 def find_bitstream(id)
+  # get all bitstreams where id matches given parameter
   sql = "SELECT * FROM BITSTREAM WHERE INTERNAL_ID = '#{id}'";
   tri = DatabaseManager.queryTable(DSpace.context, "Bitstream",   sql)
   dsos = [];

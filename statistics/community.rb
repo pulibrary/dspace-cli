@@ -7,6 +7,8 @@ require 'optparse'
 
 require 'dspace'
 
+# Given handles for communities on the command line, develop basic reports
+
 module Statistics
 
   class Community
@@ -15,7 +17,7 @@ module Statistics
                          "collection" => {"type" => 3},
                          "community" => {"type" => 4}};
 
-
+    # Given options from the command line, narrow the kind of stats to be calculated
     def initialize(options)
       communities = options['communities'];
       raise "mising communities " unless communities and not communities.empty?
@@ -47,7 +49,6 @@ module Statistics
       end
 
       @solrCoreBase = options['solrStatiticsServer'] || ConfigurationManager.getProperty("solr-statistics", "server")
-      ;
       @time_slots= options['time_slots'] || [''];
       raise "must have at least one time_slot definition" if @time_slots.empty?
       @time_ranges = @time_slots.collect { |s| s['slot'] }
@@ -74,6 +75,7 @@ module Statistics
       return @verbose
     end
 
+    # For Community, get counts for each collection, repeat for all Communities
     def collection_counts(outfile)
       print_basic_report_info(outfile)
       if (@verbose) then
@@ -199,6 +201,7 @@ module Statistics
 
     private
 
+    # Request data from Solr
     def getStatsFor(community, type, timeRange, facet_field)
       query = @solrCoreBase +
           "/select?" +
@@ -226,6 +229,7 @@ module Statistics
       return getJsonStats(uri);
     end
 
+    # Prepare query for solr
     def solrParams(props = {})
       params= "wt=json";
       props = {"indent" => "true", "rows" => "0"}.merge(props);
@@ -235,6 +239,7 @@ module Statistics
       return params;
     end
 
+    # Make request and parse JSON
     def getJsonStats(uri)
       begin
         res = HTTP.get(uri)
@@ -246,6 +251,7 @@ module Statistics
       end
     end
 
+    # NOTE: Doesn't seem to be used
     def self.printArrOfHash(outfile, pre, arr)
       first = true;
       arr.each do |hsh|
@@ -262,6 +268,7 @@ module Statistics
       end
     end
 
+    # Print config info, usually used at the top of a file / std out
     def print_basic_report_info(outfile)
       outfile.puts "# report-date: #{Time.now}";
       outfile.puts "# solr-core: #{@solrCoreBase}"
@@ -333,6 +340,6 @@ module Statistics
   end
 
 end
-Statistics::Community.run()
 
+Statistics::Community.run()
 

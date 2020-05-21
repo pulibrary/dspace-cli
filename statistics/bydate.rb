@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Go through all items and count the submissions per month and year.
+
 require 'dspace'
 
 DSpace.load
