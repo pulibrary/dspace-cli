@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Print all unarchived items and their workflow state to stdout
+
 require 'dspace'
 require "cli/ditem.rb"
 require "symplectic/ditem.rb"

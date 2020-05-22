@@ -1,4 +1,12 @@
 #!/usr/bin/env jruby
+
+##
+# UNFINISHED
+#
+# "if (false) then run function"
+
+# move a collection with given handle to a parent with given handle
+
 require 'optparse'
 require "highline/import"
 require 'dspace'
@@ -8,6 +16,7 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} source_col_handle destination_parent "
 end
 
+# TODO: Create proper Symplectic class
 class Symplectic
   def self.submissions_reassign_destination(collection, col_candidates)
     java_import org.dspace.content.WorkspaceItem

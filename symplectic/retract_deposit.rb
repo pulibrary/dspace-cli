@@ -1,22 +1,22 @@
 #!/usr/bin/env jruby  -I ../dspace-jruby/lib
+
+# Follow prompts to unarchive an item by title
+
 require "highline/import"
 require 'dspace'
 require 'symplectic/ditem'
 require 'cli/dconstants'
 
 DSpace.load
-DSpace.context_renew
+DSpace.context_renew # QUESTION: Is this necessary?
 DSpace.login DConstants::LOGIN
 
 $dspace_url = 'http://oar-dev.princeton.edu'
 $symplectic_url = 'https://oaworkflow-dev.princeton.edu'
 
-$dspace_url = 'http://oar.princeton.edu'
-$symplectic_url = 'https://oaworkflow.princeton.edu'
-
 def doit
   while (true) do
-    puts "do not include speacial character in the title"
+    puts "do not include special character in the title"
     title = ask("title ")
     return if title.empty?
     do_item title.strip
@@ -51,14 +51,17 @@ def do_item(title)
     end
   end
   DSpace.context_renew
-  DSpace.login ENV['USER']
+  DSpace.login DConstants::LOGIN
 end
 
+# get symplectic url from ditem
+# TODO: Append this to symplectic-specific DItem class
 def get_symplectic_url(ditem)
   symid = ditem.symplecticID
   return "#{$symplectic_url}/viewobject.html?cid=1&id=#{symid}"
 end
 
+# Get item by title
 def get_item(title)
   item = DSpace.fromString "TITLE.#{title}%"
 

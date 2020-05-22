@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Add standardized workflow steps to all collections
+
 require "highline/import"
 require 'dspace'
 require 'cli/dcollection'

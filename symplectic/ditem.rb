@@ -10,6 +10,7 @@ class DItem
     (n.nil?) ? nil : n.getStringColumn("PID")
   end
 
+  # Find an item when given its symplectic ID
   def self.findBySymplecticId sid
     java_import org.dspace.storage.rdbms.DatabaseManager
     sql = "SELECT ITEM_ID FROM SYMPLECTIC_PIDS WHERE PID = #{sid}";

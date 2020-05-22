@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby  
+
+# 
+
 require 'xmlsimple'
 require 'dspace'
 
@@ -14,6 +17,7 @@ fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 
+# Create a CSV of all embargoed items
 def embargoed_csv(com)
   handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
   items = DSpace.findByMetadataValue('pu.embargo.terms', nil, nil)
@@ -33,6 +37,7 @@ def embargoed_csv(com)
   csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
 end
 
+# create a hash of all items in a group after given year
 def group_restricted(group_name, after_year)
   java_import java.util.Calendar
   ihash = []
@@ -62,6 +67,7 @@ def group_restricted(group_name, after_year)
   csv_out(ihash, fields)
 end
 
+# TODO: This should be centralized. It is repeated throughout many scripts and directories.
 def csv_out(ihash, fields)
   puts fields.join("\t")
   ihash.each do |h|
@@ -74,7 +80,3 @@ end
 ["SrTheses_Bitstream_Read_Mudd", "SrTheses_Bitstream_Read_Princeton", "SrTheses_Item_Read_Anonymous"].each do |group_name|
   group_restricted(group_name, 2016)
 end
-
-
-
-

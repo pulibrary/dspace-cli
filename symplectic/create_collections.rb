@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Create collections from the departments.txt file. Add them to the Community "All"
+# TODO: Add this functionality to the DCollections and/or DCommunity
+
 require "highline/import"
 require 'dspace'
 require 'cli/dconstants'

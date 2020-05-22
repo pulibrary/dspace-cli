@@ -1,8 +1,14 @@
+##
+# UNFINISHED
+# 
+# Multiple functions defined under the same name.
+
 require 'dspace'
 require 'symplectic/ditem'
 
 DSpace.load
 
+# print all bitstream workflow items
 def list_bitstreams_wflow_items
     flows = DWorkflowItem.findAll nil
     flows.each do |f|
@@ -12,10 +18,11 @@ def list_bitstreams_wflow_items
     end
 end
 
-
+# stringify id to symplectic id mapping
 def id_info(i)
     s = "ITEM.#{i.getID}->Sy-ID.#{DSpace.create(i).symplecticID }"
 end
+
 
 def list_author_uid_wflow_items
     flows = DWorkflowItem.findAll nil

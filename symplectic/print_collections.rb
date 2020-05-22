@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Create YAML of hash of all Collections / workflow groups into standard out.
+
 require "highline/import"
 require 'dspace'
 require "yaml"

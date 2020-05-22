@@ -1,9 +1,12 @@
 #!/usr/bin/env jruby
+
+# list items in the groups listed below and place their policies into a table to std out.
+# TODO: Double check overlap between this and seniorTheses/listEmbargoed.rb
+
 require 'dspace'
 require 'cli/dconstants'
 
 DSpace.load
-
 
 after_year = DConstants::DEFAULT_YEAR
 
@@ -21,4 +24,3 @@ puts ["Handle", "Year", "Mudd", "READ_group",  "Bitstream Name",].join "\t"
   end
 
 end
-

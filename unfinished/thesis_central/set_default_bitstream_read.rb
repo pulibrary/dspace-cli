@@ -1,6 +1,8 @@
 require 'cli/dspace.rb'
 require 'cli/dconstants'
 
+# DUPLICATE: This is replicated in seniorTheses
+
 DSpace.load
 
 java_import org.dspace.eperson.Group

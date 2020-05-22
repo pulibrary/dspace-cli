@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# add "all_groups_name" to all workflowsteps
+
 require "highline/import"
 require 'dspace'
 require 'cli/dcollection'

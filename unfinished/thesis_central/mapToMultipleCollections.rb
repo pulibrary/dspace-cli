@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# DUPLICATE: This is replicated in seniorTheses
+
 require 'lumberjack'
 require 'cli/dconstants'
 

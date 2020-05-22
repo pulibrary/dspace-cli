@@ -14,22 +14,26 @@ DSpace.load
 DSpace.login($account)
 java_import org.dspace.core.Constants
 
-def shortColectionName(c)
+# get first part of collection name
+def shortCollectionName(c)
   c.getName.split(',')[0].strip()
 end
 
+# get all senior thesis items in given year
 def getClassYearItems()
   items = DSpace.findByMetadataValue($year_metadata_field, $year, nil)
   $logger.info "Select #{$year_metadata_field}=#{$year} in #{$root}  found #{items.length} items"
   return items
 end
 
+# Use Lumberjack to set a log_file
 def setLogger(log_file, level = :info)
   $logger = Lumberjack::Logger.new("#{log_file}", :buffer_size => 0) # Open a new log file with INFO level
   $logger.level = level
   puts "#{level} logging to  #{log_file}"
 end
 
+# clear metadata for senior thesis items with a null abstract
 def fixNullAbstract()
   setLogger("#{ENV['DSPACE_HOME']}/log/fixNullAbstract.log")
   items = DSpace.findByMetadataValue('dc.description.abstract', 'null', nil)
@@ -61,16 +65,16 @@ def fixNullAbstract()
 end
 
 
-# for all items in the  class $year:
+# for all items in the class $year:
 # compare the pu.department metadata value with the name of the owning collection
-# the values should match (miuns the year info on the collection name)
+# the values should match (minus the year info on the collection name)
 def compareDepartmentMetadataWithOwningCollection(fix)
   setLogger("#{ENV['DSPACE_HOME']}/log/compareDepartmentWithCollectionName.log")
 
   collections = DSpace.fromString($root).collections
 
 # colmap - maps shortened collection's name to collection pointers
-  colmap = {}; collections.each {|c| colmap[shortColectionName(c)] = c}
+  colmap = {}; collections.each {|c| colmap[shortCollectionName(c)] = c}
 #
 # go over all archived items with the given year_metadata_field equal to year
   items = getClassYearItems()
@@ -81,7 +85,7 @@ def compareDepartmentMetadataWithOwningCollection(fix)
   items.each do |i|
     begin
       if i.archived? then
-        ownerName = shortColectionName(i.getOwningCollection)
+        ownerName = shortCollectionName(i.getOwningCollection)
 
         vals = i.getMetadata("pu", "department", nil, "*")
         if (vals.length > 1) then
@@ -112,12 +116,12 @@ def compareDepartmentMetadataWithOwningCollection(fix)
   $logger.info("SUMMARY errors #{nerror} ")
 end
 
-
+# Add theses to their certificate program collections
 def mapToCollectionBasedOncertificateProgram()
   setLogger("#{ENV['DSPACE_HOME']}/log/mapToCollectionBasedOncertificateProgram.log")
 
 # colmap - maps shortened collection's name to collection pointers
-  colmap = {}; DSpace.fromString($root).collections.each {|c| colmap[shortColectionName(c)] = c}
+  colmap = {}; DSpace.fromString($root).collections.each {|c| colmap[shortCollectionName(c)] = c}
 
 # go over all archived items with the given year_metadata_value equal to $year
 # and map to collections defined in pu.certificate metadata field
@@ -159,12 +163,11 @@ def mapToCollectionBasedOncertificateProgram()
   $logger.info("SUMMARY encountered problems on #{nerror} items")
 end
 
-
 def departmentEqualsCertificate()
   setLogger("#{ENV['DSPACE_HOME']}/log/departmentEqualsCertificate.log")
 
 # colmap - maps shortened collection's name to collection pointers
-  colmap = {}; DSpace.fromString($root).collections.each {|c| colmap[shortColectionName(c)] = c}
+  colmap = {}; DSpace.fromString($root).collections.each {|c| colmap[shortCollectionName(c)] = c}
 
 # go over all archived items with the given year_metadata_value equal to $year
 # and compare department value with certificate value
@@ -203,11 +206,9 @@ def departmentEqualsCertificate()
   $logger.info("SUMMARY encountered problems on #{nerror} items")
 end
 
-
+# Uncomment functions as necessary
 #compareDepartmentMetadataWithOwningCollection(true)
 #DSpace.commit
 #compareDepartmentMetadataWithOwningCollection(false)
-
 #fixNullAbstract()
-#
 departmentEqualsCertificate

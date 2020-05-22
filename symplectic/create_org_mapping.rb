@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Add all Collections under a new "Organisation"
+
 require "highline/import"
 require 'dspace'
 require 'cli/dconstants'
@@ -14,6 +17,7 @@ puts "no such community #{com_name}" unless com
 
 collNames = com.getCollections.collect { |c| c.getName }
 
+# Create a Hash that maps "KEY_TEXT" to "COLLECTION_ID"
 def getExistingOrgMappings
     sql = "SELECT KEY_TEXT, COLLECTION_ID FROM SYMPLECTIC_COLL_MAP";
     tri = DatabaseManager.queryTable(DSpace.context, "SYMPLECTIC_COLL_MAP", sql)
@@ -25,6 +29,7 @@ def getExistingOrgMappings
     return map
 end
 
+# Add a new mapping of "KEY_TEXT" to "COLLECTION_ID"
 def insertMapping(name, id)
   row = DatabaseManager.row("SYMPLECTIC_COLL_MAP");
   row.setColumn("key_text", name);
@@ -32,12 +37,14 @@ def insertMapping(name, id)
   DatabaseManager.insert(DSpace.context, row);
 end
 
+# Add all Collections under a new "Organisation"
 map = getExistingOrgMappings
 DCollection.all.each  do |col|
   if  col.getParentObject.nil? then
-    puts "WARNING: thats a stramge collection  #{col.getID}"
+    puts "WARNING: thats a strange collection  #{col.getID}"
     next
   end
+  # QUESTION: "/Organisation/" is hardcoded. Is that correct?
   org_name = "/Organisation/" + col.getName
   map_id =  map[org_name]
   if map_id.nil? then

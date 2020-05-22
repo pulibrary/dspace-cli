@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby  
+
+# Collection of functions for listing the items in the senior thesis community
+#   in XML, CSV, and Hash.
+
 require 'xmlsimple'
 require 'dspace'
 require 'cli/dconstants'

@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby 
+
+# Following prompts, create a new collection.
+# TODO: Compare to seniorTheses/createCollection.rb
+
 require "highline/import"
 require "cli"
 require 'cli/dconstants'

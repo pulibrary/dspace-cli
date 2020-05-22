@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby 
+
+# Following prompts given, create a Collection within the senior thesis Community
+
 require "highline/import"
 require 'cli/dconstants'
 
@@ -28,11 +31,11 @@ puts "ItemAdd:\n\t#{item_add.getName}";
 approvers = DSpace.fromString("Group.SrTheses_Approvers");
 puts "Approvers:\n\t#{approvers.getName}";
 
-
 def get_policies(b, action)
     puts "get_policies #{action}"
     java_import org.dspace.storage.rdbms.DatabaseManager
     java_import org.dspace.authorize.ResourcePolicy
+    # get policy_id and resource policy where they match the function input
     sql = "SELECT POLICY_ID FROM RESOURCEPOLICY WHERE  RESOURCE_ID = #{b.getID} AND RESOURCE_TYPE_ID = #{b.getType()} AND ACTION_ID = #{action}";
     tri = DatabaseManager.queryTable(DSpace.context, "RESOURCEPOLICY", sql)
     pols = []
