@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Print out submission count per community per year and per month. Sort
+#   alphabetically by community.
+
 require 'dspace'
 
 DSpace.load

@@ -1,12 +1,17 @@
 #!/usr/bin/env jruby 
-require 'yaml';
-require 'faker';
+
+# Place YAML file and generated metadata into our DSpace context
+
+require 'yaml'
+require 'faker'
 require 'dspace'
 require 'cli/ditem'
 require 'cli/dconstants'
 
-test_data_file = "data/genTestData.yml";
+test_data_file = "data/genTestData.yml"
 
+# Delete all Collections within a Commmunity (given a Community's name)
+#   Recreate the empty Community
 def recreate_community(comm_name)
   DCommunity.all.each do |c|
     if c.getName == comm_name then
@@ -17,6 +22,7 @@ def recreate_community(comm_name)
   return DCommunity.create(comm_name)
 end
 
+# Turn YAML file into a DSpace archive
 def generate(file)
   test_data = load_file(file)
   puts test_data
@@ -37,6 +43,8 @@ def generate(file)
   end
 end
 
+# Safely load a yaml file. If parsed correctly and no errors, return YAML hash, 
+#   otherwise return an empty hash.
 def load_file(file)
   test_data = YAML.load_file(file)
   error, comi = [0, 0]
@@ -61,6 +69,7 @@ def load_file(file)
   return (error == 0) ? test_data : {"communities" => []}
 end
 
+# Using Faker, generate some realistic metadata data for items
 def fake_metadata
   metadata = {};
 
@@ -100,21 +109,19 @@ def fake_metadata
   return metadata
 end
 
+# Place YAML file + Metadata into our DSpace context
 def doit(test_data_file)
   DSpace.load()
+  # QUESTION: If these imports are listed in the dspace gem, do they need to be
+  #   re-articulated here? They aren't explicitly called in this file.
   java_import org.dspace.content.Collection
   java_import org.dspace.content.Community
   java_import org.dspace.content.Item
   DSpace.login DConstants::LOGIN
 
   generate(test_data_file)
+  # NOTE: We'll need to uncomment the following line.
   #DSpace.commit
 end
 
-
 doit(test_data_file)
-
-
-
-
-

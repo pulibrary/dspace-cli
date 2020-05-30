@@ -1,4 +1,9 @@
 #!/usr/bin/env jruby
+
+# For each handle provided by the command line, query solr for "statistics/select",
+#   printing out info like country, city, ip address, and dns.
+# QUESTION: What might "statistics_type" mean?
+
 require 'rsolr';
 require 'dspace'
 

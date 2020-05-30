@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+# Print WorkspaceItems
+
 require 'optparse'
 require 'dspace'
 require "highline/import"
@@ -24,6 +27,7 @@ def print_witems(netid)
   end
 end
 
+# TODO: add to_h to WorkSpaceItem Class
 def _to_hash(wspace)
   java_import org.dspace.workflow.WorkflowManager;
   item = wspace.getItem

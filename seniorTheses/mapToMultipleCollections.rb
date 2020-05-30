@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# TODO: Find and remove duplication / repetition here and seniorTheses/cleanupAfterImport.rb
+
 require 'lumberjack'
 require 'cli/dconstants'
 
@@ -34,8 +37,8 @@ collections = DSpace.fromString(root).collections
 colmap = {}; collections.each {|c| colmap[shortColectionName(c)] = c}
 
 puts  colmap.keys.inspect
-#
-# go over all archived items with the given year_metadata_firld equal to year
+
+# go over all archived items with the given year_metadata_field equal to year
 items = DSpace.findByMetadataValue(year_metadata_field, year, nil)
 nitems, narchived, nmapped, nerror = 0, 0, 0, 0;
 items.each do |i|

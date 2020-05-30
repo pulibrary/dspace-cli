@@ -1,6 +1,9 @@
+# for each handle from the comand line print out bitstreams
+
 require 'dspace'
 DSpace.load
 
+# print the path to bitstreams in an item
 def work_bitstreams(item)
   ditem = DSpace.create(item)
   prefix = ditem.parents().reverse.collect { |p| p.getHandle }.join(" > ")
@@ -9,12 +12,13 @@ def work_bitstreams(item)
   end
 end
 
+# Get all bistreams within JRuby DSO
 def loop_bitstreams(dso)
   if (dso.getType == DConstants::ITEM) then
     work_bitstreams(dso)
   else
     if (dso.getType == DConstants::COLLECTION) then
-      iter =  dso.getItems
+      iter = dso.getItems
       while (itm = iter.next()) do
         work_bitstreams(itm)
       end
@@ -27,9 +31,11 @@ def loop_bitstreams(dso)
   end
 end
 
+# for each handle from the comand line print out bitstreams
 ARGV.each do |hdl|
   dso = DSpace.fromString(hdl)
   if (dso) then
+    # TODO: Remove unnecessary nesting
     if (dso) then
       loop_bitstreams(dso)
     end

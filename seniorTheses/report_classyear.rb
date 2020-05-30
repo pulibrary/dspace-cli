@@ -1,7 +1,9 @@
 #!/usr/bin/env jruby  
+
+# Get a report of all items in a class year.
+
 require 'highline'
 require 'dspace'
-
 
 def report(year)
   puts ["Collection", "Year", "Status", "#Bistreams", "Formats", "Item", "Authors", "Advisors", "Title"].join("\t")

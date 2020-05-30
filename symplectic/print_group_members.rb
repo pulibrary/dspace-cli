@@ -1,10 +1,15 @@
 #!/usr/bin/env jruby
+
+# print members and member groups to stdout
+# TODO: This is not unique to Symplectic and the functionality should be moved
+
 require "highline/import"
 require 'dspace'
 
 DSpace.load
 puts "\n"
 
+# print out members
 puts ["Group    ", "Account Member's Email"].join("\t")
 DGroup.all.collect { |g| g.getName }.sort.each do |group_name|
   group = DGroup.find(group_name)
@@ -14,6 +19,7 @@ DGroup.all.collect { |g| g.getName }.sort.each do |group_name|
 end
 puts ""
 
+# print out member groups
 puts ["Group   ", "Member's Group Name"].join("\t")
 DGroup.all.collect { |g| g.getName }.sort.each do |group_name|
   group = DGroup.find(group_name)

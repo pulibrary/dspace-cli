@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby  
+
+# List items with the "walkin" policy
+
 require 'xmlsimple'
 require 'dspace'
 require 'cli/dconstants'
@@ -33,6 +36,7 @@ def pu_walkin()
   csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
 end
 
+# TODO: Centralize this function
 def csv_out(ihash, fields)
   puts fields.join("\t")
   ihash.each do |h|
@@ -41,5 +45,3 @@ def csv_out(ihash, fields)
 end
 
 pu_walkin()
-
-

@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby  
+
+# Get an XML representation of all items in a given year
+# TODO: Compare with seniorTheses/list.rb to see what's redundant.
+
 require 'xmlsimple'
 require 'dspace'
 

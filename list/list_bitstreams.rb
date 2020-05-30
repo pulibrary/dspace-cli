@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+# Given the handle of any DSO object, list out a hash of the bitstreams
+
 require 'optparse'
 require 'dspace'
 
@@ -9,6 +12,7 @@ parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} handle.."
 end
 
+# TODO: Add this function as .to_h to our DBitstream object
 def bitstream_to_hash(bit)
   return {"name" => bit.getName,
           "format" => bit.getFormat.getDescription,

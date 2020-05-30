@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+# The CLI wrapper of the dspace gem's findByMetadataValue method, placing results
+#   into a table.
+
 require 'optparse'
 require 'dspace'
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env jruby 
 require 'dspace'
 
+# List metadata in clean tabular format.
+
 DSpace.load
 
 DMetadataSchema.all.each do |s|

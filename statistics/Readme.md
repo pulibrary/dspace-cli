@@ -1,22 +1,26 @@
 
-statistics/community.rb  compiles statistics information on number of accesses recorded in solr - stats; 
+`statistics/community.rb` compiles statistics information on number of accesses recorded in solr - stats.
 
-it produces tab separated tables 
-> 1. showing the total number of collection, item, bitstream views/downloads per community. 
-> 2. and/or a listing of the top performing bitstreams in the given communities
+It produces tab separated tables 
+1. showing the total number of collection, item, bitstream views/downloads per community. 
+2. and/or a listing of the top performing bitstreams in the given communities
     
-numbers can be filtered by time slots. 
+Numbers can be filtered by time slots. 
 
-you can give a list of ip that should be excluded 
+You can give a list of ip that should be excluded.
 
-you can request to exclude entries marked with isBot=1 
+You can request to exclude entries marked with isBot=1.
 
-see the included statistics/community.yml for an example parameter file
+See the included statistics/community.yml for an example parameter file.
 
-you can print the usage with:   
+You can print the usage with `statistics/community.rb  --help` for the following output.
 
 ```
-statistics/community.rb  --help 
+    -c, --collection_counts file     cumulative counts for collections
+    -b, --bitstreams file            most downloaded bitstreams
+    -y, --yml options                yml options file
+    -v, --[no-]verbose               Run verbosely
+    -h, --help                       Prints this help
 ```
 
 # Sample top bitstream report 
@@ -32,7 +36,7 @@ TOP	COMMUNITY	N-DOWNLOADS	BITSTREAM	ITEM-id	ITEM-handle	ITEM-name	COLLECTION-id	
 1	Princeton University Doctoral Dissertations	24419	BITSTREAM.15637	ITEM.8281	88435/dsp01wd375w44n	First Principles Studies of Small Molecular Adsorbates on The Anatase TiO2 (101) Surface	COLLECTION.88	88435/dsp01sf2685121	COMMUNITY.67	88435/dsp01td96k251d	COMMUNITY.66	88435/dsp01z316q160r
 2	Princeton University Doctoral Dissertations	18148	BITSTREAM.15770	ITEM.8413	88435/dsp01js956f96n	Exploring fluid mechanics in energy processes: viscous flows, interfacial instabilities & elastohydrodynamics	COLLECTION.87	88435/dsp01x633f104k	COMMUNITY.67	88435/dsp01td96k251d	COMMUNITY.66	88435/dsp01z316q160r
 ```
-# Sample comunity report 
+# Sample community report 
 ```
 # report-date: 2015-08-04 18:00:40 -0400
 # solr-core: http://localhost:18082/solr/statistics

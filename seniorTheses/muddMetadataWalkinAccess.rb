@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Set metadata value to "walk in access" prompt for all items in given year and 
+#   group_name. Iterate through, check policy, and change metadata if appropriate.
+
 require "highline/import"
 require 'lumberjack'
 require 'cli/dconstants'
@@ -7,8 +11,10 @@ account = DConstants::LOGIN
 
 log_file = "#{ENV['DSPACE_HOME']}/log/muddWalking.log"
 
-year = 2016
+year = DConstants::DEFAULT_YEAR
 year_metadata_field = "pu.date.classyear"
+
+# one of these needs to be manually commented-out
 group_name = "SrTheses_Bitstream_Read_Princeton"
 group_name = "SrTheses_Bitstream_Read_Mudd"
 

@@ -1,4 +1,10 @@
 #!/usr/bin/env jruby -I ../dspace-jruby/lib
+
+##
+# UNFINISHED
+# 
+# Multiple "if false"s would suggest this was left in the middle of debugging
+
 require 'optparse'
 require 'dspace'
 require "highline/import"

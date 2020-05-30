@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Get counts of Items in each Collection. Repeat for all Communities.
+
 require 'dspace'
 
 DSpace.load

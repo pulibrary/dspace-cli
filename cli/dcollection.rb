@@ -1,9 +1,16 @@
+##
+# This class extends DCollection from the dspace jruby gem for Princeton-specific
+# functionality.
+# @see https://github.com/pulibrary/dspace-jruby
 class DCollection
 
+  # Create string for workflow naming convention (mainly for private use)
   def workflow_name(postfix)
     "#{@obj.getName}_#{postfix.to_s.upcase}"
   end
 
+  # Create or find step of a Collection's workflow group. If "SUBMIT", then
+  #   get submitters.
   def find_or_create_workflow_group(step)
     step = step.upcase
     if (step.start_with?("STEP_")) then
@@ -23,13 +30,14 @@ class DCollection
     group
   end
 
+  # Rename all workflows with preset "STEP_1", "STEP_2", "STEP_3" standardization
   def name_workflow_groups
     colname = @obj.getName.gsub(/\s+/, '_')
     [1, 2, 3].each do |step|
       group = @obj.getWorkflowGroup(step)
       if (group) then
         name = group.getName
-        new_name = self.workflow_name(step)
+        new_name = self.workflow_name(step) # I don't think this self is necessary
         if (name != new_name) then
           puts "rename group #{name} -> #{new_name}"
           group.setName(new_name)
@@ -40,6 +48,7 @@ class DCollection
     self
   end
 
+  # change workflow name of all submitters "SUBMIT"
   def name_submitter_group
     colname = @obj.getName.gsub(/\s+/, '_')
     group = @obj.getSubmitters
@@ -55,6 +64,11 @@ class DCollection
     self
   end
 
+  ##
+  # Return all bitstreams within the collection.
+  #
+  # @param bundleName [String] 
+  # @return [Array<org.dspace.content.Bitstream>] an array of Bitstream objects.
   def bitstreams(bundleName = "ORIGINAL")
     bits = []
     iter = @obj.getItems
@@ -64,6 +78,8 @@ class DCollection
     bits
   end
 
+  # copy Collection into Jruby Community with the new name
+  # When copying, include groups from submitters and workflow.
   def copy(name, parent)
     raise "must give non nil parent community" if parent.nil?
     raise "parent must be a community" if parent.getType != DConstants::COMMUNITY
@@ -97,6 +113,7 @@ class DCollection
   end
 
   private
+  # copy subgroups and members from one group "from" to anther "to"
   def copy_group(from, to)
     puts "create group #{to.getName()} based on #{from.getName()}"
     sub_groups = from.getMemberGroups()

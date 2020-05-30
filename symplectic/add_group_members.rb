@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Given a text file modeled after group_members.txt, add the given person to the 
+#   given group. Follow the prompts to confirm.
+
 require "highline/import"
 require 'dspace'
 require 'cli/dconstants'
@@ -8,7 +12,7 @@ DSpace.login DConstants::LOGIN
 puts "\n"
 
 filename = 'symplectic/group_members.txt'
-puts "reading group memeberships from #{filename}"
+puts "reading group memberships from #{filename}"
 
 f = File.open(filename, "r")
 f.each_line do |line|

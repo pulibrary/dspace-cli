@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby
+
+# Apply the naming standardizing functions to each handle provided by the command line
+
 require 'optparse'
 require "highline/import"
 require 'dspace'

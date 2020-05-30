@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby  
+
+# print all senior thesis submitters
+
 require 'dspace'
 require 'cli/dconstants'
 

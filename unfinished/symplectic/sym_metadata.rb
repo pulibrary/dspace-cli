@@ -1,4 +1,10 @@
 #!/usr/bin/env jruby
+
+##
+# UNFINISHED
+# 
+# "If false then run script" would suggest this was left in the middle of debugging.
+
 require 'dspace'
 require "highline/import"
 require 'net/http'

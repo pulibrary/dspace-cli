@@ -1,4 +1,7 @@
 #!/usr/bin/env jruby 
+
+# A command-line wrapper for the DEPerson's create method, unique to Princeton
+
 require "highline/import"
 require 'cli/dconstants'
 require 'dspace'

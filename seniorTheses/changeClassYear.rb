@@ -1,8 +1,11 @@
 #!/usr/bin/env jruby  
+
+# Set metadata on given year
+
 require "highline/import"
 require 'cli/dconstants'
 
-year = 2016
+year = DConstants::DEFAULT_YEAR
 schema, element, qualifier = ['pu', 'date', 'classyear']
 handle = DConstants::SENIOR_THESIS_HANDLE
 require 'dspace'
@@ -24,4 +27,3 @@ DSpace.fromString(handle).getCollections.each do |col|
 end
 
 DSpace.commit
-

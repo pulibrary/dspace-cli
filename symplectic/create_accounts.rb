@@ -1,4 +1,8 @@
 #!/usr/bin/env jruby
+
+# Create all accounts listed in accounts.txt
+# TODO: Remove this file and add this functionality to netid directory (or DPerson class)
+
 require "highline/import"
 require 'dspace'
 
