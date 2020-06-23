@@ -83,7 +83,7 @@ def fake_metadata
 
   metadata['dc.title'] = Faker::Book.title
   metadata['dc.publisher'] = Faker::Book.publisher
-  metadata['dc.date.issued'] = Faker::Date.between("6/1/2010", DateTime.now).to_s
+  metadata['dc.date.issued'] = Faker::Date.between(from: "6/1/2010", to: DateTime.now).to_s
   #journal =  Faker::Commerce.department;
   journal = metadata['dc.title'].split[0]
   if (0 == rand(1)) then
@@ -100,7 +100,7 @@ def fake_metadata
   nwords = 6 + rand(12)
   npar.times do
     nsent.times do
-      abstract = abstract + " " + Faker::Lorem.sentence(nwords)
+      abstract = abstract + " " + Faker::Lorem.sentence(word_count: nwords)
     end
     abstract = "#{abstract}\n";
   end
@@ -117,7 +117,7 @@ def doit(test_data_file)
   java_import org.dspace.content.Collection
   java_import org.dspace.content.Community
   java_import org.dspace.content.Item
-  DSpace.login DConstants::LOGIN
+  DSpace.login DConstant::LOGIN
 
   generate(test_data_file)
   # NOTE: We'll need to uncomment the following line.
