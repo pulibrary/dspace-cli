@@ -1,16 +1,19 @@
 version: 2.1
 jobs:
   documentation:
+    parameters:
+      ruby_version:
+        type: string
     working_directory: ~/dspace-cli
     machine:
       image: ubuntu-1604:201903-01
     steps:
       - checkout
       - run:
-          name: Set JRuby version to 9.1.7.0
+          name: Set JRuby version
           command: |
-            rvm install cli-9.1.7.0
-            echo . $(rvm cli-9.1.7.0 do rvm env --path) >> $BASH_ENV
+            rvm install << parameters.ruby_version >>
+            echo . $(rvm << parameters.ruby_version >> do rvm env --path) >> $BASH_ENV
       - run:
           name: Install bundler
           command: gem install -v 1.10.6 bundler
@@ -23,4 +26,9 @@ jobs:
 workflows:
   ci:
     jobs:
-      - documentation
+      - documentation:
+          name: jruby9.2.11
+          ruby_version: "cli-9.2.11.1"
+      - documentation:
+          name: jruby9.2.13
+          ruby_version: "cli-9.2.13.0"
