@@ -13,11 +13,17 @@ Most of scripts here are actively used at the Princeton University Library; some
 
 ## Installation
 
-### Prerequisite
+### Prerequisites
  * JRuby  [Get Started](http://jruby.org/getting-started)
  * Package Manager  [Bundler](http://bundler.io/)
  * a working [DSPACE installation](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.3 releases.**
  * optional - but useful [RVM](https://rvm.io/)
+
+#### JRuby
+
+Currently, the following versions are supported:
+
+- 9.2.13.0
 
 ### Installation 
 
