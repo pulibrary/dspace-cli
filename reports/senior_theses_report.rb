@@ -95,9 +95,17 @@ module Reports
     end
 
     def csv
-      @csv ||= CSV.parse(rows)
+      return @csv unless @csv.nil?
+
+      @csv = CSV.generate do |csv|
+        rows.each do |row|
+          csv << row
+        end
+      end
     end
 
-    def write(file_path); end
+    def write(file_path)
+      File.write(file_path, csv)
+    end
   end
 end
