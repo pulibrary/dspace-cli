@@ -22,21 +22,21 @@ class Dspace < Thor
       # To be implemented
     end
 
-    desc "import_senior_thesis IMPORT_DIR_PATH", "import a Thesis Central submission into DataSpace"
-    method_option :import_dir_path, :type => :string
+    desc "import_senior_thesis", "import a Thesis Central submission into DataSpace"
+    method_option :submission_id, :type => :string, aliases: 's'
     def import_senior_thesis
       # To be implemented
     end
 
     desc "generate_cover_page", "prepends a cover page PDF to a senior thesis submission"
-    method_option :pdf_file_path, :type => :string, :aliases => "-p"
-    method_option :cover_file_path, :type => :string, :aliases => "-c"
-    method_option :output_file_path, :type => :string, :aliases => "-o"
+    method_option :submission_id, :type => :string, aliases: 's'
+    method_option :department, :type => :string, aliases: 'd'
     def generate_cover_page
-      output_file_path = options[:output_file_path]
-      pdf_file_path = options[:pdf_file_path]
-      cover_file_path = options[:cover_file_path]
-      `/usr/bin/env gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite "-sOutputFile=#{output_file_path}" #{cover_file_path} #{pdf_file_path}`
+      submission_id = options[:submission_id]
+      department = options[:department]
+
+      submission = Submission.new(id: submission_id, department: department)
+      submission.generate_cover_page
     end
 
     desc "insert_metadata", "inserts a DSpace metadata field for a senior theses submission"
