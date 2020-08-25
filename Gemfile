@@ -1,12 +1,14 @@
 source 'https://rubygems.org'
 
-gem "highline"
-gem "lumberjack"
 gem "faker"
-gem "xml-simple"
+gem "highline"
 gem 'http'
 gem 'json'
+gem "lumberjack"
+gem "nokogiri"
 gem 'rack'
 gem 'rsolr'
-gem 'yard'
 gem 'rubocop'
+gem 'thor'
+gem "xml-simple"
+gem 'yard'
