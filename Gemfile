@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'caxlsx'
 gem "faker"
 gem "highline"
 gem 'http'
@@ -9,6 +10,7 @@ gem "nokogiri"
 gem 'rack'
 gem 'rsolr'
 gem 'rubocop'
+gem 'roo'
 gem 'thor'
 gem "xml-simple"
 gem 'yard'

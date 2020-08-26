@@ -38,6 +38,10 @@ class Submission
     File.basename(pdf_entries.first)
   end
 
+  def pdf_name
+    submission_pdf_name
+  end
+
   def submission_pdf_path
     dir_path.join(submission_pdf_name)
   end
@@ -60,6 +64,8 @@ class Submission
     end
 
     cover_page_job.perform
+
+    self.cover_page = 'SeniorThesisCoverPage'
   end
 
   def initialize(id:, department:)
@@ -102,6 +108,26 @@ class Submission
     return document unless document.root.nil?
 
     metadata_pu_build_document
+  end
+
+  def class_year=(value)
+    insert_metadata(schema: 'pu', element: 'date', value: value, qualifier: 'classyear')
+  end
+
+  def author_id=(value)
+    insert_metadata(schema: 'pu', element: 'contributor', value: value, qualifier: 'authorid')
+  end
+
+  def cover_page=(value)
+    insert_metadata(schema: 'pu', element: 'pdf', value: value, qualifier: 'coverpage')
+  end
+
+  def department=(value)
+    insert_metadata(schema: 'pu', element: 'department', value: value)
+  end
+
+  def certificate=(value)
+    insert_metadata(schema: 'pu', element: 'certificate', value: value)
   end
 
   def insert_metadata(schema:, element:, value:, qualifier: nil)
