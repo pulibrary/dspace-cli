@@ -61,11 +61,10 @@ class Submission
   def generate_cover_page
     if !File.exist?(original_pdf_path)
       FileUtils.copy_file(submission_pdf_path, original_pdf_path)
+
+      cover_page_job.perform
+      self.cover_page = 'SeniorThesisCoverPage'
     end
-
-    cover_page_job.perform
-
-    self.cover_page = 'SeniorThesisCoverPage'
   end
 
   def initialize(id:, department:)
@@ -115,6 +114,29 @@ class Submission
     metadata_pu_build_document
   end
 
+  def fetch_metadata(schema:, element:, qualifier: nil)
+    element_name = 'dcvalue'
+    xpath_base = '//dublin_core'
+
+    document = if schema == 'pu'
+                 metadata_pu_document
+               else
+                 dublin_core_document
+               end
+
+    xpath = if qualifier
+              "#{xpath_base}/#{element_name}[@element='#{element}' and @qualifier='#{qualifier}']"
+            else
+              "#{xpath_base}/#{element_name}[@element='#{element}']"
+            end
+    dom_element = document.at_xpath(xpath)
+    dom_element.content
+  end
+
+  def title
+    fetch_metadata(schema: 'dc', element: 'title')
+  end
+
   def class_year=(value)
     insert_metadata(schema: 'pu', element: 'date', value: value, qualifier: 'classyear')
   end
@@ -133,6 +155,22 @@ class Submission
 
   def certificate=(value)
     insert_metadata(schema: 'pu', element: 'certificate', value: value)
+  end
+
+  def embargo_lift=(value)
+    insert_metadata(schema: 'pu', element: 'embargo', qualifier: 'lift', value: value)
+  end
+
+  def embargo_terms=(value)
+    insert_metadata(schema: 'pu', element: 'embargo', qualifier: 'terms', value: value)
+  end
+
+  def mudd_walkin=(value)
+    insert_metadata(schema: 'pu', element: 'mudd', qualifier: 'walkin', value: value)
+  end
+
+  def rights=(value)
+    insert_metadata(schema: 'dc', element: 'rights', qualifier: 'accessRights', value: value)
   end
 
   def insert_metadata(schema:, element:, value:, qualifier: nil)
