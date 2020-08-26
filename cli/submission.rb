@@ -100,7 +100,12 @@ class Submission
   end
 
   def metadata_pu_build_document
-    Nokogiri::XML('<dublin_core encoding="utf-8" schema="pu"></dublin_core>')
+    built_document = Nokogiri::XML('<dublin_core encoding="utf-8" schema="pu"></dublin_core>')
+
+    built_document_file = File.open(metadata_pu_file_path, 'wb')
+    built_document.write_xml_to(built_document_file)
+    built_document_file.close
+    built_document
   end
 
   def metadata_pu_document
@@ -165,6 +170,7 @@ class Submission
                 end
     document_file = File.open(file_path, 'wb')
     document.write_xml_to(document_file)
+    document_file.close
   end
 end
 

@@ -4,11 +4,14 @@ ROOT_PATH = File.dirname(__FILE__)
 # require File.join(ROOT_PATH, 'cli', 'ditem')
 # require File.join(ROOT_PATH, 'cli', 'dcollection')
 # require File.join(ROOT_PATH, 'cli', 'dcommunity')
+require File.join(ROOT_PATH, 'cli', 'vireo_export')
 require File.join(ROOT_PATH, 'cli', 'submission')
 require File.join(ROOT_PATH, 'cli', 'department')
+require File.join(ROOT_PATH, 'cli', 'import_department_job')
 
 require 'pathname'
 require 'nokogiri'
+require 'logger'
 
 class Dspace < Thor
   desc "import", "import a DSpace"
@@ -29,25 +32,15 @@ class Dspace < Thor
       # To be implemented
     end
 
-    desc "import_thesis_department", ""
+    desc "import_thesis_department", "imports a departmental collection of student theses"
     method_option :department, :type => :string, aliases: 'd'
     method_option :year, :type => :string, aliases: 'y'
     def import_thesis_department
       department_name = options[:department]
       year = options[:year]
 
-      department = Department.new(name: department_name, year: year)
-      department.import_vireo_metadata
-      exit 1
-
-      department.submissions.each do |submission|
-        submission.generate_cover_page
-
-        submission.class_year = class_year
-        submission.author_id = author_id
-        submission.department = department_value
-        submission.certificate = certificate
-      end
+      job = ImportDepartmentJob.new(name: department_name, year: year, logger: logger)
+      job.perform
     end
 
     desc "generate_cover_page", "prepends a cover page PDF to a senior thesis submission"
@@ -83,6 +76,14 @@ class Dspace < Thor
 
     no_commands do
       # To be implemented
+
+      def logger
+        @logger ||= begin
+                      logger = Logger.new(STDOUT)
+                      logger.level = Logger::INFO
+                      logger
+                    end
+      end
     end
   end
 
