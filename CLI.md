@@ -4,6 +4,12 @@
 
 ### Senior Theses Community
 
+#### Importing Departments
+
+```bash
+bundle exec thor dspace:dataspace:import_thesis_department -d 'Creative Writing' -y 2020
+```
+
 #### PDF Management
 
 Generating a PDF with a cover sheet:
