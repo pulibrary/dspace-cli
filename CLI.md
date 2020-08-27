@@ -10,6 +10,23 @@
 bundle exec thor dspace:dataspace:import_thesis_department -d 'Creative Writing' -y 2020
 ```
 
+Then, while on the server:
+
+```bash
+export COLLECTION="88435/dsp01gx41mh91n"
+export EPERSON="jrg5@princeton.edu"
+export MAPFILE=`date +%s.map`
+export SOURCE=/tmp/creative_writing
+
+/dspace/bin/dspace import \
+  --add \
+  --collection $COLLECTION \
+  --eperson $EPERSON \
+  --mapfile $MAPFILE \
+  --source $SOURCE \
+  --workflow
+```
+
 #### PDF Management
 
 Generating a PDF with a cover sheet:

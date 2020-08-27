@@ -67,6 +67,8 @@ class ImportDepartmentJob
 
     vireo.submission_metadata.each do |metadata|
       submission = find_submission_by_id(metadata.id)
+      raise "Failed to find the submission for #{metadata.id}" if submission.nil?
+
       @logger.info("Importing the Vireo metadata for submission #{submission.id}...")
 
       submission.class_year = metadata.class_year
