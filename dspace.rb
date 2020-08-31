@@ -1,0 +1,2 @@
+
+require 'dspace/cli'
