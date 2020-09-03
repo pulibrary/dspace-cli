@@ -40,9 +40,178 @@ module DSpace
       end
     end
 
+    class Metadatum
+      java_import org.dspace.storage.rdbms.DatabaseManager
+      java_import org.dspace.content.MetadataField
+      java_import org.dspace.content.Metadatum
+
+      attr_reader :text_value, :text_lang
+
+      def initialize(obj, metadata_field, item)
+        @obj = obj
+        @text_value = @obj.value
+        @text_lang = @obj.language
+
+        @metadata_field = metadata_field
+        @metadata_field_id = metadata_field.getID
+
+        @item = item
+        @item_id = item.getID
+      end
+
+      def value=(val)
+        @text_value = val
+        @obj.value = val
+      end
+
+      def value
+        @text_value
+      end
+
+      def language=(val)
+        @text_lang = val
+        @obj.language = val
+      end
+
+      def self.build(item, metadata_field, element, qualifier = nil, language = nil)
+        obj = Java::OrgDspaceContent::Metadatum.new
+        obj.element = element
+        obj.qualifier = qualifier
+        obj.language = language
+
+        self.new(obj, metadata_field, item)
+      end
+
+      def self.find(item_id, metadata_field_id, text_value)
+        item = Java::OrgDspaceContent::Item.find(self.class.kernel, item_id)
+        metadata_field = Java::OrgDspaceContent::MetadataField.find(self.class.kernel, metadata_field_id)
+
+        obj = Java::OrgDspaceContent::Metadatum.new
+        obj.element = metadata_field.getElement
+        obj.qualifier = metadata_field.getQualifier
+        obj.value = text_value
+
+        self.new(obj, metadata_field, item)
+      end
+
+      def self.kernel
+        DSpace
+      end
+
+      def self.table_name
+        "MetadataValue"
+      end
+
+      def self.select_query
+        "SELECT * FROM MetadataValue WHERE resource_id = ? ORDER BY metadata_field_id, place"
+      end
+
+      def self.query_table(query, *params)
+        DatabaseManager.queryTable(kernel.context, table_name, query, *params)
+      end
+
+      def self.update_query
+        "UPDATE MetadataValue SET (text_value, text_lang) = (?, ?) WHERE resource_id = ? AND metadata_field_id = ?"
+      end
+
+      def self.insert_query
+        "INSERT INTO MetadataValue (item_id, metadata_field_id, text_value, text_lang) VALUES (?, ?, ?, ?)"
+      end
+
+      def self.update_table(query, *params)
+        DatabaseManager.updateQuery(kernel.context, table_name, query, *params)
+      end
+
+      def self.select_from_database(item_id)
+        query_table(select_query, item_id)
+      end
+
+      def self.update_in_database(text_value, text_lang, item_id, metadata_field_id)
+        update_table(update_query, text_value, text_lang, item_id, metadata_field_id)
+      end
+
+      def self.create_in_database(item_id, metadata_field_id, text_value, text_lang)
+        update_table(insert_query, item_id, metadata_field_id, text_value, text_lang)
+      end
+
+      def database_row
+        row_iterator = self.class.select_from_database(item_id)
+        return if row_iterator.nil?
+
+        rows = []
+        while(row_iterator.hasNext)
+          rows << row_iterator.next
+        end
+
+        rows.first
+      end
+
+      def persisted?
+        !database_row.nil?
+      end
+
+      def save
+        if persisted?
+          self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
+        else
+          self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
+        end
+      end
+
+      def delete
+        self.class.delete_from_database(@text_value, @text_lang, item_id, metadata_field_id)
+      end
+
+      def metadata_field_id
+        @metadata_field_id ||= database_row.getIntColumn("metadata_field_id")
+      end
+
+      def metadata_field
+        @metadata_field ||= Java::OrgDspaceContent::MetadataField.find(self.class.kernel, metadata_field_id)
+      end
+
+      def item_id
+        @item_id ||= database_row.getIntColumn("item_id")
+      end
+
+      def item
+        @item ||= Java::OrgDspaceContent::Item.find(self.class.kernel, item_id)
+      end
+
+      def matches_field?(metadatum)
+=begin
+        matches = false
+        matches = matches |= self.metadata_field.getSchemaID == metadatum.metadata_field.getSchemaID
+        matches = matches |= self.metadata_field.getElement == metadatum.metadata_field.getElement
+        matches = matches |= self.metadata_field.getQualifier == metadatum.metadata_field.getQualifier
+        matches
+=end
+        metadata_field_id == metadatum.metadata_field_id
+      end
+
+      def ==(metadatum)
+        matches = matches_field?(metadatum)
+
+        matches = matches |= @text_value == metadatum.text_value
+        matches = matches |= @text_lang == metadatum.text_lang
+        matches
+      end
+
+=begin
+          tr.getIntColumn("place")
+          tr.getStringColumn("text_value")
+          tr.getStringColumn("text_lang")
+
+          tr.getStringColumn("authority")
+          tr.getIntColumn("confidence")
+=end
+    end
+
     class SeniorThesisItem < ::DItem
       java_import org.dspace.workflow.WorkflowItem
       java_import org.dspace.content.Metadatum
+      java_import org.dspace.content.MetadataField
+      java_import org.dspace.content.MetadataSchema
 
       attr_reader :obj
 
@@ -60,39 +229,54 @@ module DSpace
         @obj.getMetadataByMetadataString(metadata_field)
       end
 
-      def self.build_metadata(schema, element, qualifier = nil, language = nil)
-        metadata = Java::OrgDspaceContent::Metadatum.new
-        metadata.schema = schema
-        metadata.element = element
-        metadata.qualifier = qualifier
-        metadata.language = language
-        metadata
+      def self.find_metadata_field(schema, element, qualifier = nil)
+        schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
+        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getID, element, qualifier)
       end
 
+      def build_metadatum(schema, element, qualifier = nil, language = nil)
+        metadata_field = self.class.find_metadata_field(schema, element, qualified)
+        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
+      end
+
+      # I am not certain that this is needed
       def get_metadata
-        @obj.getMetadata
-      end
-
-      def metadata
-        list = Utils::ArrayList.new(get_metadata)
+        values = @obj.getMetadata
+        list = Utils::ArrayList.new(values)
         list.to_a
       end
 
       def save
+        @metadata.each(&:save)
         @obj.save
         self.class.kernel.commit
         self
       end
 
       def add_metadata(schema, element, value, qualifier = nil, language = nil)
-        metadata = self.class.build_metadata(schema, element, qualifier, language)
-        metadata.value = value
-        updated = get_metadata
-        get_metadata.add(metadata)
-        set_metadata(updated)
-        metadata
+        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
+        @metadata << new_metadatum
+        new_metadatum
       end
 
+      def remove_metadata(schema, element, value, qualifier = nil, language = nil)
+        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
+        new_metadatum.value = value
+        new_metadatum.language = language
+
+        updated_metadata = []
+        metadata.each do |metadatum|
+          if metadatum == new_metadatum
+            metadatum.delete
+          else
+            updated_metadata << metadatum
+          end
+        end
+
+        @metadata = updated_metadata
+      end
+
+      # I am not certain that this is needed
       class Java::OrgDspaceContent::DSpaceObject::MetadataCache
         attr_reader :metadata
 
@@ -101,11 +285,13 @@ module DSpace
         end
       end
 
+      # I am not certain that this is needed
       class Java::OrgDspaceContent::Item
         field_accessor :metadataCache
         field_accessor :modifiedMetadata
       end
 
+      # I am not certain that this is needed
       def set_metadata(values)
         list = java.util.ArrayList.new(values)
         cache = Java::OrgDspaceContent::DSpaceObject::MetadataCache.new(list)
@@ -113,29 +299,18 @@ module DSpace
         @obj.modifiedMetadata = true
       end
 
-      def self.metadata_match?(u, v)
-        matches = false
+      def clear_metadata(schema, element, qualifier = nil, language = nil)
+        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
 
-        matches |= u.schema == v.schema
-        matches |= u.element == v.element
-        matches |= u.qualifier == v.qualifier
-        matches |= u.language == v.language
-
-        matches
-      end
-
-      def clear_metadata(schema, element, value, qualifier = nil, language = nil)
-        cleared = self.class.build_metadata(schema, element, qualifier, language)
-        current = metadata
-        updated = []
-
-        current.each do |metadatum|
-          if !self.class.metadata_match?(metadatum, cleared)
-            updated << metadatum
+        updated_metadata = []
+        metadata.each do |metadatum|
+          if metadatum.matches_field?(new_metadatum)
+            metadatum.delete
+          else
+            updated_metadata << metadatum
           end
         end
-
-        set_metadata(updated)
+        @metadata = updated_metadata
       end
 
       def id
