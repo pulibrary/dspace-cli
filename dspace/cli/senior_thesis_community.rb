@@ -40,12 +40,14 @@ module DSpace
       end
     end
 
+    # Class modeling Metadatum
+    # @todo Implement support for the "place" int column values
+    # @todo Implement support for the "authority" string column values
+    # @todo Implement support for the "confidence" int column values
     class Metadatum
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.content.MetadataField
       java_import org.dspace.content.Metadatum
-
-      attr_reader :text_value, :text_lang
 
       def initialize(obj, metadata_field, item)
         @obj = obj
@@ -53,10 +55,10 @@ module DSpace
         @text_lang = @obj.language
 
         @metadata_field = metadata_field
-        @metadata_field_id = metadata_field.getID
+        @metadata_field_id = metadata_field.getFieldID
 
         @item = item
-        @item_id = item.getID
+        @item_id = item.id
       end
 
       def value=(val)
@@ -118,6 +120,10 @@ module DSpace
         "INSERT INTO MetadataValue (item_id, metadata_field_id, text_value, text_lang) VALUES (?, ?, ?, ?)"
       end
 
+      def self.delete_query
+        "DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ?"
+      end
+
       def self.update_table(query, *params)
         DatabaseManager.updateQuery(kernel.context, table_name, query, *params)
       end
@@ -132,6 +138,10 @@ module DSpace
 
       def self.create_in_database(item_id, metadata_field_id, text_value, text_lang)
         update_table(insert_query, item_id, metadata_field_id, text_value, text_lang)
+      end
+
+      def self.delete_from_database(item_id, metadata_field_id, text_value)
+        update_table(delete_query, item_id, metadata_field_id, text_value)
       end
 
       def database_row
@@ -159,7 +169,7 @@ module DSpace
       end
 
       def delete
-        self.class.delete_from_database(@text_value, @text_lang, item_id, metadata_field_id)
+        self.class.delete_from_database(item_id, metadata_field_id, @text_value)
       end
 
       def metadata_field_id
@@ -179,32 +189,16 @@ module DSpace
       end
 
       def matches_field?(metadatum)
-=begin
-        matches = false
-        matches = matches |= self.metadata_field.getSchemaID == metadatum.metadata_field.getSchemaID
-        matches = matches |= self.metadata_field.getElement == metadatum.metadata_field.getElement
-        matches = matches |= self.metadata_field.getQualifier == metadatum.metadata_field.getQualifier
-        matches
-=end
         metadata_field_id == metadatum.metadata_field_id
       end
 
       def ==(metadatum)
         matches = matches_field?(metadatum)
 
-        matches = matches |= @text_value == metadatum.text_value
-        matches = matches |= @text_lang == metadatum.text_lang
+        matches = matches |= @text_value == metadatum.value
+        matches = matches |= @text_lang == metadatum.language
         matches
       end
-
-=begin
-          tr.getIntColumn("place")
-          tr.getStringColumn("text_value")
-          tr.getStringColumn("text_lang")
-
-          tr.getStringColumn("authority")
-          tr.getIntColumn("confidence")
-=end
     end
 
     class SeniorThesisItem < ::DItem
@@ -213,7 +207,7 @@ module DSpace
       java_import org.dspace.content.MetadataField
       java_import org.dspace.content.MetadataSchema
 
-      attr_reader :obj
+      attr_reader :obj, :metadata
 
       def self.kernel
         ::DSpace
@@ -222,6 +216,7 @@ module DSpace
       # This is some internal bug; I am not certain why I cannot use this from DItem
       def initialize(obj)
         @obj = obj
+        @metadata = build_metadata
       end
 
       # This is some internal bug; I am not certain why I cannot use this from DItem
@@ -231,11 +226,11 @@ module DSpace
 
       def self.find_metadata_field(schema, element, qualifier = nil)
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
-        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getID, element, qualifier)
+        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
       end
 
       def build_metadatum(schema, element, qualifier = nil, language = nil)
-        metadata_field = self.class.find_metadata_field(schema, element, qualified)
+        metadata_field = self.class.find_metadata_field(schema, element, qualifier)
         DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
       end
 
@@ -254,13 +249,28 @@ module DSpace
       end
 
       def add_metadata(schema, element, value, qualifier = nil, language = nil)
-        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
+        new_metadatum = build_metadatum(schema, element, qualifier, language)
         @metadata << new_metadatum
         new_metadatum
       end
 
+      def build_metadata
+        values = @obj.getMetadata
+        list = Utils::ArrayList.new(values)
+        current_objs = list.to_a
+
+        built = []
+        current_objs.each do |metadata_obj|
+          new_metadatum = build_metadatum(metadata_obj.schema, metadata_obj.element, metadata_obj.qualifier, metadata_obj.language)
+          new_metadatum.value = metadata_obj.value
+
+          built << new_metadatum
+        end
+        @metadata = built
+      end
+
       def remove_metadata(schema, element, value, qualifier = nil, language = nil)
-        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
+        new_metadatum = build_metadatum(schema, element, qualifier, language)
         new_metadatum.value = value
         new_metadatum.language = language
 
@@ -300,7 +310,7 @@ module DSpace
       end
 
       def clear_metadata(schema, element, qualifier = nil, language = nil)
-        new_metadatum = self.class.build_metadatum(schema, element, qualifier, language)
+        new_metadatum = build_metadatum(schema, element, qualifier, language)
 
         updated_metadata = []
         metadata.each do |metadatum|
