@@ -48,6 +48,7 @@ module DSpace
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.content.MetadataField
       java_import org.dspace.content.Metadatum
+      java_import org.dspace.core.Constants
 
       def initialize(obj, metadata_field, item)
         @obj = obj
@@ -73,6 +74,10 @@ module DSpace
       def language=(val)
         @text_lang = val
         @obj.language = val
+      end
+
+      def language
+        @text_lang
       end
 
       def self.build(item, metadata_field, element, qualifier = nil, language = nil)
@@ -104,12 +109,13 @@ module DSpace
         "MetadataValue"
       end
 
-      def self.select_query
-        "SELECT * FROM MetadataValue WHERE resource_id = ? ORDER BY metadata_field_id, place"
+      # This cannot be used due to some issues between the splat operator and Java varargs
+      def self.query_table(query, *params)
+        Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, query, *params)
       end
 
-      def self.query_table(query, *params)
-        DatabaseManager.queryTable(kernel.context, table_name, query, *params)
+      def self.select_query
+        "SELECT * FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ? AND text_lang = ?"
       end
 
       def self.update_query
@@ -117,35 +123,43 @@ module DSpace
       end
 
       def self.insert_query
-        "INSERT INTO MetadataValue (item_id, metadata_field_id, text_value, text_lang) VALUES (?, ?, ?, ?)"
+        "INSERT INTO MetadataValue (resource_id, resource_type_id, metadata_field_id, text_value, text_lang) VALUES (?, ?, ?, ?, ?)"
       end
 
       def self.delete_query
-        "DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ?"
+        "DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ? AND text_lang = ?"
       end
 
       def self.update_table(query, *params)
-        DatabaseManager.updateQuery(kernel.context, table_name, query, *params)
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, query, *params)
       end
 
-      def self.select_from_database(item_id)
-        query_table(select_query, item_id)
+      def self.select_from_database(item_id, metadata_field_id, text_value, text_lang)
+        lang = text_lang.nil? ? "" : text_lang
+
+        Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, select_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
       end
 
       def self.update_in_database(text_value, text_lang, item_id, metadata_field_id)
-        update_table(update_query, text_value, text_lang, item_id, metadata_field_id)
+        lang = text_lang.nil? ? "" : text_lang
+
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, update_query, text_value, lang, item_id.to_java, metadata_field_id.to_java)
       end
 
       def self.create_in_database(item_id, metadata_field_id, text_value, text_lang)
-        update_table(insert_query, item_id, metadata_field_id, text_value, text_lang)
+        lang = text_lang.nil? ? "" : text_lang
+
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, insert_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value, lang)
       end
 
-      def self.delete_from_database(item_id, metadata_field_id, text_value)
-        update_table(delete_query, item_id, metadata_field_id, text_value)
+      def self.delete_from_database(item_id, metadata_field_id, text_value, text_lang)
+        lang = text_lang.nil? ? "" : text_lang
+
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, delete_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
       end
 
       def database_row
-        row_iterator = self.class.select_from_database(item_id)
+        row_iterator = self.class.select_from_database(item_id, metadata_field_id, @text_value, @text_lang)
         return if row_iterator.nil?
 
         rows = []
@@ -250,6 +264,7 @@ module DSpace
 
       def add_metadata(schema, element, value, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
+        new_metadatum.value = value
         @metadata << new_metadatum
         new_metadatum
       end
