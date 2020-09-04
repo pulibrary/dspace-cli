@@ -11,6 +11,14 @@ module DSpace
         @obj = obj
       end
 
+      def id
+        @obj.getID
+      end
+
+      def handle
+        @obj.getHandle
+      end
+
       # This needs to be abstracted
       def getMetadataByMetadataString(metadata_field)
         @obj.getMetadataByMetadataString(metadata_field)
@@ -167,6 +175,22 @@ module DSpace
         @text_lang
       end
 
+      def schema_id
+        metadata_field.schemaID
+      end
+
+      def schema
+        Java::OrgDspaceContent::MetadataSchema.find(self.class.kernel.context, schema_id)
+      end
+
+      def element
+        metadata_field.element
+      end
+
+      def qualifier
+        metadata_field.qualifier
+      end
+
       def self.build(item, metadata_field, element, qualifier = nil, language = nil)
         obj = Java::OrgDspaceContent::Metadatum.new
         obj.element = element
@@ -249,6 +273,13 @@ module DSpace
         row_iterator = self.class.select_from_database(item_id, metadata_field_id, @text_value, @text_lang)
         return if row_iterator.nil?
 
+        # This does not disambiguate between the "dc" and "dcterms" schema
+        # As a result, duplicate metadata are generated
+        if !row_iterator.hasNext && metadata_field_id == 2
+          row_iterator = self.class.select_from_database(item_id, 3, @text_value, @text_lang)
+          return if row_iterator.nil?
+        end
+
         rows = []
         while(row_iterator.hasNext)
           rows << row_iterator.next
@@ -328,12 +359,22 @@ module DSpace
 
       def self.find_metadata_field(schema, element, qualifier = nil)
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
+        raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
+
+        # STDOUT.puts("Found the schema record with #{schema} #{schema.class}")
+        # STDOUT.puts("Querying for the MetadataField record for #{schema}.#{element}.#{qualifier} (#{schema_model})")
         Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
       end
 
       def build_metadatum(schema, element, qualifier = nil, language = nil)
         metadata_field = self.class.find_metadata_field(schema, element, qualifier)
+
         DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
+      rescue => error
+        STDERR.puts("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
+        STDERR.puts error.message
+        STDERR.puts error.backtrace.join("\n")
+        return
       end
 
       # I am not certain that this is needed
@@ -352,12 +393,16 @@ module DSpace
 
       def add_metadata(schema, element, value, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
+        return if new_metadatum.nil?
+
         new_metadatum.value = value
         @metadata << new_metadatum
         new_metadatum
       end
 
       def build_metadata
+        # This does not disambiguate between the "dc" and "dcterms" schema
+        # As a result, duplicate metadata are generated
         values = @obj.getMetadata
         list = Utils::ArrayList.new(values)
         current_objs = list.to_a
@@ -365,6 +410,8 @@ module DSpace
         built = []
         current_objs.each do |metadata_obj|
           new_metadatum = build_metadatum(metadata_obj.schema, metadata_obj.element, metadata_obj.qualifier, metadata_obj.language)
+          next if new_metadatum.nil?
+
           new_metadatum.value = metadata_obj.value
 
           built << new_metadatum
@@ -374,6 +421,8 @@ module DSpace
 
       def remove_metadata(schema, element, value, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
+        return if new_metadatum.nil?
+
         new_metadatum.value = value
         new_metadatum.language = language
 
@@ -381,6 +430,36 @@ module DSpace
         metadata.each do |metadatum|
           if metadatum == new_metadatum
             metadatum.delete
+          else
+            updated_metadata << metadatum
+          end
+        end
+
+        @metadata = updated_metadata
+      end
+
+      def remove_duplicated_metadata(schema, element, qualifier = nil, language = nil)
+        new_metadatum = build_metadatum(schema, element, qualifier, language)
+        return if new_metadatum.nil?
+        new_metadatum.language = language
+
+        updated_metadata = []
+        metadata.each do |metadatum|
+          if metadatum.matches_field?(new_metadatum)
+
+            existing_metadata = metadata
+            matching_metadata = existing_metadata.select { |md| md == metadatum }
+
+            if matching_metadata.length > 1
+
+              duplicate_metadata = matching_metadata.pop
+              duplicate_metadata.delete
+
+              # updated_metadata << metadata
+            else
+              updated_metadata << metadatum
+            end
+
           else
             updated_metadata << metadatum
           end
@@ -414,6 +493,7 @@ module DSpace
 
       def clear_metadata(schema, element, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
+        return if new_metadatum.nil?
 
         updated_metadata = []
         metadata.each do |metadatum|
