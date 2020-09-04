@@ -225,20 +225,36 @@ module DSpace
         Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, query, *params)
       end
 
-      def self.select_query
+      def self.select_language_query
         "SELECT * FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ? AND text_lang = ?"
       end
 
-      def self.update_query
-        "UPDATE MetadataValue SET (text_value, text_lang) = (?, ?) WHERE resource_id = ? AND metadata_field_id = ?"
+      def self.select_value_query
+        "SELECT * FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ?"
       end
 
-      def self.insert_query
+      def self.update_language_query
+        "UPDATE MetadataValue SET text_value = ?, text_lang = ? WHERE resource_id = ? AND metadata_field_id = ?"
+      end
+
+      def self.update_value_query
+        "UPDATE MetadataValue SET text_value = ? WHERE resource_id = ? AND metadata_field_id = ?"
+      end
+
+      def self.insert_language_query
         "INSERT INTO MetadataValue (resource_id, resource_type_id, metadata_field_id, text_value, text_lang) VALUES (?, ?, ?, ?, ?)"
       end
 
-      def self.delete_query
+      def self.insert_value_query
+        "INSERT INTO MetadataValue (resource_id, resource_type_id, metadata_field_id, text_value) VALUES (?, ?, ?, ?)"
+      end
+
+      def self.delete_language_query
         "DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ? AND text_lang = ?"
+      end
+
+      def self.delete_value_query
+        "DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ?"
       end
 
       def self.update_table(query, *params)
@@ -248,25 +264,50 @@ module DSpace
       def self.select_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? "" : text_lang
 
-        Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, select_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+        if lang.empty?
+          database_query = select_value_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
+        else
+          database_query = select_language_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+        end
+
       end
 
       def self.update_in_database(text_value, text_lang, item_id, metadata_field_id)
         lang = text_lang.nil? ? "" : text_lang
 
-        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, update_query, text_value, lang, item_id.to_java, metadata_field_id.to_java)
+        if lang.empty?
+          database_query = update_value_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, text_value, item_id.to_java, metadata_field_id.to_java)
+        else
+          database_query = update_language_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, text_value, lang, item_id.to_java, metadata_field_id.to_java)
+        end
       end
 
       def self.create_in_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? "" : text_lang
 
-        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, insert_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value, lang)
+        if lang.empty?
+          database_query = insert_value_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value)
+        else
+          database_query = insert_language_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value, lang)
+        end
       end
 
       def self.delete_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? "" : text_lang
 
-        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, delete_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+        if lang.empty?
+          database_query = delete_value_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
+        else
+          database_query = delete_language_query
+          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+        end
       end
 
       def database_row
@@ -328,7 +369,12 @@ module DSpace
         matches = matches_field?(metadatum)
 
         matches &&= @text_value == metadatum.value
-        matches &&= @text_lang == metadatum.language
+        # matches &&= @text_lang == metadatum.language
+
+        text_lang_value = @text_lang.nil? ? "" : @text_lang
+        compared_text_lang_value = metadatum.language.nil? ? "" : metadatum.language
+        matches &&= text_lang_value == compared_text_lang_value
+
         matches
       end
     end
@@ -438,7 +484,28 @@ module DSpace
         @metadata = updated_metadata
       end
 
-      def remove_duplicated_metadata(schema, element, qualifier = nil, language = nil)
+      def remove_duplicated_metadata
+        updated_metadata = []
+        existing_metadata = metadata
+
+        metadata.each do |metadatum|
+          matching_metadata = existing_metadata.select { |md| md == metadatum }
+
+          if matching_metadata.length > 1
+            if updated_metadata.select { |md| md == metadatum }.empty?
+              updated_metadata << metadatum
+            else
+              metadatum.delete
+            end
+          else
+            updated_metadata << metadatum
+          end
+        end
+
+        @metadata = updated_metadata
+      end
+
+      def remove_duplicated_metadata_field(schema, element, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
         return if new_metadatum.nil?
         new_metadatum.language = language
