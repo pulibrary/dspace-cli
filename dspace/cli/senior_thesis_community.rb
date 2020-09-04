@@ -174,7 +174,7 @@ module DSpace
         !database_row.nil?
       end
 
-      def save
+      def update
         if persisted?
           self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
         else
@@ -183,7 +183,7 @@ module DSpace
       end
 
       def delete
-        self.class.delete_from_database(item_id, metadata_field_id, @text_value)
+        self.class.delete_from_database(item_id, metadata_field_id, @text_value, @text_lang)
       end
 
       def metadata_field_id
@@ -209,8 +209,8 @@ module DSpace
       def ==(metadatum)
         matches = matches_field?(metadatum)
 
-        matches = matches |= @text_value == metadatum.value
-        matches = matches |= @text_lang == metadatum.language
+        matches &&= @text_value == metadatum.value
+        matches &&= @text_lang == metadatum.language
         matches
       end
     end
@@ -255,9 +255,9 @@ module DSpace
         list.to_a
       end
 
-      def save
-        @metadata.each(&:save)
-        @obj.save
+      def update
+        @metadata.each(&:update)
+        @obj.update
         self.class.kernel.commit
         self
       end
