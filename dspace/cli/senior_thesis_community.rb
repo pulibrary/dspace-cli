@@ -11,8 +11,17 @@ module DSpace
         @obj = obj
       end
 
+      # This needs to be abstracted
+      def getMetadataByMetadataString(metadata_field)
+        @obj.getMetadataByMetadataString(metadata_field)
+      end
+
       def removeItem(item)
         @obj.removeItem(item.obj)
+      end
+
+      def addItem(item)
+        @obj.addItem(item.obj)
       end
 
       def update
@@ -298,6 +307,7 @@ module DSpace
       java_import org.dspace.content.Metadatum
       java_import org.dspace.content.MetadataField
       java_import org.dspace.content.MetadataSchema
+      java_import org.dspace.handle.HandleManager
 
       attr_reader :obj, :metadata
 
@@ -467,9 +477,40 @@ module DSpace
         self.class.workflow_item_class.new(workflow_obj)
       end
 
-      
       def collections
         @obj.getCollections.map { |collection_obj| self.class.collection_class.new(collection_obj) }
+      end
+
+      def self.find_collection_by_title(title)
+        # This should be restructured
+        query = DSpace::CLI::SeniorThesisCommunity.query
+        query.find_collections_by_title(title)
+        return if query.results.empty?
+
+        query.results.first
+      end
+
+      def self.find_collection_by_handle(handle)
+        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(kernel.context, handle)
+        return if obj.nil?
+
+        SeniorThesisCollection.new(obj)
+      end
+
+      def add_to_collection(handle)
+        collection = self.class.find_collection_by_handle(handle)
+        return if collection.nil?
+
+        collection.addItem(self)
+        collection.update
+      end
+
+      def remove_from_collection(handle)
+        collection = self.class.find_collection_by_handle(handle)
+        return if collection.nil?
+
+        collection.removeItem(self)
+        collection.update
       end
 
       def delete
@@ -487,6 +528,8 @@ module DSpace
 
     class SeniorThesisQuery
       java_import org.dspace.content.Item
+      java_import org.dspace.core.Constants
+
       attr_reader :results, :parent
 
       def self.kernel
@@ -522,9 +565,27 @@ module DSpace
         @parent = parent
       end
 
+      def find_collections(metadata_field, value)
+        if @results.empty?
+          objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, Java::OrgDspaceCore::Constants::COLLECTION)
+          @results = objs.map do |obj|
+            SeniorThesisCollection.new(obj)
+          end
+        else
+          selected_results = @results.select do |collection|
+            persisted_values = collection.getMetadataByMetadataString(metadata_field.to_s).collect { |v| v.value }
+            persisted_values.include?(value)
+          end
+
+          return self.class.new(selected_results, self)
+        end
+
+        self
+      end
+
       def find_items(metadata_field, value)
         if @results.empty?
-          objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, DConstants::ITEM)
+          objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, Java::OrgDspaceCore::Constants::ITEM)
           @results = objs.map do |obj|
             SeniorThesisItem.new(obj)
           end
@@ -564,6 +625,10 @@ module DSpace
         find_items(self.class.title_field.to_s, value)
       end
 
+      def find_collections_by_title(value)
+        find_collections(self.class.title_field.to_s, value)
+      end
+
       def find_by_id(value)
         objs = []
         obj = Java::OrgDspaceContent::Item.find(self.class.kernel.context, value)
@@ -592,7 +657,7 @@ module DSpace
       end
 
       def self.class_year_field
-                Metadata::Field.new('pu', 'date', 'classyear')
+        Metadata::Field.new('pu', 'date', 'classyear')
       end
 
       def self.embargo_date_field
