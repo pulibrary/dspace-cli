@@ -266,6 +266,8 @@ module DSpace
 
         if lang.empty?
           database_query = select_value_query
+
+
           Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
         else
           database_query = select_language_query
@@ -434,6 +436,7 @@ module DSpace
         @metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
+        build_metadata
         self
       end
 
@@ -446,23 +449,43 @@ module DSpace
         new_metadatum
       end
 
-      def build_metadata
-        # This does not disambiguate between the "dc" and "dcterms" schema
-        # As a result, duplicate metadata are generated
-        values = @obj.getMetadata
-        list = Utils::ArrayList.new(values)
-        current_objs = list.to_a
+      def metadata_database_rows
+        database_query = "SELECT * FROM MetadataValue WHERE resource_id = ?"
 
-        built = []
-        current_objs.each do |metadata_obj|
-          new_metadatum = build_metadatum(metadata_obj.schema, metadata_obj.element, metadata_obj.qualifier, metadata_obj.language)
-          next if new_metadatum.nil?
+        row_iterator = Java::OrgDspaceStorageRdbms::DatabaseManager.query(self.class.kernel.context, database_query, id.to_java)
 
-          new_metadatum.value = metadata_obj.value
-
-          built << new_metadatum
+        rows = []
+        while(row_iterator.hasNext)
+          rows << row_iterator.next
         end
-        @metadata = built
+        rows
+      end
+
+      def find_metadata_objects
+        values = metadata_database_rows.map do |row|
+          metadata_field_id = row.getIntColumn("metadata_field_id")
+          metadata_field = Java::OrgDspaceContent::MetadataField.find(self.class.kernel.context, metadata_field_id)
+
+          schema_id = metadata_field.getSchemaID
+          schema_model = Java::OrgDspaceContent::MetadataSchema.find(self.class.kernel.context, schema_id)
+
+          schema = schema_model.getName
+          element = metadata_field.getElement
+          qualifier = metadata_field.getQualifier
+          value = row.getStringColumn("text_value")
+          language = row.getStringColumn("text_lang")
+
+          new_metadatum = build_metadatum(schema, element, qualifier, language)
+
+          new_metadatum.value = value unless new_metadatum.nil?
+          new_metadatum
+        end
+
+        values.reject(&:nil?)
+      end
+
+      def build_metadata
+        @metadata = find_metadata_objects
       end
 
       def remove_metadata(schema, element, value, qualifier = nil, language = nil)
