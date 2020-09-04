@@ -24,6 +24,7 @@ module DSpace
     class SeniorThesisWorkflowItem
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.eperson.EPerson
+      java_import org.dspace.workflow.WorkflowManager
 
       attr_reader :obj
 
@@ -40,10 +41,24 @@ module DSpace
         @obj.getID
       end
 
+      def update
+        @obj.update
+        self.class.kernel.commit
+        self
+      end
+
       def delete
         @obj.deleteWrapper
         self.class.kernel.commit
         @obj = nil
+      end
+
+      def state
+        @obj.getState
+      end
+
+      def state=(value)
+        @obj.setState(value)
       end
 
       def self.delete_query
@@ -64,6 +79,9 @@ module DSpace
           Java::OrgDspaceStorageRdbms::DatabaseManager.insert(self.class.kernel.context, table_row)
 
           self.class.kernel.commit
+
+          self.state = Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1POOL
+          update
         end
       end
 
