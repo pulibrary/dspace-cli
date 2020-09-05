@@ -1,3 +1,5 @@
+require 'pathname'
+
 module DSpace
   module CLI
     class SeniorThesisCollection
@@ -381,6 +383,53 @@ module DSpace
       end
     end
 
+    require 'logger'
+    class ExportJob
+      def self.build_logger
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
+        logger
+      end
+
+      def initialize(obj)
+        @obj = obj
+        @logger = self.class.build_logger
+      end
+
+      def resource_id
+        @obj.id
+      end
+
+      def resource_type
+        @obj.type_text
+      end
+
+      def self.destination_path
+        Pathname.new("#{__FILE__}/../../../exports")
+      end
+
+      def self.dspace_home_path
+        Pathname.new('/dspace')
+      end
+
+      def self.dspace_bin_path
+        Pathname.new("#{dspace_home_path}/bin/dspace")
+      end
+
+      def export_command
+        "#{self.class.dspace_bin_path} export --type #{resource_type} --id #{resource_id} --number #{resource_id} --dest #{self.class.destination_path.realpath}"
+      end
+
+      def perform
+        @logger.info("Exporting #{resource_id} to #{self.class.destination_path.realpath}...")
+        if File.exists?("#{self.class.destination_path.realpath}/#{resource_id}")
+          @logger.info("Directory #{self.class.destination_path.realpath}/#{resource_id} exists: might #{resource_id} have already been exported?")
+        else
+          raise "Failed to execute #{export_command}" unless system(export_command)
+        end
+      end
+    end
+
     class SeniorThesisItem < ::DItem
       java_import org.dspace.workflow.WorkflowItem
       java_import org.dspace.content.Metadatum
@@ -423,13 +472,6 @@ module DSpace
         STDERR.puts error.message
         STDERR.puts error.backtrace.join("\n")
         return
-      end
-
-      # I am not certain that this is needed
-      def get_metadata
-        values = @obj.getMetadata
-        list = Utils::ArrayList.new(values)
-        list.to_a
       end
 
       def update
@@ -604,6 +646,10 @@ module DSpace
         @obj.getHandle
       end
 
+      def type_text
+        @obj.getTypeText
+      end
+
       def self.title_field
         Metadata::Field.new('dc', 'title')
       end
@@ -694,6 +740,112 @@ module DSpace
         self.class.kernel.commit
         @obj = nil
       end
+
+      def export_job
+        ExportJob.new(self)
+      end
+
+      def export
+        export_job.perform
+      end
+    end
+
+    class SeniorThesisCommunity < ::DCommunity
+      def self.collection_titles
+        [
+          'African American Studies',
+          'Anthropology',
+          'Architecture School',
+          'Art and Archaeology',
+          'Astrophysical Sciences',
+          'Chemical and Biological Engineering',
+          'Chemistry',
+          'Civil and Environmental Engineering',
+          'Civil Engineering and Operations Research',
+          'Classics',
+          'Comparative Literature',
+          'Computer Science',
+          'East Asian Studies',
+          'Ecology and Evolutionary Biology',
+          'Economics',
+          'Electrical Engineering',
+          'English',
+          'French and Italian',
+          'Geosciences',
+          'German',
+          'History',
+          'Independent Concentration',
+          'Mathematics',
+          'Mechanical and Aerospace Engineering',
+          'Molecular Biology',
+          'Near Eastern Studies',
+          'Neuroscience',
+          'Operations Research and Financial Engineering',
+          'Philosophy',
+          'Physics',
+          'Politics',
+          'Princeton School of Public and International Affairs',
+          'Psychology',
+          'Slavic Languages and Literature',
+          'Sociology',
+          'Spanish and Portuguese'
+        ]
+      end
+
+      def self.kernel
+        ::DSpace
+      end
+
+      def self.query_class
+        SeniorThesisQuery
+      end
+
+      def self.class_year_field
+        Metadata::Field.new('pu', 'date', 'classyear')
+      end
+
+      def self.embargo_date_field
+        Metadata::Field.new('pu', 'embargo', 'lift')
+      end
+
+      def self.walk_in_access_field
+        Metadata::Field.new('pu', 'mudd', 'walkin')
+      end
+
+      def initialize(obj)
+        @obj = obj
+      end
+
+      def self.query
+        query_class.new
+      end
+
+      def self.find_items(metadata_field, value)
+        query = query_class.new
+        query.find_items(metadata_field, value)
+      end
+
+      def self.find_by_class_year(value)
+        find_items(class_year_field.to_s, value)
+      end
+
+      def self.find_by_embargo_date(value)
+        find_items(embargo_date_field.to_s, value)
+      end
+
+      def self.find_by_walk_in_access(value)
+        find_items(walk_in_access_field.to_s, value)
+      end
+
+      def self.export_departments(year)
+        collection_titles.each do |department_title|
+          year_query = query.find_by_class_year(year)
+          dept_query = year_query.find_by_department(department_title)
+          dept_query.results.each do |item|
+            item.export
+          end
+        end
+      end
     end
 
     class SeniorThesisQuery
@@ -728,6 +880,10 @@ module DSpace
 
       def self.title_field
         Metadata::Field.new('dc', 'title')
+      end
+
+      def self.author_field
+        Metadata::Field.new('dc', 'contributor', 'author')
       end
 
       def initialize(results = [], parent = nil)
@@ -787,6 +943,23 @@ module DSpace
         find_items(self.class.department_field.to_s, value)
       end
 
+      def find_by_author(value)
+        find_items(self.class.author_field.to_s, value)
+      end
+
+      def self.community_class
+        SeniorThesisCommunity
+      end
+
+      community_class.collection_titles.each do |title|
+        normal_title = title.downcase
+        normal_title = normal_title.gsub(/\s/, '_')
+        method_name = "find_#{normal_title}_department_items"
+        define_method(method_name.to_sym) do
+          find_by_department(title)
+        end
+      end
+
       def find_by_certificate_program(value)
         find_items(self.class.certificate_program_field.to_s, value)
       end
@@ -814,54 +987,6 @@ module DSpace
         end
 
         self
-      end
-    end
-
-    class SeniorThesisCommunity < ::DCommunity
-      def self.kernel
-        ::DSpace
-      end
-
-      def self.query_class
-        SeniorThesisQuery
-      end
-
-      def self.class_year_field
-        Metadata::Field.new('pu', 'date', 'classyear')
-      end
-
-      def self.embargo_date_field
-        Metadata::Field.new('pu', 'embargo', 'lift')
-      end
-
-      def self.walk_in_access_field
-        Metadata::Field.new('pu', 'mudd', 'walkin')
-      end
-
-      def initialize(obj)
-        @obj = obj
-      end
-
-      def self.query
-        query_class.new
-      end
-
-      def self.find_items(metadata_field, value)
-        query = query_class.new
-        query.find_items(metadata_field, value)
-      end
-
-      def self.find_by_class_year(value)
-        find_items(class_year_field.to_s, value)
-      end
-
-      def self.find_by_embargo_date(value)
-        find_items(embargo_date_field.to_s, value)
-      end
-
-      def self.find_by_walk_in_access(value)
-        find_items(walk_in_access_field.to_s, value)
-
       end
     end
   end
