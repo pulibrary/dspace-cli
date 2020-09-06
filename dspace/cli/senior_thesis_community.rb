@@ -4,10 +4,33 @@ module DSpace
   module CLI
     class SeniorThesisCollection
       java_import org.dspace.storage.rdbms.DatabaseManager
+      java_import org.dspace.handle.HandleManager
       attr_reader :obj
 
       def self.kernel
         ::DSpace
+      end
+
+      # This needs to be restructured to parse a configuration file
+      def self.department_to_collection_map
+        {
+          'Comparative Literature' => '88435/dsp01rf55z7763',
+          'English' => '88435/dsp01qf85nb35s'
+        }
+      end
+
+      def self.find_for_department(department)
+        return unless department_to_collection_map.key?(department)
+
+        handle = department_to_collection_map[department]
+        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(kernel.context, handle)
+        return if obj.nil?
+
+        self.new(obj)
+      end
+
+      def self.title_field
+        Metadata::Field.new('dc', 'title')
       end
 
       def initialize(obj)
@@ -27,10 +50,15 @@ module DSpace
         @obj.getMetadataByMetadataString(metadata_field)
       end
 
-      def removeItem(item)
-        # This is bug-ridden for unpublished Items
-        # @obj.removeItem(item.obj)
+      def titles
+        @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect { |v| v.value }
+      end
 
+      def title
+        titles.first
+      end
+
+      def removeItem(item)
         database_statement = "DELETE FROM collection2item WHERE collection_id= ? AND item_id= ?"
         Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(self.class.kernel.context, database_statement, id, item.id)
         self.class.kernel.commit
@@ -473,8 +501,6 @@ module DSpace
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
         raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
 
-        # STDOUT.puts("Found the schema record with #{schema} #{schema.class}")
-        # STDOUT.puts("Querying for the MetadataField record for #{schema}.#{element}.#{qualifier} (#{schema_model})")
         Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
       end
 
@@ -601,8 +627,6 @@ module DSpace
 
               duplicate_metadata = matching_metadata.pop
               duplicate_metadata.delete
-
-              # updated_metadata << metadata
             else
               updated_metadata << metadatum
             end
@@ -752,6 +776,25 @@ module DSpace
         SeniorThesisCollection.new(obj)
       end
 
+      def find_collections_for_departments
+        collections = []
+        departments.each do |department|
+          # collection = self.class.find_collection_by_title(department)
+          collection = SeniorThesisCollection.find_for_department(department)
+          collections << collection unless collection.nil?
+        end
+        collections
+      end
+
+      def find_collections_for_certificate_programs
+        collections = []
+        certificate_programs.each do |program|
+          collection = self.class.find_collection_by_title(program)
+          collections << collection unless collection.nil?
+        end
+        collections
+      end
+
       def add_to_collection(handle)
         collection = self.class.find_collection_by_handle(handle)
         return if collection.nil?
@@ -802,6 +845,15 @@ module DSpace
     end
 
     class SeniorThesisCommunity < ::DCommunity
+
+      # This needs to be restructured to parse from a configuration file
+      def self.certificate_program_titles
+        [
+          'Creative Writing Program'
+        ]
+      end
+
+      # This needs to be restructured to parse from a configuration file
       def self.collection_titles
         [
           'African American Studies',
@@ -835,7 +887,7 @@ module DSpace
           'Philosophy',
           'Physics',
           'Politics',
-          'Princeton School of Public and International Affairs',
+          'Woodrow Wilson School',
           'Psychology',
           'Slavic Languages and Literature',
           'Sociology',
