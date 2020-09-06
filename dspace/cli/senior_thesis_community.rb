@@ -3,6 +3,7 @@ require 'pathname'
 module DSpace
   module CLI
     class SeniorThesisCollection
+      java_import org.dspace.storage.rdbms.DatabaseManager
       attr_reader :obj
 
       def self.kernel
@@ -27,11 +28,24 @@ module DSpace
       end
 
       def removeItem(item)
-        @obj.removeItem(item.obj)
+        # This is bug-ridden for unpublished Items
+        # @obj.removeItem(item.obj)
+
+        database_statement = "DELETE FROM collection2item WHERE collection_id= ? AND item_id= ?"
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(self.class.kernel.context, database_statement, id, item.id)
+        self.class.kernel.commit
+      end
+
+      def remove_item(item)
+        removeItem(item)
       end
 
       def addItem(item)
         @obj.addItem(item.obj)
+      end
+
+      def add_item(item)
+        addItem(item)
       end
 
       def update
@@ -44,6 +58,7 @@ module DSpace
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.eperson.EPerson
       java_import org.dspace.workflow.WorkflowManager
+      java_import org.dspace.handle.HandleManager
 
       attr_reader :obj
 
@@ -717,7 +732,7 @@ module DSpace
         collection = self.class.find_collection_by_handle(handle)
         return if collection.nil?
 
-        collection.addItem(self)
+        collection.add_item(self)
         collection.update
       end
 
@@ -725,7 +740,7 @@ module DSpace
         collection = self.class.find_collection_by_handle(handle)
         return if collection.nil?
 
-        collection.removeItem(self)
+        collection.remove_item(self)
         collection.update
       end
 
@@ -747,6 +762,18 @@ module DSpace
 
       def export
         export_job.perform
+      end
+
+      def move_collection(from, to, inherit_default_policies = false)
+        # @obj.move(from, to, inherit_default_policies)
+
+        add_to_collection(to.handle)
+        remove_from_collection(from.handle)
+      end
+
+      def move_collection_by_handles(from_handle, to_handle, inherit_default_policies = false)
+        add_to_collection(to_handle)
+        remove_from_collection(from_handle)
       end
     end
 
@@ -846,6 +873,59 @@ module DSpace
           end
         end
       end
+
+    end
+
+    class ResultSet
+      java_import(org.dspace.content.Collection)
+
+      attr_reader :members
+
+      def self.kernel
+        ::DSpace
+      end
+
+      def initialize(members)
+        @members = members
+      end
+
+      def add_to_collection(handle)
+        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(self.class.kernel.context, handle)
+        return if obj.nil?
+
+        collection = SeniorThesisCollection.new(obj)
+
+        members.each do |member|
+          collection.addItem(member)
+        end
+        collection.update
+      end
+
+      def remove_from_collection(handle)
+        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(self.class.kernel.context, handle)
+        return if obj.nil?
+
+        collection = SeniorThesisCollection.new(obj)
+
+        members.each do |member|
+          collection.removeItem(member)
+        end
+        collection.update
+      end
+
+      def add_task_pool_user(email)
+        members.each do |member|
+          member.workflow_item.add_task_pool_user(email)
+          self.class.kernel.commit
+        end
+      end
+
+      def move_collection(from_handle, to_handle, inherit_default_policies = false)
+        members.each do |member|
+          member.move_collection_by_handles(from_handle, to_handle, inherit_default_policies)
+          self.class.kernel.commit
+        end
+      end
     end
 
     class SeniorThesisQuery
@@ -889,6 +969,10 @@ module DSpace
       def initialize(results = [], parent = nil)
         @results = results
         @parent = parent
+      end
+
+      def result_set
+        ResultSet.new(@results)
       end
 
       def find_collections(metadata_field, value)
