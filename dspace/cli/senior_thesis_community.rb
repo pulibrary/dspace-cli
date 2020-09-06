@@ -669,6 +669,18 @@ module DSpace
         Metadata::Field.new('dc', 'title')
       end
 
+      def self.department_field
+        Metadata::Field.new('pu', 'department')
+      end
+
+      def self.certificate_program_field
+        Metadata::Field.new('pu', 'certificate')
+      end
+
+      def self.class_year_field
+        Metadata::Field.new('pu', 'date', 'classyear')
+      end
+
       def titles
         @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect { |v| v.value }
       end
@@ -677,16 +689,28 @@ module DSpace
         titles.first
       end
 
-      def self.department_field
-        Metadata::Field.new('pu', 'department')
-      end
-
       def departments
         @obj.getMetadataByMetadataString(self.class.department_field.to_s).collect { |v| v.value }
       end
 
       def department
         departments.first
+      end
+
+      def certificate_programs
+        @obj.getMetadataByMetadataString(self.class.certificate_program_field.to_s).collect { |v| v.value }
+      end
+
+      def certificate_program
+        certificate_programs.first
+      end
+
+      def class_years
+        @obj.getMetadataByMetadataString(self.class.class_year_field.to_s).collect { |v| v.value }
+      end
+
+      def class_year
+        class_years.first
       end
 
       def persisted?
