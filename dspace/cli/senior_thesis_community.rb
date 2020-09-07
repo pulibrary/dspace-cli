@@ -891,7 +891,6 @@ module DSpace
     end
 
     class SeniorThesisCommunity < ::DCommunity
-
       # This needs to be restructured to parse from a configuration file
       def self.certificate_program_titles
         [
@@ -910,7 +909,6 @@ module DSpace
           'Chemical and Biological Engineering',
           'Chemistry',
           'Civil and Environmental Engineering',
-          'Civil Engineering and Operations Research',
           'Classics',
           'Comparative Literature',
           'Computer Science',
@@ -995,6 +993,26 @@ module DSpace
           end
         end
       end
+
+      def self.write_item_state_reports(year)
+        collection_titles.each do |department_title|
+          year_query = query.find_by_class_year(year)
+          dept_query = year_query.find_by_department(department_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(department_title)}.csv"
+          report = dept_query.result_set.item_state_report(report_name)
+          report.write
+        end
+
+        certificate_program_titles.each do |program_title|
+          year_query = query.find_by_class_year(year)
+          program_query = year_query.find_by_certificate_program(program_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(program_title)}.csv"
+          report = program_query.result_set.item_state_report(report_name)
+          report.write
+        end
+
+      end
+
     end
 
     class Report
@@ -1020,6 +1038,8 @@ module DSpace
       def self.headers
         [
           'item',
+          'title',
+          'classyear',
           'state',
           'eperson'
         ]
@@ -1037,7 +1057,7 @@ module DSpace
                          end
 
             submitter = item.submitter
-            row = [item.id, item_state, submitter.email]
+            row = [item.id, item.title, item.class_year, item_state, submitter.email]
             csv << row
           end
         end
@@ -1046,7 +1066,7 @@ module DSpace
       def write
         generate if @output.nil?
 
-        file = File.open(@output_file_path, 'wb')
+        file = File.open(@output_file_path, 'wb:UTF-8')
         file.write(@output)
         file.close
       end
@@ -1180,7 +1200,7 @@ module DSpace
       end
 
       def csv_file
-        @csv_file ||= File.open(@csv_file_path, 'rb')
+        @csv_file ||= File.open(@csv_file_path, 'rb:UTF-8')
       end
 
       def csv
@@ -1199,22 +1219,31 @@ module DSpace
         csv.headers
       end
 
-      def item_id_column
-        value = headers.index("item")
-        raise "Could not find the 'item' column" if value.nil?
+      def find_column_index(column)
+        value = headers.index(column)
+        raise "Could not find the '#{column}' column" if value.nil?
         value
+      end
+
+      # This is not used for cross-DSpace batch updates
+      def item_id_column
+        find_column_index('item')
+      end
+
+      def title_column
+        find_column_index('title')
+      end
+
+      def class_year_column
+        find_column_index('classyear')
       end
 
       def state_column
-        value = headers.index("state")
-        raise "Could not find the 'state' column" if value.nil?
-        value
+        find_column_index('state')
       end
 
       def eperson_email_column
-        value = headers.index("eperson")
-        raise "Could not find the 'eperson' column" if value.nil?
-        value
+        find_column_index('eperson')
       end
 
       def self.update_state_job_class
@@ -1225,7 +1254,15 @@ module DSpace
         batch_args = {}
 
         rows.each do |row|
-          item_id = row[item_id_column]
+          title = row[title_column]
+          class_year = row[class_year_column]
+
+          query = DSpace::CLI::SeniorThesisCommunity.find_by_class_year(class_year)
+          sub_query = query.find_by_title(title)
+          raise "Failed to find the Item for '#{title}' (graduating year #{class_year})" if sub_query.results.empty?
+
+          item = sub_query.results.first
+          item_id = item.id
           state = row[state_column]
           eperson_email = row[eperson_email_column]
 
