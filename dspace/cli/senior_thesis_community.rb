@@ -844,20 +844,30 @@ module DSpace
         workflow_item.update
       end
 
+      def archived?
+        state.nil?
+      end
+
       def submitter
         @obj.getSubmitter
       end
 
       def advance_workflow(eperson)
-        return if workflow_item.nil?
+        return if workflow_item.nil? || archived?
 
+        # This increases the state by 1 step
         WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
       end
 
-      def advance_workflow_to_state(eperson, state)
-        return if workflow_item.nil? || self.state == state.to_i
-        self.state = state.to_i
+      def advance_workflow_to_state(eperson, next_state)
+        if next_state == 5
+          return self.state = next_state
+        end
+        return if workflow_item.nil? || next_state > 8 || next_state <= 5 || self.state == next_state
 
+        self.state = next_state - 1
+
+        # This increases the state by 1 step
         WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
       end
 
@@ -1020,10 +1030,14 @@ module DSpace
           csv << self.class.headers
 
           items.each do |item|
-            next if item.state.nil?
+            item_state = if item.state.nil?
+                           'ARCHIVED' # This is a placeholder for the ARCHIVED status
+                         else
+                           item.state
+                         end
 
             submitter = item.submitter
-            row = [item.id, item.state, submitter.email]
+            row = [item.id, item_state, submitter.email]
             csv << row
           end
         end
@@ -1122,7 +1136,11 @@ module DSpace
 
       def initialize(item_ids, state, eperson_email)
         @item_ids = item_ids
-        @state = state
+        @state = if state == 'ARCHIVED'
+                   8 # This is a hack for the Item#advance_workflow method
+                 else
+                   state.to_i
+                 end
         @eperson_email = eperson_email
         @logger = self.class.build_logger
       end
