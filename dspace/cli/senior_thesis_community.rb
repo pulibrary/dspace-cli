@@ -855,8 +855,8 @@ module DSpace
       end
 
       def advance_workflow_to_state(eperson, state)
-        return if workflow_item.nil? || self.state == state
-        self.state = state
+        return if workflow_item.nil? || self.state == state.to_i
+        self.state = state.to_i
 
         WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
       end
@@ -870,8 +870,6 @@ module DSpace
       end
 
       def move_collection(from, to, inherit_default_policies = false)
-        # @obj.move(from, to, inherit_default_policies)
-
         add_to_collection(to.handle)
         remove_from_collection(from.handle)
       end
@@ -1006,7 +1004,7 @@ module DSpace
       end
 
       def self.root_path
-        Pathname.new("#{__FILE__}/../../../reports")
+        Pathname.new("#{File.dirname(__FILE__)}/../../reports")
       end
 
       def self.headers
@@ -1103,26 +1101,80 @@ module DSpace
       end
     end
 
+    require 'logger'
+
     class BatchJob
 
     end
 
+    class BatchUpdateStateJob
+      java_import org.dspace.eperson.EPerson
+
+      def self.kernel
+        ::DSpace
+      end
+
+      def self.build_logger
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
+        logger
+      end
+
+      def initialize(item_ids, state, eperson_email)
+        @item_ids = item_ids
+        @state = state
+        @eperson_email = eperson_email
+        @logger = self.class.build_logger
+      end
+
+      def items
+        @item_ids.map do |item_id|
+          SeniorThesisItem.find(item_id.to_i)
+        end
+      end
+
+      def eperson
+        Java::OrgDspaceEperson::EPerson.findByEmail(self.class.kernel.context, @eperson_email)
+      end
+
+      def perform
+        items.each do |item|
+          @logger.info("Advancing Item #{item.id} to the state #{@state} for the user #{eperson.getEmail}...")
+          item.advance_workflow_to_state(eperson, @state)
+          item.update
+        end
+      end
+    end
+
     class BatchUpdateJob < BatchJob
-      def initialize(csv_file_path, child_job_class)
+      attr_reader :jobs
+
+      def self.build_logger
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
+        logger
+      end
+
+      def initialize(csv_file_path)
         @csv_file_path = csv_file_path
-        @child_job_class = child_job_class
+        @jobs = []
+        @logger = self.class.build_logger
       end
 
       def csv_file
-        @csv_file ||= File.open('rb', @csv_file_path)
+        @csv_file ||= File.open(@csv_file_path, 'rb')
       end
 
       def csv
         @csv ||= CSV.new(csv_file, headers: :first_row)
       end
 
+      def table
+        @table ||= csv.read
+      end
+
       def rows
-        csv.read
+        table.to_a[1..-1]
       end
 
       def headers
@@ -1130,18 +1182,28 @@ module DSpace
       end
 
       def item_id_column
-        headers.index("item")
+        value = headers.index("item")
+        raise "Could not find the 'item' column" if value.nil?
+        value
       end
 
       def state_column
-        headers.index("state")
+        value = headers.index("state")
+        raise "Could not find the 'state' column" if value.nil?
+        value
       end
 
       def eperson_email_column
-        headers.index("eperson")
+        value = headers.index("eperson")
+        raise "Could not find the 'eperson' column" if value.nil?
+        value
       end
 
-      def perform
+      def self.update_state_job_class
+        BatchUpdateStateJob
+      end
+
+      def batch_update_state_args
         batch_args = {}
 
         rows.each do |row|
@@ -1159,48 +1221,32 @@ module DSpace
             end
           else
             job_args = {}
-
-            batch_args[eperson_email] = [job_args]
+            batch_args[eperson_email] = job_args
           end
         end
 
-        batch_args.each_pair do |eperson_email, job_args|
+        batch_args
+      end
+
+      def build_update_state_jobs
+        jobs = []
+
+        batch_update_state_args.each_pair do |eperson_email, job_args|
           job_args.each_pair do |state, item_ids|
-            job = @child_job_class.new(item_ids, state, eperson_email)
-            job.perform
+            job = self.class.update_state_job_class.new(item_ids, state, eperson_email)
+            jobs << job
           end
         end
-      end
-    end
-
-    class BatchUpdateStateJob
-      java_import org.dspace.eperson.EPerson
-
-      def self.kernel
-        ::DSpace
-      end
-
-      def initialize(item_ids, state, eperson_email)
-        @item_ids = item_ids
-        @state = state
-        @eperson_email = eperson_email
-      end
-
-      def items
-        @item_ids.map do |item_id|
-          SeniorThesisItem.find(item_id)
-        end
-      end
-
-      def eperson
-        Java::OrgDspaceEperson::EPerson.findByEmail(self.class.kernel.context, @eperson_email)
+        @jobs = jobs
       end
 
       def perform
-        items.each do |item|
-          item.advance_workflow_to_state(eperson, state)
-          item.update
-        end
+        jobs.each { |job| job.perform }
+      end
+
+      def perform_update_state_jobs
+        build_update_state_jobs
+        perform
       end
     end
 
