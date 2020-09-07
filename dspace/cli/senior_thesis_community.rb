@@ -717,6 +717,10 @@ module DSpace
         Metadata::Field.new('dc', 'contributor', 'author')
       end
 
+      def self.uri_field
+        Metadata::Field.new('dc', 'identifier', 'uri')
+      end
+
       def titles
         @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect { |v| v.value }
       end
@@ -755,6 +759,24 @@ module DSpace
 
       def author
         authors.first
+      end
+
+      def uris
+        @obj.getMetadataByMetadataString(self.class.uri_field.to_s).collect { |v| v.value }
+      end
+
+      def uri
+        authors.first
+      end
+
+      def has_handles?
+        output = false
+
+        uris.each do |uri|
+          output ||= uri =~ /arks\.princeton\.edu/
+        end
+
+        output
       end
 
       def persisted?
