@@ -4,5 +4,9 @@ jr_dspace
 
 .yardoc/
 doc/
+exports/
+!exports/.keep
+reports/
+!reports/.keep
 
 .DS_Store
