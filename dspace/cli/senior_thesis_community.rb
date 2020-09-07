@@ -713,6 +713,10 @@ module DSpace
         Metadata::Field.new('pu', 'date', 'classyear')
       end
 
+      def self.author_field
+        Metadata::Field.new('dc', 'contributor', 'author')
+      end
+
       def titles
         @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect { |v| v.value }
       end
@@ -745,6 +749,14 @@ module DSpace
         class_years.first
       end
 
+      def authors
+        @obj.getMetadataByMetadataString(self.class.author_field.to_s).collect { |v| v.value }
+      end
+
+      def author
+        authors.first
+      end
+
       def persisted?
         !@obj.nil?
       end
@@ -762,6 +774,28 @@ module DSpace
         return if workflow_obj.nil?
 
         self.class.workflow_item_class.new(workflow_obj)
+      end
+
+      def add_task_pool_users(emails)
+        return if workflow_item.nil?
+
+        workflow_item.add_task_pool_users(emails)
+        workflow_item.update
+      end
+
+      def add_task_pool_user(email)
+        add_task_pool_users([email])
+      end
+
+      def remove_task_pool_users(emails)
+        return if workflow_item.nil?
+
+        workflow_item.remove_task_pool_users(emails)
+        workflow_item.update
+      end
+
+      def remove_task_pool_user(email)
+        remove_task_pool_users([email])
       end
 
       def collections
@@ -850,6 +884,10 @@ module DSpace
 
       def submitter
         @obj.getSubmitter
+      end
+
+      def submitter=(eperson)
+        @obj.setSubmitter(eperson)
       end
 
       def advance_workflow(eperson)
@@ -1010,9 +1048,25 @@ module DSpace
           report = program_query.result_set.item_state_report(report_name)
           report.write
         end
-
       end
 
+      def self.write_item_author_reports(year)
+        collection_titles.each do |department_title|
+          year_query = query.find_by_class_year(year)
+          dept_query = year_query.find_by_department(department_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(department_title)}.csv"
+          report = dept_query.result_set.item_author_report(report_name)
+          report.write
+        end
+
+        certificate_program_titles.each do |program_title|
+          year_query = query.find_by_class_year(year)
+          program_query = year_query.find_by_certificate_program(program_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(program_title)}.csv"
+          report = program_query.result_set.item_author_report(report_name)
+          report.write
+        end
+      end
     end
 
     class Report
@@ -1032,12 +1086,13 @@ module DSpace
       end
 
       def self.root_path
-        Pathname.new("#{File.dirname(__FILE__)}/../../reports")
+        Pathname.new("#{File.dirname(__FILE__)}/../../reports/item_state")
       end
 
       def self.headers
         [
           'item',
+          'handle',
           'title',
           'classyear',
           'state',
@@ -1057,7 +1112,80 @@ module DSpace
                          end
 
             submitter = item.submitter
-            row = [item.id, item.title, item.class_year, item_state, submitter.email]
+            row = [item.id, item.handle, item.title, item.class_year, item_state, submitter.email]
+            csv << row
+          end
+        end
+      end
+
+      def write
+        generate if @output.nil?
+
+        file = File.open(@output_file_path, 'wb:UTF-8')
+        file.write(@output)
+        file.close
+      end
+    end
+
+    class ItemAuthorReport
+      attr_reader :items
+
+      def initialize(items, output_file_path)
+        @items = items
+        @output_file_path = output_file_path
+      end
+
+      def self.root_path
+        Pathname.new("#{File.dirname(__FILE__)}/../../reports/item_authors")
+      end
+
+      def self.headers
+        [
+          'author',
+          'item',
+          'handle',
+          'title',
+          'classyear',
+          'department',
+          'state',
+          'submitter'
+        ]
+      end
+
+      def items_by_author
+        grouped = {}
+
+        items.each do |item|
+          item.authors.each do |author|
+            grouped[author] = item
+          end
+        end
+
+        grouped
+      end
+
+      def generate
+        @output = CSV.generate do |csv|
+          csv << self.class.headers
+
+          items_by_author.each_pair do |author_name, item|
+            item_state = if item.state.nil?
+                           'ARCHIVED' # This is a placeholder for the ARCHIVED status
+                         else
+                           item.state
+                         end
+
+            submitter = item.submitter
+            row = [
+              author_name,
+              item.id,
+              item.handle,
+              item.title,
+              item.class_year,
+              item.department,
+              item_state,
+              submitter.email
+            ]
             csv << row
           end
         end
@@ -1074,6 +1202,7 @@ module DSpace
 
     class ResultSet
       java_import(org.dspace.content.Collection)
+      java_import(org.dspace.eperson.EPerson)
 
       attr_reader :members
 
@@ -1083,6 +1212,10 @@ module DSpace
 
       def initialize(members)
         @members = members
+      end
+
+      def update
+        members.each { |member| member.update }
       end
 
       def add_to_collection(handle)
@@ -1109,11 +1242,26 @@ module DSpace
         collection.update
       end
 
-      def add_task_pool_user(email)
+      def add_task_pool_users(emails)
         members.each do |member|
-          member.workflow_item.add_task_pool_user(email)
+          member.add_task_pool_users(emails)
           self.class.kernel.commit
         end
+      end
+
+      def add_task_pool_user(email)
+        add_task_pool_users([email])
+      end
+
+      def remove_task_pool_users(emails)
+        members.each do |member|
+          member.remove_task_pool_users(emails)
+          self.class.kernel.commit
+        end
+      end
+
+      def remove_task_pool_user(email)
+        remove_task_pool_users([email])
       end
 
       def move_collection(from_handle, to_handle, inherit_default_policies = false)
@@ -1132,6 +1280,25 @@ module DSpace
         output_file_path = File.join(ItemStateReport.root_path, output_file_name)
 
         ItemStateReport.new(members, output_file_path)
+      end
+
+      def item_author_report(output_file_name)
+        output_file_path = File.join(ItemAuthorReport.root_path, output_file_name)
+
+        ItemAuthorReport.new(members, output_file_path)
+      end
+
+      def submitter=(eperson)
+        members.each do |member|
+          member.submitter = eperson
+          member.update
+        end
+        self.class.kernel.commit
+      end
+
+      def submitter_email=(email)
+        eperson = Java::OrgDspaceEperson::EPerson.findByEmail(self.class.kernel.context, email)
+        self.submitter = eperson
       end
     end
 
