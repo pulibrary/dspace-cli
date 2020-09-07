@@ -497,6 +497,13 @@ module DSpace
         @obj.getMetadataByMetadataString(metadata_field)
       end
 
+      def self.find(id)
+        obj = Java::OrgDspaceContent::Item.find(kernel.context, id)
+        return if obj.nil?
+
+        self.new(obj)
+      end
+
       def self.find_metadata_field(schema, element, qualifier = nil)
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
         raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
@@ -823,6 +830,32 @@ module DSpace
         @obj = nil
       end
 
+      def state
+        return if workflow_item.nil?
+
+        workflow_item.state
+      end
+
+      def state=(value)
+        return if workflow_item.nil?
+
+        workflow_item.state = value
+        workflow_item.update
+      end
+
+      def advance_workflow(eperson)
+        return if workflow_item.nil?
+
+        WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
+      end
+
+      def advance_workflow_to_state(eperson, state)
+        return if workflow_item.nil?
+        self.state = state
+
+        WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
+      end
+
       def export_job
         ExportJob.new(self)
       end
@@ -1000,6 +1033,112 @@ module DSpace
         members.each do |member|
           member.move_collection_by_handles(from_handle, to_handle, inherit_default_policies)
           self.class.kernel.commit
+        end
+      end
+    end
+
+    class BatchJob
+
+    end
+
+    class BatchUpdateJob < BatchJob
+      def initialize(csv_file_path, child_job_class)
+        @csv_file_path = csv_file_path
+        @child_job_class = child_job_class
+      end
+
+      def csv_file
+        @csv_file ||= File.open('rb', @csv_file_path)
+      end
+
+      def csv
+        @csv ||= CSV.new(csv_file, headers: :first_row)
+      end
+
+      def rows
+        csv.read
+      end
+
+      def headers
+        csv.headers
+      end
+
+      def item_id_column
+        headers.index("item")
+      end
+
+      def state_column
+        headers.index("state")
+      end
+
+      def eperson_email_column
+        headers.index("eperson")
+      end
+
+      def perform
+        batch_args = {}
+
+        rows.each do |row|
+          item_id = row[item_id_column]
+          state = row[state_column]
+          eperson_email = row[eperson_email_column]
+
+          if batch_args.key?(eperson_email)
+
+            # batch_args[eperson_email] << job_args
+            job_args = batch_args[eperson_email]
+            if job_args.key?(state)
+              job_args[state] << item_id
+
+            else
+              job_args[state] = [item_id]
+
+            end
+
+          else
+            job_args = {}
+
+            batch_args[eperson_email] = [job_args]
+
+          end
+        end
+
+        batch_args.each_pair do |eperson_email, job_args|
+          job_args.each_pair do |state, item_ids|
+            job = @child_job_class.new(item_ids, state, eperson_email)
+            job.perform
+          end
+        end
+      end
+    end
+
+    class BatchUpdateStateJob
+      java_import org.dspace.eperson.EPerson
+
+      def self.kernel
+        ::DSpace
+      end
+
+      def initialize(item_ids, state, eperson_email)
+        @item_ids = item_ids
+        @state = state
+        @eperson_email = eperson_email
+      end
+
+      def items
+        @item_ids.map do |item_id|
+          SeniorThesisItem.find(item_id)
+        end
+      end
+
+      def eperson
+        Java::OrgDspaceEperson::EPerson.findByEmail(self.class.kernel.context, @eperson_email)
+      end
+
+      def perform
+        items.each do |item|
+          item.advance_workflow_to_state(eperson, state)
+          item.update
         end
       end
     end
