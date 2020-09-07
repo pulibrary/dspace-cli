@@ -722,12 +722,24 @@ module DSpace
         Metadata::Field.new('dc', 'identifier', 'uri')
       end
 
+      def self.submission_id_field
+        Metadata::Field.new('pu', 'submissionid')
+      end
+
       def titles
         @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect { |v| v.value }
       end
 
       def title
         titles.first
+      end
+
+      def title=(value)
+        clear_metadata('dc', 'title')
+        update
+        add_metadata('dc', 'title', value)
+        update
+        self.class.kernel.commit
       end
 
       def departments
@@ -770,14 +782,24 @@ module DSpace
         authors.first
       end
 
-      def has_handles?
-        output = false
+      def handle_uris
+        uris.select { |uri| uri =~ /ark\:/ }
+      end
 
-        uris.each do |uri|
-          output ||= uri =~ /arks\.princeton\.edu/
-        end
+      def submission_ids
+        @obj.getMetadataByMetadataString(self.class.submission_id_field.to_s).collect { |v| v.value }
+      end
 
-        output
+      def submission_id
+        submission_ids.first
+      end
+
+      def submission_id=(value)
+        clear_metadata('pu', 'submissionid')
+        update
+        add_metadata('pu', 'submissionid', value)
+        update
+        self.class.kernel.commit
       end
 
       def archive
@@ -851,7 +873,6 @@ module DSpace
       def find_collections_for_departments
         collections = []
         departments.each do |department|
-          # collection = self.class.find_collection_by_title(department)
           collection = SeniorThesisCollection.find_for_department(department)
           collections << collection unless collection.nil?
         end
@@ -921,19 +942,26 @@ module DSpace
       end
 
       def advance_workflow(eperson)
-        return if workflow_item.nil? || archived?
-        return archive if state == 7
+        return if workflow_item.nil?
 
         # This increases the state by 1 step
         Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
       end
 
+      # This needs to be refactored
+      def self.valid_workflow_state?(state)
+        state > Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE || state <= Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1
+      end
+
       def advance_workflow_to_state(eperson, next_state)
-        return self.state = next_state if next_state == 5
-        return archive if next_state == 8
-        return if workflow_item.nil? || next_state > 7 || next_state <= 5 || self.state == next_state
+        return self.state = next_state if next_state == Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1POOL
+
+        return archive if next_state == Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE
+
+        return if workflow_item.nil? || self.class.valid_workflow_state?(next_state) || self.state == next_state
 
         self.state = next_state - 1
+        update
 
         # This increases the state by 1 step
         Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
@@ -999,7 +1027,7 @@ module DSpace
           'Philosophy',
           'Physics',
           'Politics',
-          'Woodrow Wilson School',
+          'Woodrow Wilson School', # This needs to be renamed to the Princeton School
           'Psychology',
           'Slavic Languages and Literature',
           'Sociology',
@@ -1140,6 +1168,7 @@ module DSpace
 
       def self.headers
         [
+          'submissionid',
           'item',
           'handle',
           'title',
@@ -1161,7 +1190,15 @@ module DSpace
                          end
 
             submitter = item.submitter
-            row = [item.id, item.handle, item.title, item.class_year, item_state, submitter.email]
+            row = [
+              item.submission_id,
+              item.id,
+              item.handle,
+              item.title,
+              item.class_year,
+              item_state,
+              submitter.email
+            ]
             csv << row
           end
         end
@@ -1191,6 +1228,7 @@ module DSpace
       def self.headers
         [
           'author',
+          'submissionid',
           'item',
           'handle',
           'title',
@@ -1227,6 +1265,7 @@ module DSpace
             submitter = item.submitter
             row = [
               author_name,
+              item.submission_id,
               item.id,
               item.handle,
               item.title,
@@ -1263,7 +1302,8 @@ module DSpace
 
       def self.headers
         [
-          'contribute_program',
+          'certificate_program',
+          'submissionid',
           'item',
           'handle',
           'title',
@@ -1300,6 +1340,7 @@ module DSpace
             submitter = item.submitter
             row = [
               certificate_program,
+              item.submission_id,
               item.id,
               item.handle,
               item.title,
@@ -1321,7 +1362,6 @@ module DSpace
         file.close
       end
     end
-
 
     class ResultSet
       java_import(org.dspace.content.Collection)
@@ -1437,8 +1477,46 @@ module DSpace
 
     end
 
+    class BatchUpdateTitleJob
+      java_import org.dspace.eperson.EPerson
+
+      def self.kernel
+        ::DSpace
+      end
+
+      def self.build_logger
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
+        logger
+      end
+
+      def initialize(item_ids, title, submission_id)
+        @item_ids = item_ids
+        @title = title
+        @submission_id = submission_id
+        @logger = self.class.build_logger
+      end
+
+      def items
+        @item_ids.map do |item_id|
+          SeniorThesisItem.find(item_id.to_i)
+        end
+      end
+
+      def perform
+        items.each do |item|
+          @logger.info("Updating the Item #{item.id} title to #{@title}...")
+          item.title = @title
+          item.submission_id = @submission_id
+          item.update
+        end
+      end
+
+    end
+
     class BatchUpdateStateJob
       java_import org.dspace.eperson.EPerson
+      java_import(org.dspace.workflow.WorkflowManager)
 
       def self.kernel
         ::DSpace
@@ -1453,7 +1531,7 @@ module DSpace
       def initialize(item_ids, state, eperson_email)
         @item_ids = item_ids
         @state = if state == 'ARCHIVED'
-                   8 # This is a hack for the Item#advance_workflow method
+                   Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE # This is a hack for the Item#advance_workflow method
                  else
                    state.to_i
                  end
@@ -1526,6 +1604,10 @@ module DSpace
         find_column_index('item')
       end
 
+      def author_column
+        find_column_index('author')
+      end
+
       def title_column
         find_column_index('title')
       end
@@ -1542,8 +1624,42 @@ module DSpace
         find_column_index('eperson')
       end
 
+      def submission_id_column
+        find_column_index('submissionid')
+      end
+
       def self.update_state_job_class
         BatchUpdateStateJob
+      end
+
+      def self.update_title_job_class
+        BatchUpdateTitleJob
+      end
+
+      def batch_update_title_args
+        batch_args = []
+
+        rows.each do |row|
+          author = row[author_column]
+          class_year = row[class_year_column]
+
+          query = DSpace::CLI::SeniorThesisCommunity.find_by_class_year(class_year)
+
+          # This is temporary until the submission IDs are appended
+          sub_query = query.find_by_author(author)
+          raise "Failed to find the Item for '#{author}' (graduating year #{class_year})" if sub_query.results.empty?
+
+          item = sub_query.results.first
+          item_id = item.id
+
+          title = row[title_column]
+          submission_id = row[submission_id_column]
+
+          job_args = { item_ids: [item_id], title: title, submission_id: submission_id }
+          batch_args << job_args
+        end
+
+        batch_args
       end
 
       def batch_update_state_args
@@ -1591,12 +1707,32 @@ module DSpace
         @jobs = jobs
       end
 
+      def build_update_title_jobs
+        jobs = []
+
+        batch_update_title_args.each do |job_args|
+          item_ids = job_args.fetch(:item_ids)
+          title = job_args.fetch(:title)
+          submission_id = job_args.fetch(:submission_id)
+
+          job = self.class.update_title_job_class.new(item_ids, title, submission_id)
+          jobs << job
+        end
+
+        @jobs = jobs
+      end
+
       def perform
         jobs.each { |job| job.perform }
       end
 
       def perform_update_state_jobs
         build_update_state_jobs
+        perform
+      end
+
+      def perform_update_title_jobs
+        build_update_title_jobs
         perform
       end
     end
