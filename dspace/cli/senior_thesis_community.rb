@@ -480,6 +480,7 @@ module DSpace
       java_import org.dspace.content.MetadataField
       java_import org.dspace.content.MetadataSchema
       java_import org.dspace.handle.HandleManager
+      java_import(org.dspace.content.InstallItem)
 
       attr_reader :obj, :metadata
 
@@ -779,6 +780,13 @@ module DSpace
         output
       end
 
+      def archive
+        return if archived?
+
+        Java::OrgDspaceContent::InstallItem.installItem(self.class.kernel.context, workflow_item.obj)
+        self.class.kernel.commit
+      end
+
       def persisted?
         !@obj.nil?
       end
@@ -914,16 +922,16 @@ module DSpace
 
       def advance_workflow(eperson)
         return if workflow_item.nil? || archived?
+        return archive if state == 7
 
         # This increases the state by 1 step
         Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
       end
 
       def advance_workflow_to_state(eperson, next_state)
-        if next_state == 5
-          return self.state = next_state
-        end
-        return if workflow_item.nil? || next_state > 8 || next_state <= 5 || self.state == next_state
+        return self.state = next_state if next_state == 5
+        return archive if next_state == 8
+        return if workflow_item.nil? || next_state > 7 || next_state <= 5 || self.state == next_state
 
         self.state = next_state - 1
 
