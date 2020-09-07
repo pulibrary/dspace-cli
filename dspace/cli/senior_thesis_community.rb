@@ -1067,6 +1067,25 @@ module DSpace
           report.write
         end
       end
+
+      def self.write_item_certificate_program_reports(year)
+        collection_titles.each do |department_title|
+          year_query = query.find_by_class_year(year)
+          dept_query = year_query.find_by_department(department_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(department_title)}.csv"
+          report = dept_query.result_set.item_certificate_program_report(report_name)
+          report.write
+        end
+
+        certificate_program_titles.each do |program_title|
+          year_query = query.find_by_class_year(year)
+          program_query = year_query.find_by_certificate_program(program_title)
+          report_name = "#{DSpace::CLI::ResultSet.normalize_department_title(program_title)}.csv"
+          report = program_query.result_set.item_certificate_program_report(report_name)
+          report.write
+        end
+      end
+
     end
 
     class Report
@@ -1200,6 +1219,80 @@ module DSpace
       end
     end
 
+    class ItemCertificateProgramReport
+      attr_reader :items
+
+      def initialize(items, output_file_path)
+        @items = items
+        @output_file_path = output_file_path
+      end
+
+      def self.root_path
+        Pathname.new("#{File.dirname(__FILE__)}/../../reports/item_certificate_programs")
+      end
+
+      def self.headers
+        [
+          'contribute_program',
+          'item',
+          'handle',
+          'title',
+          'classyear',
+          'department',
+          'state',
+          'submitter'
+        ]
+      end
+
+      def items_by_program
+        grouped = {}
+
+        items.each do |item|
+          item.certificate_programs.each do |program|
+            grouped[program] = item
+          end
+        end
+
+        grouped
+      end
+
+      def generate
+        @output = CSV.generate do |csv|
+          csv << self.class.headers
+
+          items_by_program.each_pair do |certificate_program, item|
+            item_state = if item.state.nil?
+                           'ARCHIVED' # This is a placeholder for the ARCHIVED status
+                         else
+                           item.state
+                         end
+
+            submitter = item.submitter
+            row = [
+              certificate_program,
+              item.id,
+              item.handle,
+              item.title,
+              item.class_year,
+              item.department,
+              item_state,
+              submitter.email
+            ]
+            csv << row
+          end
+        end
+      end
+
+      def write
+        generate if @output.nil?
+
+        file = File.open(@output_file_path, 'wb:UTF-8')
+        file.write(@output)
+        file.close
+      end
+    end
+
+
     class ResultSet
       java_import(org.dspace.content.Collection)
       java_import(org.dspace.eperson.EPerson)
@@ -1286,6 +1379,12 @@ module DSpace
         output_file_path = File.join(ItemAuthorReport.root_path, output_file_name)
 
         ItemAuthorReport.new(members, output_file_path)
+      end
+
+      def item_certificate_program_report(output_file_name)
+        output_file_path = File.join(ItemCertificateProgramReport.root_path, output_file_name)
+
+        ItemCertificateProgramReport.new(members, output_file_path)
       end
 
       def submitter=(eperson)

@@ -10,6 +10,7 @@ exports/
 
 !reports/item_state/.keep
 !reports/item_authors/.keep
+!reports/item_certificate_programs/.keep
 !reports/.keep
 reports/
 
