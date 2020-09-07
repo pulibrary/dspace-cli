@@ -856,7 +856,7 @@ module DSpace
         return if workflow_item.nil? || archived?
 
         # This increases the state by 1 step
-        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
+        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
       end
 
       def advance_workflow_to_state(eperson, next_state)
@@ -868,7 +868,7 @@ module DSpace
         self.state = next_state - 1
 
         # This increases the state by 1 step
-        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
+        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
       end
 
       def export_job
