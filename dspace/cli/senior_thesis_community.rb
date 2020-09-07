@@ -843,6 +843,10 @@ module DSpace
         workflow_item.update
       end
 
+      def submitter
+        @obj.getSubmitter
+      end
+
       def advance_workflow(eperson)
         return if workflow_item.nil?
 
@@ -850,7 +854,7 @@ module DSpace
       end
 
       def advance_workflow_to_state(eperson, state)
-        return if workflow_item.nil?
+        return if workflow_item.nil? || self.state == state
         self.state = state
 
         WorkflowManager.advance(self.class.kernel.context, workflow_item, eperson, true, true)
@@ -982,7 +986,52 @@ module DSpace
           end
         end
       end
+    end
 
+    class Report
+
+    end
+
+    class ItemReport
+
+    end
+
+    class ItemStateReport
+      def initialize(items, output_file_path)
+        @items = items
+        @output_file_path = output_file_path
+      end
+
+      def self.root_path
+        Pathname.new("#{__FILE__}/../../../reports")
+      end
+
+      def self.headers
+        [
+          'item',
+          'state',
+          'eperson'
+        ]
+      end
+
+      def generate
+        @output = CSV.generate do |csv|
+          csv << self.class.headers
+
+          items.each do |item|
+            submitter = item.submitter
+
+            row = [item.id, item.state, submitter.email]
+            csv << row
+          end
+        end
+      end
+
+      def write
+        file = File.open(@output_file_path, 'wb')
+        file.write(@output)
+        file.close
+      end
     end
 
     class ResultSet
@@ -1035,6 +1084,12 @@ module DSpace
           self.class.kernel.commit
         end
       end
+
+      def item_state_report(output_file_name)
+        output_file_path = File.join(ItemStateReport.root_path, output_file_name)
+
+        ItemStateReport.new(members, output_file_path)
+      end
     end
 
     class BatchJob
@@ -1085,21 +1140,16 @@ module DSpace
 
           if batch_args.key?(eperson_email)
 
-            # batch_args[eperson_email] << job_args
             job_args = batch_args[eperson_email]
             if job_args.key?(state)
               job_args[state] << item_id
-
             else
               job_args[state] = [item_id]
-
             end
-
           else
             job_args = {}
 
             batch_args[eperson_email] = [job_args]
-
           end
         end
 
