@@ -1,3 +1,4 @@
+require 'csv'
 require 'pathname'
 
 module DSpace
@@ -997,6 +998,8 @@ module DSpace
     end
 
     class ItemStateReport
+      attr_reader :items
+
       def initialize(items, output_file_path)
         @items = items
         @output_file_path = output_file_path
@@ -1019,8 +1022,9 @@ module DSpace
           csv << self.class.headers
 
           items.each do |item|
-            submitter = item.submitter
+            next if item.state.nil?
 
+            submitter = item.submitter
             row = [item.id, item.state, submitter.email]
             csv << row
           end
@@ -1028,6 +1032,8 @@ module DSpace
       end
 
       def write
+        generate if @output.nil?
+
         file = File.open(@output_file_path, 'wb')
         file.write(@output)
         file.close
@@ -1083,6 +1089,11 @@ module DSpace
           member.move_collection_by_handles(from_handle, to_handle, inherit_default_policies)
           self.class.kernel.commit
         end
+      end
+
+      def self.normalize_department_title(title)
+        normal_title = title.downcase
+        normal_title.gsub(/\s/, '_')
       end
 
       def item_state_report(output_file_name)
