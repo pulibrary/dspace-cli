@@ -1567,8 +1567,9 @@ module DSpace
         logger
       end
 
-      def initialize(csv_file_path)
+      def initialize(csv_file_path, class_year)
         @csv_file_path = csv_file_path
+        @class_year = class_year
         @jobs = []
         @logger = self.class.build_logger
       end
@@ -1641,7 +1642,7 @@ module DSpace
 
         rows.each do |row|
           author = row[author_column]
-          class_year = row[class_year_column]
+          class_year = @class_year
 
           query = DSpace::CLI::SeniorThesisCommunity.find_by_class_year(class_year)
 
