@@ -1509,6 +1509,7 @@ module DSpace
           item.title = @title
           item.submission_id = @submission_id
           item.update
+          item.remove_duplicated_metadata
         end
       end
 
