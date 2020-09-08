@@ -14,4 +14,7 @@ exports/
 !reports/.keep
 reports/
 
+!batch_imports/.keep
+batch_imports/
+
 .DS_Store

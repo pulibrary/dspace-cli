@@ -13,6 +13,7 @@ module Vireo
 
       def self.spreadsheet_headers
         [
+          'Status',
           'ID',
           'Primary document',
           'Title',
@@ -44,7 +45,7 @@ module Vireo
           imported_rows = xlsx_rows[1..-1]
           imported_rows.each do |row|
             values = row.map do |cell|
-              if cell.is_a?(Float)
+              if cell.value.is_a?(Float)
                 cell.value.to_i.to_s
               else
                 cell.value.to_s
@@ -69,6 +70,10 @@ module Vireo
 
       def csv_submission_id_column
         csv_headers.index('ID')
+      end
+
+      def csv_title_column
+        csv_headers.index('Title')
       end
 
       def csv_author_id_column
@@ -130,6 +135,7 @@ module Vireo
 
             submission_id = row[csv_submission_id_column]
             author_id = row[csv_author_id_column]
+            title = row[csv_title_column]
             author = row[csv_author_column]
             department = row[csv_department_column]
             certificate_program = row[csv_certificate_program_column]
