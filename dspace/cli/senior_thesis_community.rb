@@ -1648,7 +1648,10 @@ module DSpace
 
           # This is temporary until the submission IDs are appended
           sub_query = query.find_by_author(author)
-          raise "Failed to find the Item for '#{author}' (graduating year #{class_year})" if sub_query.results.empty?
+          if sub_query.results.empty?
+            @logger.warn "Failed to find the Item for '#{author}' (graduating year #{class_year})"
+            next
+          end
 
           item = sub_query.results.first
           item_id = item.id
