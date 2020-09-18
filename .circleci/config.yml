@@ -9,11 +9,11 @@ jobs:
       - run:
           name: Set JRuby version to 9.1.7.0
           command: |
-            rvm install cli-9.1.7.0
-            echo . $(rvm cli-9.1.7.0 do rvm env --path) >> $BASH_ENV
+            rvm install cli-9.2.13.0
+            echo . $(rvm cli-9.2.13.0 do rvm env --path) >> $BASH_ENV
       - run:
           name: Install bundler
-          command: gem install -v 1.10.6 bundler
+          command: gem install -v 2.1.4 bundler
       - run:
           name: Install the dependencies
           command: bundle install
