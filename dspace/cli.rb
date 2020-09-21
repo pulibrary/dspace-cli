@@ -7,6 +7,8 @@ module DSpace
     autoload(:Metadatum, File.join(File.dirname(__FILE__), 'cli', 'metadatum'))
     autoload(:MetadataField, File.join(File.dirname(__FILE__), 'cli', 'metadata_field'))
 
+    autoload(:ExportJob, File.join(File.dirname(__FILE__), 'cli', 'export_job'))
+
     autoload(:Item, File.join(File.dirname(__FILE__), 'cli', 'item'))
     autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
     autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
