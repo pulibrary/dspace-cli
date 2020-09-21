@@ -13,31 +13,31 @@ module DSpace
       end
 
       def self.class_year_field
-        Metadata::Field.new('pu', 'date', 'classyear')
+        MetadataField.new('pu', 'date', 'classyear')
       end
 
       def self.embargo_date_field
-        Metadata::Field.new('pu', 'embargo', 'lift')
+        MetadataField.new('pu', 'embargo', 'lift')
       end
 
       def self.walk_in_access_field
-        Metadata::Field.new('pu', 'mudd', 'walkin')
+        MetadataField.new('pu', 'mudd', 'walkin')
       end
 
       def self.department_field
-        Metadata::Field.new('pu', 'department')
+        MetadataField.new('pu', 'department')
       end
 
       def self.certificate_program_field
-        Metadata::Field.new('pu', 'certificate')
+        MetadataField.new('pu', 'certificate')
       end
 
       def self.title_field
-        Metadata::Field.new('dc', 'title')
+        MetadataField.new('dc', 'title')
       end
 
       def self.author_field
-        Metadata::Field.new('dc', 'contributor', 'author')
+        MetadataField.new('dc', 'contributor', 'author')
       end
 
       def initialize(results = [], parent = nil)

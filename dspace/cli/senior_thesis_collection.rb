@@ -28,7 +28,7 @@ module DSpace
       end
 
       def self.title_field
-        Metadata::Field.new('dc', 'title')
+        MetadataField.new('dc', 'title')
       end
 
       def initialize(obj)

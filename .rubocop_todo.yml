@@ -52,18 +52,26 @@ Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'
+    - 'dspace.rb'
+    - 'dspace/cli.rb'
     - 'dspace/cli/batch_update_state_job.rb'
     - 'dspace/cli/batch_update_title_job.rb'
+    - 'dspace/cli/collection.rb'
+    - 'dspace/cli/community.rb'
     - 'dspace/cli/export_job.rb'
+    - 'dspace/cli/item.rb'
     - 'dspace/cli/item_author_report.rb'
     - 'dspace/cli/item_certificate_report.rb'
     - 'dspace/cli/item_state_report.rb'
+    - 'dspace/cli/metadata_field.rb'
+    - 'dspace/cli/metadatum.rb'
     - 'dspace/cli/result_set.rb'
     - 'dspace/cli/senior_thesis_collection.rb'
     - 'dspace/cli/senior_thesis_community.rb'
     - 'dspace/cli/senior_thesis_item.rb'
     - 'dspace/cli/senior_thesis_query.rb'
     - 'dspace/cli/senior_thesis_workflow_item.rb'
+    - 'dspace/cli/utils/array_list.rb'
 
 # Offense count: 12
 # Cop supports --auto-correct.

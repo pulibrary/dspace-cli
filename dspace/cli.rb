@@ -2,17 +2,15 @@
 
 module DSpace
   module CLI
-    autoload(:MetadataField, 'metadata_field')
-    autoload(:Metadatum, 'metadatum')
+    autoload(:Metadatum, File.join(File.dirname(__FILE__), 'cli', 'metadatum'))
+    autoload(:MetadataField, File.join(File.dirname(__FILE__), 'cli', 'metadata_field'))
 
-    autoload(:Item, 'item')
-    autoload(:Collection, 'collection')
-    autoload(:Community, 'community')
+    autoload(:Item, File.join(File.dirname(__FILE__), 'cli', 'item'))
+    autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
+    autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
 
-    autoload(:SeniorThesisItem, 'senior_thesis_item')
-    autoload(:SeniorThesisCollection, 'senior_thesis_collection')
-    autoload(:SeniorThesisCommunity, 'senior_thesis_community')
+    autoload(:SeniorThesisItem, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_item'))
+    autoload(:SeniorThesisCollection, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_collection'))
+    autoload(:SeniorThesisCommunity, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_community'))
   end
 end
-
-require 'cli/senior_thesis_community'

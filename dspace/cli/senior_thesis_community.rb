@@ -62,15 +62,15 @@ module DSpace
       end
 
       def self.class_year_field
-        Metadata::Field.new('pu', 'date', 'classyear')
+        MetadataField.new('pu', 'date', 'classyear')
       end
 
       def self.embargo_date_field
-        Metadata::Field.new('pu', 'embargo', 'lift')
+        MetadataField.new('pu', 'embargo', 'lift')
       end
 
       def self.walk_in_access_field
-        Metadata::Field.new('pu', 'mudd', 'walkin')
+        MetadataField.new('pu', 'mudd', 'walkin')
       end
 
       def initialize(obj)

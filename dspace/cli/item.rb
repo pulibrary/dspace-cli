@@ -23,9 +23,11 @@ module DSpace
       end
 
       # This is some internal bug; I am not certain why I cannot use this from DItem
+      # rubocop:disable Naming/MethodName
       def getMetadataByMetadataString(metadata_field)
         @obj.getMetadataByMetadataString(metadata_field)
       end
+      # rubocop:enable Naming/MethodName
 
       def self.find(id)
         obj = Java::OrgDspaceContent::Item.find(kernel.context, id)
@@ -202,12 +204,14 @@ module DSpace
       end
 
       # I am not certain that this is needed
+      # rubocop:disable Naming/AccessorMethodName
       def set_metadata(values)
         list = java.util.ArrayList.new(values)
         cache = Java::OrgDspaceContent::DSpaceObject::MetadataCache.new(list)
         @obj.metadataCache = cache
         @obj.modifiedMetadata = true
       end
+      # rubocop:enable Naming/AccessorMethodName
 
       def clear_metadata(schema, element, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
