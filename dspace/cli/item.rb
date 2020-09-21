@@ -252,7 +252,7 @@ module DSpace
       end
 
       def self.workflow_item_class
-        SeniorThesisWorkflowItem
+        WorkflowItem
       end
 
       def self.collection_class
