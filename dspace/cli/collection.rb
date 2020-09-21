@@ -45,6 +45,10 @@ module DSpace
         super
         members.map(&:index)
       end
+
+      def browse_index
+        @browse_index ||= BrowseIndex.new(container: @obj, per_page: 1000000)
+      end
     end
   end
 end
