@@ -13,6 +13,24 @@ module DSpace
         MetadataField.new('dc', 'title')
       end
 
+      def self.find_metadata_field(schema, element, qualifier = nil)
+        schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
+        raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
+
+        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
+      end
+
+      def build_metadatum(schema, element, qualifier = nil, language = nil)
+        metadata_field = self.class.find_metadata_field(schema, element, qualifier)
+
+        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
+      rescue StandardError => e
+        warn("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
+        warn e.message
+        warn e.backtrace.join("\n")
+        nil
+      end
+
       def initialize(obj)
         @obj = obj
       end
@@ -29,7 +47,6 @@ module DSpace
         @obj.getTypeText
       end
 
-      # This needs to be abstracted
       # rubocop:disable Naming/MethodName
       def getMetadataByMetadataString(metadata_field)
         @obj.getMetadataByMetadataString(metadata_field)

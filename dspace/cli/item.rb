@@ -13,44 +13,16 @@ module DSpace
 
       attr_reader :metadata
 
-      # This is some internal bug; I am not certain why I cannot use this from DItem
       def initialize(obj)
-        @obj = obj
+        super(obj)
         @metadata = build_metadata
       end
-
-      # This is some internal bug; I am not certain why I cannot use this from DItem
-      # rubocop:disable Naming/MethodName
-      def getMetadataByMetadataString(metadata_field)
-        return [] if @obj.nil?
-
-        @obj.getMetadataByMetadataString(metadata_field)
-      end
-      # rubocop:enable Naming/MethodName
 
       def self.find(id)
         obj = Java::OrgDspaceContent::Item.find(kernel.context, id)
         return if obj.nil?
 
         new(obj)
-      end
-
-      def self.find_metadata_field(schema, element, qualifier = nil)
-        schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
-        raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
-
-        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
-      end
-
-      def build_metadatum(schema, element, qualifier = nil, language = nil)
-        metadata_field = self.class.find_metadata_field(schema, element, qualifier)
-
-        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
-      rescue StandardError => e
-        warn("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
-        warn e.message
-        warn e.backtrace.join("\n")
-        nil
       end
 
       def update

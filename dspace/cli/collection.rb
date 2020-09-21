@@ -42,6 +42,7 @@ module DSpace
       end
 
       def index
+        super
         members.map(&:index)
       end
     end
