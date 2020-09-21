@@ -2,45 +2,9 @@
 
 module DSpace
   module CLI
-    class Collection
+    class Collection < DSpaceObject
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.handle.HandleManager
-      attr_reader :obj
-
-      def self.kernel
-        ::DSpace
-      end
-
-      def self.title_field
-        MetadataField.new('dc', 'title')
-      end
-
-      def initialize(obj)
-        @obj = obj
-      end
-
-      def id
-        @obj.getID
-      end
-
-      def handle
-        @obj.getHandle
-      end
-
-      # This needs to be abstracted
-      # rubocop:disable Naming/MethodName
-      def getMetadataByMetadataString(metadata_field)
-        @obj.getMetadataByMetadataString(metadata_field)
-      end
-      # rubocop:enable Naming/MethodName
-
-      def titles
-        @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect(&:value)
-      end
-
-      def title
-        titles.first
-      end
 
       # rubocop:disable Naming/MethodName
       def removeItem(item)
@@ -64,9 +28,21 @@ module DSpace
         addItem(item)
       end
 
-      def update
-        @obj.update
-        self.class.kernel.commit
+      def get_all_items
+        member_objs = []
+
+        member_iterator = @obj.getAllItems
+        member_objs << member_iterator.next while member_iterator.hasNext
+
+        member_objs
+      end
+
+      def members
+        @members ||= get_all_items.map { |member_obj| Item.new(member_obj) }
+      end
+
+      def index
+        members.map(&:index)
       end
     end
   end

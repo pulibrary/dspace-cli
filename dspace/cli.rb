@@ -2,6 +2,8 @@
 
 module DSpace
   module CLI
+    autoload(:DSpaceObject, File.join(File.dirname(__FILE__), 'cli', 'dspace_object'))
+
     autoload(:Metadatum, File.join(File.dirname(__FILE__), 'cli', 'metadatum'))
     autoload(:MetadataField, File.join(File.dirname(__FILE__), 'cli', 'metadata_field'))
 

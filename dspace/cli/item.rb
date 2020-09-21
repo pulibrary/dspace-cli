@@ -2,7 +2,7 @@
 
 module DSpace
   module CLI
-    class Item
+    class Item < DSpaceObject
       java_import org.dspace.workflow.WorkflowItem
       java_import org.dspace.content.Metadatum
       java_import org.dspace.content.MetadataField
@@ -11,11 +11,7 @@ module DSpace
       java_import(org.dspace.content.InstallItem)
       java_import(org.dspace.discovery.IndexingService)
 
-      attr_reader :obj, :metadata
-
-      def self.kernel
-        ::DSpace
-      end
+      attr_reader :metadata
 
       # This is some internal bug; I am not certain why I cannot use this from DItem
       def initialize(obj)
@@ -208,44 +204,12 @@ module DSpace
         @metadata = updated_metadata
       end
 
-      def id
-        @obj.getID
-      end
-
-      def handle
-        @obj.getHandle
-      end
-
-      def type_text
-        @obj.getTypeText
-      end
-
-      def self.title_field
-        MetadataField.new('dc', 'title')
-      end
-
       def self.author_field
         MetadataField.new('dc', 'contributor', 'author')
       end
 
       def self.uri_field
         MetadataField.new('dc', 'identifier', 'uri')
-      end
-
-      def titles
-        @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect(&:value)
-      end
-
-      def title
-        titles.first
-      end
-
-      def title=(value)
-        clear_metadata('dc', 'title')
-        update
-        add_metadata('dc', 'title', value)
-        update
-        self.class.kernel.commit
       end
 
       def authors
@@ -261,7 +225,7 @@ module DSpace
       end
 
       def uri
-        authors.first
+        uris.first
       end
 
       def handle_uris
@@ -289,10 +253,6 @@ module DSpace
 
         Java::OrgDspaceContent::InstallItem.installItem(self.class.kernel.context, workflow_item.obj)
         self.class.kernel.commit
-      end
-
-      def persisted?
-        !@obj.nil?
       end
 
       def self.workflow_item_class
@@ -429,22 +389,6 @@ module DSpace
 
         # This increases the state by 1 step
         Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
-      end
-
-      def self.service_manager
-        kernel.getServiceManager
-      end
-
-      def self.get_service_by_name(class_name, service_class)
-        service_manager.getServiceByName(class_name, service_class)
-      end
-
-      def self.indexing_service
-        get_service_by_name('org.dspace.discovery.SearchService', Java::OrgDspaceDiscovery::IndexingService)
-      end
-
-      def index
-        self.class.indexing_service.indexContent(self.class.kernel.context, @obj, true)
       end
 
       def export_job
