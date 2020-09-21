@@ -9,6 +9,7 @@ module DSpace
     autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
     autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
 
+    autoload(:SeniorThesisQuery, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_query'))
     autoload(:SeniorThesisItem, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_item'))
     autoload(:SeniorThesisCollection, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_collection'))
     autoload(:SeniorThesisCommunity, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_community'))

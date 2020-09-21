@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module DSpace
-  autoload(:CLI, './cli')
+  autoload(:CLI, File.join(__FILE__, 'cli'))
 end

@@ -25,6 +25,8 @@ module DSpace
       # This is some internal bug; I am not certain why I cannot use this from DItem
       # rubocop:disable Naming/MethodName
       def getMetadataByMetadataString(metadata_field)
+        return [] if @obj.nil?
+
         @obj.getMetadataByMetadataString(metadata_field)
       end
       # rubocop:enable Naming/MethodName
@@ -63,7 +65,7 @@ module DSpace
         self
       end
 
-      def add_metadata(schema, element, value, qualifier = nil, language = nil)
+      def add_metadata(schema:, element:, value:, qualifier: nil, language: nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
         return if new_metadatum.nil?
 
@@ -73,6 +75,8 @@ module DSpace
       end
 
       def metadata_database_rows
+        return [] if @obj.nil?
+
         database_query = 'SELECT * FROM MetadataValue WHERE resource_id = ?'
 
         row_iterator = Java::OrgDspaceStorageRdbms::DatabaseManager.query(self.class.kernel.context, database_query, id.to_java)
@@ -176,31 +180,6 @@ module DSpace
         end
 
         @metadata = updated_metadata
-      end
-
-      # I am not certain that this is needed
-      module Java
-        module OrgDspaceContent
-          module DSpaceObject
-            class MetadataCache
-              attr_reader :metadata
-
-              def initialize(metadata)
-                @metadata = metadata
-              end
-            end
-          end
-        end
-      end
-
-      # I am not certain that this is needed
-      module Java
-        module OrgDspaceContent
-          class Item
-            field_accessor :metadataCache
-            field_accessor :modifiedMetadata
-          end
-        end
       end
 
       # I am not certain that this is needed
