@@ -1,6 +1,7 @@
 #!/usr/bin/env jruby -I $DSPACE_JRUBY_DIR/lib -I $DSPACE_CLI_DIR/ $*
 
 require "dspace"
+require "dspace/cli"
 require "irb"
 require 'irb/completion'
 
