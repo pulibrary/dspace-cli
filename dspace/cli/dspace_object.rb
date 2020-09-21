@@ -3,6 +3,7 @@
 module DSpace
   module CLI
     class DSpaceObject
+      java_import(org.dspace.content.DSpaceObject)
       attr_reader :obj
 
       def self.kernel
@@ -37,6 +38,19 @@ module DSpace
 
       def id
         @obj.getID
+      end
+
+      def type
+        @obj.getType
+      end
+
+      def reload
+        persisted_type = type
+        persisted_id = id
+
+        @obj = nil
+        reloaded = Java::OrgDspaceContent::DSpaceObject.find(self.class.kernel.context, persisted_type, persisted_id)
+        @obj = reloaded
       end
 
       def handle

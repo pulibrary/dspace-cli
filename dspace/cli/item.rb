@@ -184,6 +184,14 @@ module DSpace
         MetadataField.new('dc', 'identifier', 'uri')
       end
 
+      def self.date_accessioned_field
+        MetadataField.new('dc', 'date', 'accessioned')
+      end
+
+      def self.date_issued_field
+        MetadataField.new('dc', 'date', 'issued')
+      end
+
       def authors
         @obj.getMetadataByMetadataString(self.class.author_field.to_s).collect(&:value)
       end
@@ -220,11 +228,34 @@ module DSpace
         self.class.kernel.commit
       end
 
+      def accession_dates
+        @obj.getMetadataByMetadataString(self.class.date_accessioned_field.to_s).collect(&:value)
+      end
+
+      def date_accessioned
+        accession_dates.first
+      end
+
+      def issued_dates
+        @obj.getMetadataByMetadataString(self.class.date_issued_field.to_s).collect(&:value)
+      end
+
+      def date_issued
+        issued_dates.first
+      end
+
       def archive
         return if archived?
 
         Java::OrgDspaceContent::InstallItem.installItem(self.class.kernel.context, workflow_item.obj)
         self.class.kernel.commit
+
+        # This is a work-around for a curation task
+        if date_accessioned && date_issued.nil?
+          date_issued = date_accessioned.gsub(/T.+$/, '')
+          add_metadata(schema: 'dc', element: 'date', qualifier: 'issued', value: date_issued)
+          update
+        end
       end
 
       def self.workflow_item_class
