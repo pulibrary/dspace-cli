@@ -9,6 +9,7 @@ module DSpace
       java_import org.dspace.content.MetadataSchema
       java_import org.dspace.handle.HandleManager
       java_import(org.dspace.content.InstallItem)
+      java_import(org.dspace.discovery.IndexingService)
 
       attr_reader :obj, :metadata
 
@@ -428,6 +429,22 @@ module DSpace
 
         # This increases the state by 1 step
         Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
+      end
+
+      def self.service_manager
+        kernel.getServiceManager
+      end
+
+      def self.get_service_by_name(class_name, service_class)
+        service_manager.getServiceByName(class_name, service_class)
+      end
+
+      def self.indexing_service
+        get_service_by_name('org.dspace.discovery.SearchService', Java::OrgDspaceDiscovery::IndexingService)
+      end
+
+      def index
+        self.class.indexing_service.indexContent(self.class.kernel.context, @obj, true)
       end
 
       def export_job
