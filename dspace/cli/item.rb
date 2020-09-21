@@ -249,13 +249,6 @@ module DSpace
 
         Java::OrgDspaceContent::InstallItem.installItem(self.class.kernel.context, workflow_item.obj)
         self.class.kernel.commit
-
-        # This is a work-around for a curation task
-        if date_accessioned && date_issued.nil?
-          date_issued = date_accessioned.gsub(/T.+$/, '')
-          add_metadata(schema: 'dc', element: 'date', qualifier: 'issued', value: date_issued)
-          update
-        end
       end
 
       def self.workflow_item_class
