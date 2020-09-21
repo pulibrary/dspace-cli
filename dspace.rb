@@ -1,2 +1,4 @@
+module DSpace
+  autoload(:CLI, 'cli')
+end
 
-require 'dspace/cli'

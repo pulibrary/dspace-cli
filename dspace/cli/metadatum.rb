@@ -196,11 +196,14 @@ module DSpace
         !database_row.nil?
       end
 
+      # This is where there is duplication
+      # I suspect that explicitly writing INSERT statements here is where they are create
       def update
         if persisted?
           self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
         else
-          self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
+          # do not INSERT, as these are likely being updated elsewhere
+          # self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
         end
       end
 
