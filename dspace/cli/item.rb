@@ -101,56 +101,6 @@ module DSpace
         @metadata = updated_metadata
       end
 
-      def remove_duplicated_metadata
-        updated_metadata = []
-        existing_metadata = metadata
-
-        metadata.each do |metadatum|
-          matching_metadata = existing_metadata.select { |md| md == metadatum }
-
-          if matching_metadata.length > 1
-            if updated_metadata.select { |md| md == metadatum }.empty?
-              updated_metadata << metadatum
-            else
-              metadatum.delete
-            end
-          else
-            updated_metadata << metadatum
-          end
-        end
-
-        @metadata = updated_metadata
-      end
-
-      def remove_duplicated_metadata_field(schema, element, qualifier = nil, language = nil)
-        new_metadatum = build_metadatum(schema, element, qualifier, language)
-        return if new_metadatum.nil?
-
-        new_metadatum.language = language
-
-        updated_metadata = []
-        metadata.each do |metadatum|
-          if metadatum.matches_field?(new_metadatum)
-
-            existing_metadata = metadata
-            matching_metadata = existing_metadata.select { |md| md == metadatum }
-
-            if matching_metadata.length > 1
-
-              duplicate_metadata = matching_metadata.pop
-              duplicate_metadata.delete
-            else
-              updated_metadata << metadatum
-            end
-
-          else
-            updated_metadata << metadatum
-          end
-        end
-
-        @metadata = updated_metadata
-      end
-
       # I am not certain that this is needed
       # rubocop:disable Naming/AccessorMethodName
       def set_metadata(values)
@@ -252,7 +202,7 @@ module DSpace
       end
 
       def self.workflow_item_class
-        WorkflowItem
+        DSpace::CLI::WorkflowItem
       end
 
       def self.collection_class

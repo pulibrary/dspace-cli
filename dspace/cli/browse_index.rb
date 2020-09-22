@@ -19,11 +19,11 @@ module DSpace
       end
 
       def self.default_browse_index_name
-        "title"
+        'title'
       end
 
       def self.browse_index_name
-        Java::OrgDspaceCore::ConfigurationManager.getProperty("webui.collectionhome.browse-name") || default_browse_index_name
+        Java::OrgDspaceCore::ConfigurationManager.getProperty('webui.collectionhome.browse-name') || default_browse_index_name
       end
 
       def self.browse_index
@@ -47,11 +47,11 @@ module DSpace
       end
 
       def self.et_al
-        Java::OrgDspaceCore::ConfigurationManager.getIntProperty("webui.browse.author-limit", -1)
+        Java::OrgDspaceCore::ConfigurationManager.getIntProperty('webui.browse.author-limit', -1)
       end
 
       def self.per_page
-        Java::OrgDspaceCore::ConfigurationManager.getIntProperty("webui.collectionhome.perpage", 20)
+        Java::OrgDspaceCore::ConfigurationManager.getIntProperty('webui.collectionhome.perpage', 20)
       end
 
       def build_browser_scope
@@ -103,9 +103,9 @@ module DSpace
         end
 
         if items_withdrawn
-          query.addFilterQueries("withdrawn:true")
+          query.addFilterQueries('withdrawn:true')
         elsif !items_discoverable
-          query.addFilterQueries("discoverable:false")
+          query.addFilterQueries('discoverable:false')
         end
 
         query.addFilterQueries("search.resourcetype: #{Java::OrgDspaceCore::Constants::ITEM}")
@@ -143,7 +143,7 @@ module DSpace
       end
 
       def self.solr_service
-        configuration_service.getProperty("discovery.search.server")
+        configuration_service.getProperty('discovery.search.server')
       end
 
       def build_solr
@@ -160,14 +160,14 @@ module DSpace
       def delete_query
         output = []
 
-        if @container.is_a?(Java::OrgDspaceContent::Community)
-          output << "location.comm: #{@container.getID}"
-        else
-          output << "location.coll: #{@container.getID}"
-        end
+        output << if @container.is_a?(Java::OrgDspaceContent::Community)
+                    "location.comm: #{@container.getID}"
+                  else
+                    "location.coll: #{@container.getID}"
+                  end
 
         output << "search.resourcetype: #{Java::OrgDspaceCore::Constants::ITEM}"
-        output.join(" AND ")
+        output.join(' AND ')
       end
 
       def delete_all_documents

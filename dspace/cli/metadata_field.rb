@@ -5,10 +5,29 @@ module DSpace
     class MetadataField
       attr_reader :schema, :element, :qualifier
 
-      def initialize(schema, element, qualifier = nil)
+      def self.kernel
+        ::DSpace
+      end
+
+      def self.find_schema_model(model:)
+        schema_id = model.getSchemaID
+        Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema_id)
+      end
+
+      def self.build(model:)
+        schema_model = find_schema_model(model: model)
+        schema = schema_model.getShortName
+        element = model.getElement
+        qualifier = model.getQualifier
+
+        new(schema, element, qualifier, model)
+      end
+
+      def initialize(schema, element, qualifier = nil, model = nil)
         @schema = schema
         @element = element
         @qualifier = qualifier
+        @model = model
       end
 
       def to_s

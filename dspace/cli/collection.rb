@@ -41,13 +41,27 @@ module DSpace
         @members ||= get_all_items.map { |member_obj| Item.new(member_obj) }
       end
 
+      def self.workflow_item_class
+        DSpace::CLI::WorkflowItem
+      end
+
+      def workflow_items
+        values = Java::OrgDspaceWorkflow::WorkflowItem.findByCollection(self.class.kernel.context, @obj)
+        workflow_objs = values.to_a
+        return workflow_objs if workflow_objs.empty?
+
+        workflow_objs.map do |workflow_obj|
+          self.class.workflow_item_class.new(workflow_obj)
+        end
+      end
+
       def index
         super
         members.map(&:index)
       end
 
       def browse_index
-        @browse_index ||= BrowseIndex.new(container: @obj, per_page: 1000000)
+        @browse_index ||= BrowseIndex.new(container: @obj, per_page: 1_000_000)
       end
     end
   end

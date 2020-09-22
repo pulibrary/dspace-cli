@@ -214,8 +214,13 @@ module DSpace
         @metadata_field_id ||= database_row.getIntColumn('metadata_field_id')
       end
 
+      def build_metadata_field
+        dspace_model = Java::OrgDspaceContent::MetadataField.find(self.class.kernel, metadata_field_id)
+        DSpace::CLI::MetadataField.build(model: dspace_model)
+      end
+
       def metadata_field
-        @metadata_field ||= Java::OrgDspaceContent::MetadataField.find(self.class.kernel, metadata_field_id)
+        @metadata_field ||= build_metadata_field
       end
 
       def item_id

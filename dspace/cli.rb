@@ -11,10 +11,15 @@ module DSpace
 
     autoload(:BrowseIndex, File.join(File.dirname(__FILE__), 'cli', 'browse_index'))
 
+    autoload(:WorkflowItem, File.join(File.dirname(__FILE__), 'cli', 'workflow_item'))
+
     autoload(:Item, File.join(File.dirname(__FILE__), 'cli', 'item'))
     autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
     autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
 
+    autoload(:Jobs, File.join(File.dirname(__FILE__), 'cli', 'jobs'))
+
+    autoload(:ResultSet, File.join(File.dirname(__FILE__), 'cli', 'result_set'))
     autoload(:Query, File.join(File.dirname(__FILE__), 'cli', 'query'))
 
     autoload(:SeniorThesisQuery, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_query'))

@@ -14,6 +14,30 @@ module DSpace
         MetadataField.new('dc', 'title')
       end
 
+      def self.update_handle_statement
+        'UPDATE handle SET handle = ? WHERE resource_id = ? AND handle = ?'
+      end
+
+      def self.insert_handle_statement
+        'INSERT INTO handle (handle, resource_id) VALUES (?, ?)'
+      end
+
+      def self.update_table(query, *params)
+        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, query, *params)
+      end
+
+      def update_handle(value)
+        statement = update_handle_statement
+
+        update_table(statement, value, id, handle)
+      end
+
+      def add_handle(value)
+        statement = insert_handle_statement
+
+        update_table(statement, value, id)
+      end
+
       def self.find_metadata_field(schema, element, qualifier = nil)
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
         raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
@@ -55,6 +79,14 @@ module DSpace
 
       def handle
         @obj.getHandle
+      end
+
+      def handle=(value)
+        if handle.nil?
+          update_handle(value)
+        else
+          add_handle(value)
+        end
       end
 
       def type_text

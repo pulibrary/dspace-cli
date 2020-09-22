@@ -1,5 +1,6 @@
 module DSpace
   module CLI
+    module Jobs
     class BatchUpdateStateJob
       java_import org.dspace.eperson.EPerson
       java_import(org.dspace.workflow.WorkflowManager)
@@ -43,5 +44,6 @@ module DSpace
         end
       end
     end
+  end
   end
 end

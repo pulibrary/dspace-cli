@@ -69,7 +69,11 @@ module DSpace
 
       def find_items(metadata_field, value)
         if @results.empty?
-          objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, Java::OrgDspaceCore::Constants::ITEM)
+          found_objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, Java::OrgDspaceCore::Constants::ITEM)
+
+          # Filter for nil objects
+          objs = found_objs.reject(&:nil?)
+
           @results = objs.map do |obj|
             SeniorThesisItem.new(obj)
           end
