@@ -14,6 +14,10 @@ group :development, :test do
   gem "rubocop"
 end
 
+group :development do
+  gem 'pry-debugger-jruby'
+end
+
 group :test do
   gem "faker"
 end

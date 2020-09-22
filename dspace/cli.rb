@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pry-debugger-jruby'
+
 module DSpace
   module CLI
     autoload(:DSpaceObject, File.join(File.dirname(__FILE__), 'cli', 'dspace_object'))

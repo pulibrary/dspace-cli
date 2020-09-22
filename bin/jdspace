@@ -6,5 +6,6 @@ SRC_DIR=`dirname "$PARENT_DIR"`
 
 export DSPACE_JRUBY_DIR=$SRC_DIR/dspace-jruby
 export DSPACE_CLI_DIR=$PARENT_DIR
+export JRUBY_OPTS="--debug"
 
 /usr/bin/env jruby -I $DSPACE_JRUBY_DIR/lib -I $DSPACE_CLI_DIR/ $*
