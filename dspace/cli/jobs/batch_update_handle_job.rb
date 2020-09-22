@@ -18,7 +18,7 @@ module DSpace
         end
 
         def self.build_from_csv(file_path:)
-          updates = CSVUpdate.build_from_file(file_path: file_path)
+          updates = CSVUpdate.build_from_file(path: file_path)
           build(updates)
         end
       end

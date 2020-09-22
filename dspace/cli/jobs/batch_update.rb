@@ -5,6 +5,7 @@ module DSpace
 
       class BatchUpdate
 
+        
         def initialize(updates: [])
           @updates = updates
         end

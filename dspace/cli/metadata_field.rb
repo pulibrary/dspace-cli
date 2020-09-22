@@ -16,7 +16,7 @@ module DSpace
 
       def self.build(model:)
         schema_model = find_schema_model(model: model)
-        schema = schema_model.getShortName
+        schema = schema_model.getName
         element = model.getElement
         qualifier = model.getQualifier
 

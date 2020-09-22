@@ -15,8 +15,7 @@ module DSpace
         @text_value = @obj.value
         @text_lang = @obj.language
 
-        @metadata_field = metadata_field
-        @metadata_field_id = metadata_field.getFieldID
+        @metadata_field_id = metadata_field.getFieldID unless metadata_field.nil?
 
         @item = item
         @item_id = item.id
@@ -215,7 +214,7 @@ module DSpace
       end
 
       def build_metadata_field
-        dspace_model = Java::OrgDspaceContent::MetadataField.find(self.class.kernel, metadata_field_id)
+        dspace_model = Java::OrgDspaceContent::MetadataField.find(self.class.kernel.context, metadata_field_id)
         DSpace::CLI::MetadataField.build(model: dspace_model)
       end
 

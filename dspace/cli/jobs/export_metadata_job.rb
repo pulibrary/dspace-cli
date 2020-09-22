@@ -45,24 +45,32 @@ module DSpace
         row << @dspace_object.handle
         row << @dspace_object.state
 
+        metadata_values = {}
         @dspace_object.metadata.each do |metadatum|
-          row << metadatum.value
+          key = metadatum.metadata_field.to_s
+          metadata_value = metadata_values.fetch(key, [])
+
+          metadata_value << metadatum.value.gsub(/\R/, '')
+
+          metadata_values[key] = metadata_value
+        end
+
+        metadata_values.values.each do |value|
+          row << value.join(';')
         end
 
         row
       end
 
-      def existing_file
-        @existing_file ||= File.new(@file_path, 'r:UTF-8')
+      def build_existing_file
+        File.new(@file_path, 'r:UTF-8')
       end
 
       def existing_csv_table
-        return unless File.exist?(@file_path)
+        return if File.empty?(@file_path)
 
-        existing_data = existing_file.read
-        value = CSV.parse(existing_data, headers: true)
-        # This raises an intermittent error - perhaps there is a race condition?
-        # existing_file.close
+        existing_file = build_existing_file
+        value = CSV.parse(existing_file, headers: true)
         value
       end
 
@@ -77,8 +85,8 @@ module DSpace
       end
 
       def csv_rows
-        rows = existing_rows
-        rows << headers if existing_headers.empty?
+        rows = []
+        rows << headers if File.empty?(@file_path)
 
         rows << csv_row
         rows
@@ -97,7 +105,7 @@ module DSpace
       end
 
       def output_file
-        @output_file ||= File.new(@file_path, 'w:UTF-8')
+        @output_file ||= File.new(@file_path, 'a:UTF-8')
       end
 
       def write
@@ -106,7 +114,7 @@ module DSpace
       end
 
       def perform(**_args)
-        @logger.info("Exporting the metadata to #{@file_path}...")
+        @logger.info("Exporting the metadata from #{@dspace_object.id} to #{@file_path}...")
         write
       end
     end
