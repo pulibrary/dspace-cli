@@ -3,6 +3,7 @@
 module DSpace
   module CLI
     class Item < DSpaceObject
+      java_import org.dspace.core.Constants
       java_import org.dspace.workflow.WorkflowItem
       java_import org.dspace.content.Metadatum
       java_import org.dspace.content.MetadataField
@@ -27,7 +28,7 @@ module DSpace
 
       def update
         # DO NOT ENABLE THIS
-        # @metadata.each(&:update)
+        @metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
         build_metadata
@@ -43,12 +44,18 @@ module DSpace
         new_metadatum
       end
 
+      def self.select_all_metadata_value_query
+        <<-SQL
+          SELECT * FROM metadatavalue
+            WHERE resource_id = ?
+            AND resource_type_id = #{Java::OrgDspaceCore::Constants::ITEM}
+        SQL
+      end
+
       def metadata_database_rows
         return [] if @obj.nil?
 
-        database_query = 'SELECT * FROM MetadataValue WHERE resource_id = ?'
-
-        row_iterator = Java::OrgDspaceStorageRdbms::DatabaseManager.query(self.class.kernel.context, database_query, id.to_java)
+        row_iterator = Java::OrgDspaceStorageRdbms::DatabaseManager.query(self.class.kernel.context, self.class.select_all_metadata_value_query, id.to_java)
 
         rows = []
         rows << row_iterator.next while row_iterator.hasNext

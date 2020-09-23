@@ -16,11 +16,10 @@ module DSpace
 
       def self.build(model:)
         schema_model = find_schema_model(model: model)
-        schema = schema_model.getName
         element = model.getElement
         qualifier = model.getQualifier
 
-        new(schema, element, qualifier, model)
+        new(schema_model, element, qualifier, model)
       end
 
       def initialize(schema, element, qualifier = nil, model = nil)
@@ -36,6 +35,10 @@ module DSpace
         else
           "#{schema}.#{element}.#{qualifier}"
         end
+      end
+
+      def schema_id
+        schema.getSchemaID
       end
     end
   end

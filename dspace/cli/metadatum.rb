@@ -40,7 +40,7 @@ module DSpace
       end
 
       def schema_id
-        metadata_field.schemaID
+        metadata_field.schema_id
       end
 
       def schema
