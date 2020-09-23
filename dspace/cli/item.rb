@@ -26,8 +26,8 @@ module DSpace
       end
 
       def update
-        # This is likely where the duplication is occurring
-        @metadata.each(&:update)
+        # DO NOT ENABLE THIS
+        # @metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
         build_metadata
