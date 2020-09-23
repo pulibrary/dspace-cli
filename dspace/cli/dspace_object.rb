@@ -139,6 +139,10 @@ module DSpace
       def index
         self.class.indexing_service.indexContent(self.class.kernel.context, @obj, true)
       end
+
+      def remove_from_index
+        self.class.indexing_service.unIndexContent(self.class.kernel.context, @obj, true)
+      end
     end
   end
 end

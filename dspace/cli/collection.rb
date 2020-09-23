@@ -63,6 +63,11 @@ module DSpace
       def browse_index
         @browse_index ||= BrowseIndex.new(container: @obj, per_page: 1_000_000)
       end
+
+      def remove_from_index
+        super
+        browse_index.delete_all_documents
+      end
     end
   end
 end
