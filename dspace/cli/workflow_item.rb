@@ -23,6 +23,7 @@ module DSpace
       end
 
       def update
+        # Please note, this updates the related Item object
         @obj.update
         self.class.kernel.commit
         self
@@ -35,11 +36,46 @@ module DSpace
       end
 
       def state
-        @obj.getState
+        @state = @obj.getState
+      end
+
+      def self.update_statement
+        <<-SQL
+        UPDATE workflowitem
+          SET state = ?
+          WHERE workflow_id = ?
+        SQL
+      end
+
+      def self.database_manager
+        Java::OrgDspaceStorageRdbms::DatabaseManager
+      end
+
+      def self.update_query(statement, *params)
+        database_manager.updateQuery(kernel.context, statement, *params)
+      end
+
+      def update_state
+        statement = self.class.update_statement
+        self.class.update_query(statement, @state, id)
       end
 
       def state=(value)
-        @obj.setState(value)
+        # This does not work
+        # @obj.setState(value)
+
+        @state = value
+        update_state
+        state
+      end
+
+      def owner
+        @obj.getOwner
+      end
+
+      def owner=(value)
+        @obj.setOwner(value)
+        update
       end
 
       def self.delete_query

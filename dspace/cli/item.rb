@@ -318,30 +318,93 @@ module DSpace
         @obj.setSubmitter(eperson)
       end
 
-      def advance_workflow(eperson)
-        return if workflow_item.nil?
-
-        # This increases the state by 1 step
-        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
+      def valid_workflow_state?(workflow_state)
+        valid_state = workflow_state >= self.class.pending_curator_review_state
+        valid_state |= workflow_state <= self.class.archived_state
+        valid_state |= !workflow_item.nil?
+        valid_state |= state != workflow_state
+        valid_state
       end
 
-      # This needs to be refactored
-      def self.valid_workflow_state?(state)
-        state > Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE || state <= Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1
+      def self.workflow_manager
+        Java::OrgDspaceWorkflow::WorkflowManager
       end
 
-      def advance_workflow_to_state(eperson, next_state)
-        return self.state = next_state if next_state == Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1POOL
-
-        return archive if next_state == Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE
-
-        return if workflow_item.nil? || self.class.valid_workflow_state?(next_state) || state == next_state
-
+      def advance_workflow(next_state, eperson)
         self.state = next_state - 1
-        update
 
         # This increases the state by 1 step
-        Java::OrgDspaceWorkflow::WorkflowManager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
+        self.class.workflow_manager.advance(self.class.kernel.context, workflow_item.obj, eperson, true, true)
+      end
+
+      def set_workflow(new_state:, eperson:)
+        return archive if new_state == self.class.archived_state
+
+        return unless valid_workflow_state?(new_state)
+
+        # This is currently broken
+        # advance_workflow(state, eperson)
+        workflow_item.owner = eperson
+        self.state = new_state
+      end
+
+      def set_workflow_with_submitter(new_state:)
+        set_workflow(new_state: new_state, eperson: submitter)
+      end
+
+      def self.archived_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE
+      end
+
+      def self.pending_curator_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1POOL
+      end
+
+      def self.under_curator_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1
+      end
+
+      def self.pending_admin_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP2POOL
+      end
+
+      def self.under_admin_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP2
+      end
+
+      def self.pending_editorial_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3POOL
+      end
+
+      def self.under_editorial_review_state
+        Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3
+      end
+
+      def self.workflow_state_methods
+        [
+          :archived_state,
+          :pending_curator_review_state,
+          :under_curator_review_state,
+          :pending_admin_review_state,
+          :under_admin_review_state,
+          :pending_editorial_review_state,
+          :under_editorial_review_state
+        ]
+      end
+
+      workflow_state_methods.each do |method_name|
+        segment = method_name.to_s.gsub('_state', '')
+        state = send(method_name)
+
+        base_method_name = "set_workflow_to_#{segment}"
+        define_method(base_method_name.to_sym) do |eperson|
+          set_workflow(new_state: state, eperson: eperson)
+        end
+
+        with_submitter_method_name = "set_workflow_to_#{segment}_with_submitter"
+        define_method(with_submitter_method_name.to_sym) do
+          set_workflow_with_submitter(new_state: state)
+        end
       end
 
       def export_job
