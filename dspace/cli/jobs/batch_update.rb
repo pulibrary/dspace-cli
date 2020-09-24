@@ -5,7 +5,6 @@ module DSpace
 
       class BatchUpdate
 
-        
         def initialize(updates: [])
           @updates = updates
         end
@@ -14,8 +13,8 @@ module DSpace
           @updates.to_a
         end
 
-        def each
-          to_enum(:to_a)
+        def each(&block)
+          to_a.each(&block)
         end
       end
     end

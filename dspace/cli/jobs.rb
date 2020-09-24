@@ -9,7 +9,9 @@ module DSpace
     autoload(:FileUpdate, File.join(File.dirname(__FILE__), 'jobs', 'file_update'))
     autoload(:CSVUpdate, File.join(File.dirname(__FILE__), 'jobs', 'csv_update'))
 
+    autoload(:Job, File.join(File.dirname(__FILE__), 'jobs', 'job'))
     autoload(:BatchJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_job'))
+    autoload(:BatchImportJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_import_job'))
 
     autoload(:ExportMetadataJob, File.join(File.dirname(__FILE__), 'jobs', 'export_metadata_job'))
     autoload(:BatchExportMetadataJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_export_metadata_job'))

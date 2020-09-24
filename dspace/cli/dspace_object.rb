@@ -15,27 +15,95 @@ module DSpace
       end
 
       def self.update_handle_statement
-        'UPDATE handle SET handle = ? WHERE resource_id = ? AND handle = ?'
+        <<-SQL
+        UPDATE handle
+          SET handle = ?
+          WHERE resource_id = ?
+            AND handle = ?
+        SQL
       end
 
       def self.insert_handle_statement
-        'INSERT INTO handle (handle, resource_id) VALUES (?, ?)'
+        <<-SQL
+        INSERT INTO handle
+          (handle_id, handle, resource_id)
+          VALUES (?, ?, ?)
+        SQL
       end
 
-      def self.update_table(query, *params)
-        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, query, *params)
+      def self.database_manager
+        Java::OrgDspaceStorageRdbms::DatabaseManager
+      end
+
+      def self.update_table(statement, *params)
+        database_manager.updateQuery(kernel.context, statement, *params)
+      end
+
+      def self.query(database_query, *params)
+        database_manager.query(kernel.context, database_query, *params)
       end
 
       def update_handle(value)
-        statement = update_handle_statement
+        statement = self.class.update_handle_statement
 
-        update_table(statement, value, id, handle)
+        self.class.update_table(statement, value, id, handle)
+        reload
+      end
+
+      def self.select_next_handle_id_query
+        <<-SQL
+        SELECT (handle_id + 1) AS next_handle_id FROM handle
+          ORDER BY handle_id DESC
+          LIMIT 1
+        SQL
+      end
+
+      def self.select_handle_query
+        <<-SQL
+        SELECT handle FROM handle
+          WHERE resource_id = ?
+          LIMIT 1
+        SQL
+      end
+
+      def self.select_next_handle_id
+        select_query = select_next_handle_id_query
+
+        results = query(select_query)
+        row_iterator = results
+
+        rows = []
+        rows << row_iterator.next while row_iterator.hasNext
+
+        return if rows.empty?
+
+        row = rows.first
+        value = row.getIntColumn('next_handle_id')
+        value.to_i
       end
 
       def add_handle(value)
-        statement = insert_handle_statement
+        statement = self.class.insert_handle_statement
+        new_record_id = self.class.select_next_handle_id
 
-        update_table(statement, value, id)
+        self.class.update_table(statement, new_record_id, value, id)
+        reload
+      end
+
+      def select_handle
+        select_query = self.class.select_handle_query
+
+        results = self.class.query(select_query, id)
+        row_iterator = results
+
+        rows = []
+        rows << row_iterator.next while row_iterator.hasNext
+
+        return if rows.empty?
+
+        row = rows.first
+        value = row.getStringColumn('handle')
+        value.to_s
       end
 
       def self.find_metadata_field(schema, element, qualifier = nil)
@@ -78,15 +146,24 @@ module DSpace
       end
 
       def handle
-        @obj.getHandle
+        # This is not reliable either
+        # @obj.getHandle
+        @obj.getHandle || select_handle
       end
 
+      # This will never delete existing handles if set to nil
       def handle=(value)
+        return if value.nil?
+
         if handle.nil?
-          update_handle(value)
-        else
           add_handle(value)
+        else
+          update_handle(value)
         end
+      end
+
+      def delete_handle
+        nil
       end
 
       def type_text

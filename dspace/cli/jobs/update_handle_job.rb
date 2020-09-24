@@ -2,31 +2,26 @@
 module DSpace
   module CLI
     module Jobs
-    class UpdateHandleJob
+    class UpdateHandleJob < Job
 
-      def self.build_logger
-        logger = Logger.new(STDOUT)
-        logger.level = Logger::INFO
-        logger
-      end
-
-      def initialize(item_id, handle)
-        @item_id = item_id
+      def initialize(id:, handle:, **args)
+        super(**args)
+        @item_id = id
         @handle = handle
-        @logger = self.class.build_logger
-      end
-
-      def self.item_class
-        Item
       end
 
       def item
-        self.class.item_class.find(item_id.to_i)
+        self.class.item_class.find(@item_id.to_i)
       end
 
-      def perform
-        item.handle = handle
+      def perform(**args)
+        return if @handle.nil?
+
+        @logger.info("Updating the handle from #{item.handle} to #{@handle} for #{item.id}...")
+        item.handle = @handle
         item.update
+        item.reload
+        @logger.info("Updated the handle to #{item.handle} for #{item.id}")
       end
     end
   end
