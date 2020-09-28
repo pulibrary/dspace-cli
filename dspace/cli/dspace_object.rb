@@ -124,6 +124,14 @@ module DSpace
         nil
       end
 
+      def self.community_class
+        Community
+      end
+
+      def self.collection_class
+        Collection
+      end
+
       def initialize(obj)
         @obj = obj
       end

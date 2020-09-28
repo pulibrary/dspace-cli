@@ -16,8 +16,8 @@ module DSpace
     autoload(:WorkflowItem, File.join(File.dirname(__FILE__), 'cli', 'workflow_item'))
 
     autoload(:Item, File.join(File.dirname(__FILE__), 'cli', 'item'))
-    autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
     autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
+    autoload(:Collection, File.join(File.dirname(__FILE__), 'cli', 'collection'))
 
     autoload(:Jobs, File.join(File.dirname(__FILE__), 'cli', 'jobs'))
 
@@ -28,5 +28,12 @@ module DSpace
     autoload(:SeniorThesisItem, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_item'))
     autoload(:SeniorThesisCollection, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_collection'))
     autoload(:SeniorThesisCommunity, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_community'))
+
+    autoload(:DCollection, File.join(File.dirname(__FILE__), 'cli', 'legacy', 'dcollection'))
+
+    autoload(:SerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'serials_collection'))
+    autoload(:PublicSerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'public_serials_collection'))
+    autoload(:PrivateSerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'private_serials_collection'))
+
   end
 end

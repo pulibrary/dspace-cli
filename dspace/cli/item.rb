@@ -212,10 +212,6 @@ module DSpace
         DSpace::CLI::WorkflowItem
       end
 
-      def self.collection_class
-        Collection
-      end
-
       def workflow_item
         workflow_obj = Java::OrgDspaceWorkflow::WorkflowItem.findByItem(self.class.kernel.context, @obj)
         return if workflow_obj.nil?

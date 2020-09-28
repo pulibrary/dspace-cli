@@ -6,18 +6,10 @@ require 'logger'
 
 module DSpace
   module CLI
-    class Community
-      def self.kernel
-        ::DSpace
-      end
-
+    class Community < DSpaceObject
       # This needs to be a base query class
       def self.query_class
         nil
-      end
-
-      def initialize(obj)
-        @obj = obj
       end
 
       def self.query

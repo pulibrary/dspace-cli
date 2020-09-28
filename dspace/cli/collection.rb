@@ -41,6 +41,14 @@ module DSpace
         @members ||= get_all_items.map { |member_obj| Item.new(member_obj) }
       end
 
+      def communities
+        @obj.getCommunities.map { |community_obj| self.class.community_class.new(community_obj) }
+      end
+
+      def collections
+        @obj.getCollections.map { |collection_obj| self.class.collection_class.new(collection_obj) }
+      end
+
       def self.workflow_item_class
         DSpace::CLI::WorkflowItem
       end
