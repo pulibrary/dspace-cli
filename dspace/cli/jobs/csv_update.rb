@@ -12,11 +12,11 @@ module DSpace
         end
 
         def self.build_from_file(path:)
-          if !File.exist?(path)
-            relative_path = File.join(File.dirname(__FILE__), '..', '..', '..', 'imports', 'metadata', path)
-          else
-            relative_path = path
-          end
+          relative_path = if !File.exist?(path)
+                            File.join(File.dirname(__FILE__), '..', '..', '..', 'imports', 'metadata', path)
+                          else
+                            path
+                          end
           absolute_path = Pathname.new(relative_path)
           csv_table = parse_csv(absolute_path)
 
@@ -28,14 +28,14 @@ module DSpace
             value = {}
             csv_table.headers.each do |column|
               column_index = csv_table.headers.find_index(column)
-              cell = row[column_index] || ""
+              cell = row[column_index] || ''
               cell_values = cell.split(/;/)
 
-              if cell_values.length < 2
-                value[column] = cell_values.first
-              else
-                value[column] = cell_values
-              end
+              value[column] = if cell_values.length < 2
+                                cell_values.first
+                              else
+                                cell_values
+                              end
             end
 
             update = Update.new(value)

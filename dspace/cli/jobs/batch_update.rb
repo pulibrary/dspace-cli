@@ -1,10 +1,7 @@
-
 module DSpace
   module CLI
     module Jobs
-
       class BatchUpdate
-
         def initialize(updates: [])
           @updates = updates
         end

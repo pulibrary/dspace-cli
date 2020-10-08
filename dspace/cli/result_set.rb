@@ -30,12 +30,11 @@ module DSpace
       end
 
       def export_metadata_to_file(csv_file_path:)
-
-        if !File.exists?(csv_file_path)
-          value = File.join(File.dirname(__FILE__), '..', '..', 'exports', 'metadata', csv_file_path)
-        else
-          value = csv_file_path
-        end
+        value = if !File.exist?(csv_file_path)
+                  File.join(File.dirname(__FILE__), '..', '..', 'exports', 'metadata', csv_file_path)
+                else
+                  csv_file_path
+                end
         absolute_file_path = Pathname.new(value)
 
         job = DSpace::CLI::Jobs::BatchExportMetadataJob.build(file_path: absolute_file_path, dspace_objects: members)

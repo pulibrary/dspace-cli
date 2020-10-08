@@ -1,12 +1,14 @@
-#!/usr/bin/env jruby  
+#!/usr/bin/env jruby
 
 # Set metadata on given year
 
-require "highline/import"
+require 'highline/import'
 require 'cli/dconstants'
 
 year = DConstants::DEFAULT_YEAR
-schema, element, qualifier = ['pu', 'date', 'classyear']
+schema = 'pu'
+element = 'date'
+qualifier = 'classyear'
 handle = DConstants::SENIOR_THESIS_HANDLE
 require 'dspace'
 DSpace.load
@@ -16,7 +18,7 @@ ask 'ctr-c to abort'
 
 DSpace.fromString(handle).getCollections.each do |col|
   template = col.get_template_item
-  if (template) then
+  if template
     puts "#{col.getHandle} template item #{template} set #{year}"
     template.setMetadataSingleValue(schema, element, qualifier, nil, year.to_s)
     template.update_metadata

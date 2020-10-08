@@ -1,14 +1,13 @@
 module DSpace
   module CLI
     class SerialsCollection < Collection
-
       # This needs to be restructured to parse a configuration file
       def self.private_community_handle
-        "88435/dsp01r781wg06f"
+        '88435/dsp01r781wg06f'
       end
 
       def self.public_community_handle
-        "88435/dsp01kh04dp74g"
+        '88435/dsp01kh04dp74g'
       end
 
       def self.community
@@ -45,20 +44,20 @@ module DSpace
       end
 
       def copy(name:, parent:)
-        raise "Parent object must be a community" if parent.getType != ::DConstants::COMMUNITY
+        raise 'Parent object must be a community' if parent.getType != ::DConstants::COMMUNITY
 
         collection_name = name.strip
         new_col = DSpace::CLI::DCollection.create(collection_name, parent)
 
         submitter_group = @obj.getSubmitters
-        if !submitter_group.nil?
+        unless submitter_group.nil?
           new_group = new_col.createSubmitters
           copy_group(submitter_group, new_group)
         end
 
         [1, 2, 3].each do |i|
           wf_group = @obj.getWorkflowGroup(i)
-          if !wf_group.nil?
+          unless wf_group.nil?
             new_wf_group = new_col.createWorkflowGroup(i)
             copy_group(wf_group, new_wf_group)
           end
@@ -75,11 +74,11 @@ module DSpace
       sub_groups = from.getMemberGroups
 
       sub_groups.each do |g|
-        to.addMember(g);
+        to.addMember(g)
       end
 
-      from.getMembers().each do |g|
-        to.addMember(g);
+      from.getMembers.each do |g|
+        to.addMember(g)
       end
 
       to.update

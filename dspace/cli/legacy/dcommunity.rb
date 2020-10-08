@@ -1,7 +1,8 @@
-##
-#
+# frozen_string_literal: true
+
 module DSpace
   module CLI
+    # This extends the JRuby models for DCommunity
     class DCommunity < ::DCommunity
       # get Collection from within DCommunity by name
       # QUESTION: Is this the appropriate way to get match? I guess zero-eth index

@@ -1,7 +1,8 @@
-##
-#
+# frozen_string_literal: true
+
 module DSpace
   module CLI
+    # This extends the JRuby models for DCollection
     class DCollection < ::DCollection
       java_import(org.dspace.content.Collection)
 
@@ -14,6 +15,7 @@ module DSpace
       end
 
       def initialize(dobj)
+        super(dobj)
         @obj = dobj
       end
 
@@ -45,7 +47,6 @@ module DSpace
 
       # Rename all workflows with preset "STEP_1", "STEP_2", "STEP_3" standardization
       def name_workflow_groups
-        colname = @obj.getName.gsub(/\s+/, '_')
         [1, 2, 3].each do |step|
           group = @obj.getWorkflowGroup(step)
           next unless group
@@ -57,12 +58,12 @@ module DSpace
             group.update
           end
         end
+
         self
       end
 
       # change workflow name of all submitters "SUBMIT"
       def name_submitter_group
-        colname = @obj.getName.gsub(/\s+/, '_')
         group = @obj.getSubmitters
         if group
           name = group.getName
@@ -72,6 +73,7 @@ module DSpace
             group.update
           end
         end
+
         self
       end
 

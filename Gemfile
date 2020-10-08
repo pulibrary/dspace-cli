@@ -1,17 +1,17 @@
 source 'https://rubygems.org'
 
-gem "highline"
+gem 'highline'
 gem 'http'
-gem "lumberjack"
 gem 'json'
+gem 'lumberjack'
 gem 'rack'
 gem 'roo'
 gem 'rsolr'
-gem "xml-simple"
+gem 'xml-simple'
 gem 'yard'
 
 group :development, :test do
-  gem "rubocop"
+  gem 'rubocop'
 end
 
 group :development do
@@ -19,5 +19,5 @@ group :development do
 end
 
 group :test do
-  gem "faker"
+  gem 'faker'
 end

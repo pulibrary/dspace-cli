@@ -2,7 +2,6 @@ module DSpace
   module CLI
     module Jobs
       class BatchUpdateHandleJob < BatchImportJob
-
         def self.child_job_class
           UpdateHandleJob
         end

@@ -1,68 +1,64 @@
-#!/usr/bin/env jruby 
+#!/usr/bin/env jruby
 
-# This is a complicated script that walks you through either adding 
+# This is a complicated script that walks you through either adding
 #   a given netid to the same groups as another user, or removing a user from
 #   a group.
 
-require "highline/import"
+require 'highline/import'
 require 'dspace'
 
 netid, who = ARGV
 
-if (netid.nil?) then
-  netid = ask "enter netid "
-end
+netid = ask 'enter netid ' if netid.nil?
 
 DSpace.load
 
 # TODO: This naming convention is misleading. This prints the groups of which
 #   the given person is a member.
 def print_members(p)
-  puts p.getNetid + ":"
+  puts p.getNetid + ':'
   DSpace.create(p).groups.each { |g| puts "\t#{g.getName}" }
 end
 
-p = DEPerson.find(netid);
-raise "no such eperson" if p.nil?
-print_members(p);
+p = DEPerson.find(netid)
+raise 'no such eperson' if p.nil?
 
-if (who.nil?) then
-  who = ask "want to add to same groups as another user ? [return/netid] "
-end
+print_members(p)
 
-unless (who.empty?) then
-  o = DEPerson.find(who);
-  raise "no such eperson" if o.nil?
-  print_members(o);
+who = ask 'want to add to same groups as another user ? [return/netid] ' if who.nil?
+
+unless who.empty?
+  o = DEPerson.find(who)
+  raise 'no such eperson' if o.nil?
+
+  print_members(o)
   pgroups = DSpace.create(p).groups
   DSpace.create(o).groups.each do |g|
-    if (pgroups.select { |pg| pg.getName() == g.getName }.empty?) then
-      yes = ask "add #{p} to #{g.getName()} ? [Y/N] ";
-      if (yes == "Y") then
+    if pgroups.select { |pg| pg.getName == g.getName }.empty?
+      yes = ask "add #{p} to #{g.getName} ? [Y/N] "
+      if yes == 'Y'
         puts "\tadding #{p} to #{g}"
-        g.addMember(p);
-        g.update();
+        g.addMember(p)
+        g.update
       end
     else
       puts "\talready member of GROUP.#{g.getName}"
     end
   end
 end
-puts "";
+puts ''
 
-if "Y" == ask("want to remove from groups ? [Y/N] ") then
+if 'Y' == ask('want to remove from groups ? [Y/N] ')
   DSpace.create(p).groups.each do |g|
-    yes = ask "remove #{p} from #{g.getName()} ? [Y/N] ";
-    if (yes == "Y") then
-      puts "\tremoving from #{g}"
-      g.removeMember(p);
-      g.update();
-    end
+    yes = ask "remove #{p} from #{g.getName} ? [Y/N] "
+    next unless yes == 'Y'
+
+    puts "\tremoving from #{g}"
+    g.removeMember(p)
+    g.update
   end
 end
-puts "";
+puts ''
 
-print_members(p);
-if "Y" == ask("want to commit the changes ? [Y/N] ") then
-  DSpace.commit
-end
+print_members(p)
+DSpace.commit if 'Y' == ask('want to commit the changes ? [Y/N] ')

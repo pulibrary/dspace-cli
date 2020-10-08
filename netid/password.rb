@@ -1,30 +1,23 @@
-#!/usr/bin/env jruby 
+#!/usr/bin/env jruby
 
 # Reset password of given netid
 
-require "highline/import"
+require 'highline/import'
 require 'dspace'
 require 'cli/dconstants'
 
 netid, pwd = ARGV
 
-if (netid.nil?) then
-    netid = ask "enter netid "
-end
+netid = ask 'enter netid ' if netid.nil?
 
 DSpace.load
 DSpace.login DConstants::LOGIN
 
-p = DEPerson.find(netid);
-raise "no such eperson" if p.nil?
+p = DEPerson.find(netid)
+raise 'no such eperson' if p.nil?
 
-if (pwd.nil?) then
-    pwd = ask "enter password "
-end
+pwd = ask 'enter password ' if pwd.nil?
 
-p.setPassword(pwd) 
+p.setPassword(pwd)
 p.update
 DSpace.commit
-
-
-

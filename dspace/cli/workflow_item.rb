@@ -2,11 +2,12 @@
 
 module DSpace
   module CLI
+    # This models the DSpace entity org.dspace.workflow.WorkflowItem
     class WorkflowItem
-      java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.eperson.EPerson
-      java_import org.dspace.workflow.WorkflowManager
       java_import org.dspace.handle.HandleManager
+      java_import org.dspace.storage.rdbms.DatabaseManager
+      java_import org.dspace.workflow.WorkflowManager
 
       attr_reader :obj
 

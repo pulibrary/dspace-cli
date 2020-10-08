@@ -6,19 +6,19 @@ require 'dspace'
 
 DSpace.load
 
-puts ["Field", "Year", "Month", "#Items"].join("\t")
+puts ['Field', 'Year', 'Month', '#Items'].join("\t")
 ['dc.date.accessioned', 'dc.date.issued'].each do |mdfield|
-  items= DItem.iter
-  submissions = {};
-  while (i = items.next()) do
+  items = DItem.iter
+  submissions = {}
+  while (i = items.next)
     date = i.getMetadata(mdfield)
     begin
       year, month = date.split('-')
-      submissions[year] ||= {'total' => 0}
+      submissions[year] ||= { 'total' => 0 }
       submissions[year][month] ||= 0
       submissions[year][month] += 1
       submissions[year]['total'] += 1
-    rescue
+    rescue StandardError
       puts "Item #{i} #{mdfield} value = '#{date}'"
     end
   end

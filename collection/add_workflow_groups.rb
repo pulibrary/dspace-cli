@@ -4,7 +4,7 @@
 #   the handle provided on the command line
 
 require 'optparse'
-require "highline/import"
+require 'highline/import'
 require 'dspace'
 require 'cli/dcommunity'
 require 'cli/dcollection'
@@ -17,7 +17,7 @@ end
 
 begin
   parser.parse!
-  raise "must give at collection/community parameter and at least one workflow step" if ARGV.length < 2
+  raise 'must give at collection/community parameter and at least one workflow step' if ARGV.length < 2
 
   DSpace.load
   DSpace.login DConstants::LOGIN
@@ -27,12 +27,9 @@ begin
     dso.find_or_create_workflow_group(step)
   end
 
-  doit = ask "commit ? (Y/N) "
-  if (doit == "Y") then
-    DSpace.commit
-  end
-
+  doit = ask 'commit ? (Y/N) '
+  DSpace.commit if doit == 'Y'
 rescue Exception => e
-  puts e.message;
-  puts parser.help();
+  puts e.message
+  puts parser.help
 end

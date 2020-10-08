@@ -377,14 +377,14 @@ module DSpace
       end
 
       def self.workflow_state_methods
-        [
-          :archived_state,
-          :pending_curator_review_state,
-          :under_curator_review_state,
-          :pending_admin_review_state,
-          :under_admin_review_state,
-          :pending_editorial_review_state,
-          :under_editorial_review_state
+        %i[
+          archived_state
+          pending_curator_review_state
+          under_curator_review_state
+          pending_admin_review_state
+          under_admin_review_state
+          pending_editorial_review_state
+          under_editorial_review_state
         ]
       end
 

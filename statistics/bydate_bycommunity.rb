@@ -7,16 +7,16 @@ require 'dspace'
 
 DSpace.load
 
-puts ["Field", "Year", "Month", "#Items"].join("\t")
+puts ['Field', 'Year', 'Month', '#Items'].join("\t")
 ['dc.date.accessioned', 'dc.date.issued'].each do |mdfield|
-  submissions = {};
+  submissions = {}
   items = DItem.iter
-  while (i = items.next()) do
+  while (i = items.next)
     date = i.getMetadata(mdfield)
     begin
       year, month = date.split('-')
       community = DSpace.create(i).parents[-1] # top level community
-      if (community and community.getHandle) then
+      if community&.getHandle
         ['total', community.getHandle].each do |bucket|
           submissions[bucket] ||= {}
           submissions[bucket][year] ||= {}
@@ -24,19 +24,19 @@ puts ["Field", "Year", "Month", "#Items"].join("\t")
           submissions[bucket][year][month] += 1
           submissions[bucket][year]['total'] ||= 0
           submissions[bucket][year]['total'] += 1
-          submissions[bucket]['total'] ||= {'total' => 0}
+          submissions[bucket]['total'] ||= { 'total' => 0 }
           submissions[bucket]['total']['total'] += 1
         end
       else
-        $stderr.puts "Item #{i}  in community #{community} without a handle"
+        warn "Item #{i}  in community #{community} without a handle"
       end
-    rescue
-      $stderr.puts "Item #{i} #{mdfield} value = '#{date}'"
+    rescue StandardError
+      warn "Item #{i} #{mdfield} value = '#{date}'"
     end
   end
   print "\n"
 
-  puts ["Type", "Year", "Month", "#Items", "Community"].join("\t")
+  puts ['Type', 'Year', 'Month', '#Items', 'Community'].join("\t")
   submissions.keys.sort.each do |bucket|
     submissions[bucket].keys.sort.each do |year|
       submissions[bucket][year].keys.sort.each do |month|
