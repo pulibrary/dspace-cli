@@ -34,6 +34,5 @@ module DSpace
     autoload(:SerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'serials_collection'))
     autoload(:PublicSerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'public_serials_collection'))
     autoload(:PrivateSerialsCollection, File.join(File.dirname(__FILE__), 'cli', 'private_serials_collection'))
-
   end
 end

@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 gem "highline"
-gem "lumberjack"
 gem 'http'
+gem "lumberjack"
 gem 'json'
 gem 'rack'
 gem 'roo'

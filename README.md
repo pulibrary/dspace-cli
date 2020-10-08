@@ -1,4 +1,4 @@
-# DSpace-CLI
+# DSpace CLI
 
 [![CircleCI](https://circleci.com/gh/pulibrary/dspace-cli.svg?style=svg)](https://circleci.com/gh/pulibrary/dspace-cli)
 [![Inch
@@ -8,23 +8,21 @@ This repo contains command line scripts that report on as well as modify the con
 
 Scripts are implemented with the help of the [DSpace JRuby repository](https://github.com/pulibrary/dspace-jruby).
 
-Most of scripts here are actively used at the Princeton University Library; some are tailored to the specific Princeton needs. 
-
+Most of scripts here are actively used at the Princeton University Library; some are tailored to the specific Princeton needs.
 
 ## Installation
 
 ### Prerequisite
- * JRuby  [Get Started](http://jruby.org/getting-started)
- * Package Manager  [Bundler](http://bundler.io/)
- * a working [DSPACE installation](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.3 releases.**
- * optional - but useful [RVM](https://rvm.io/)
+ * JRuby [Get Started](http://jruby.org/getting-started)
+ * Package Manager [Bundler](http://bundler.io/)
+ * [DSpace Installation](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.5 releases.**
 
-### Installation 
+### Installation
 
-clone  this repository 
+Clone this repository:
 
 Install the gems used by the scripts:
-```
+```bash
 bundle install
 ```
 

@@ -83,8 +83,29 @@ module DSpace
       end
 
       def self.delete_from_database(eperson_id, workflow_id)
-        Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, delete_query, eperson_id.to_java, workflow_id.to_java)
+        database_manager.updateQuery(kernel.context, delete_query, eperson_id.to_java, workflow_id.to_java)
         kernel.commit
+      end
+
+      def self.select_tasks_query
+        <<-SQL
+        SELECT eperson_id FROM tasklistitem
+          WHERE workflow_id = ?
+        SQL
+      end
+
+      def self.query(database_query, *params)
+        database_manager.query(kernel.context, database_query, *params)
+      end
+
+      def self.eperson_class
+        Java::OrgDspaceEperson::EPerson
+      end
+
+      def task_users
+        database_query = self.class.select_tasks_query
+        rows = self.class.query(database_query, id)
+        rows.map { |row| self.class.eperson_class.build(row['eperson_id']) }
       end
 
       def create_workflow_tasks(epeople)
