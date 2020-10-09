@@ -73,6 +73,7 @@ GEM
     rubyzip (2.3.0)
     spoon (0.0.6)
       ffi
+    thor (1.0.1)
     unf (0.1.4-java)
     unicode-display_width (1.7.0)
     xml-simple (1.1.5)
@@ -92,6 +93,7 @@ DEPENDENCIES
   roo
   rsolr
   rubocop
+  thor
   xml-simple
   yard
 

@@ -14,6 +14,28 @@ module DSpace
           logger
         end
 
+        def self.find_item_ids(primary_column, metadatum_value)
+          metadata_field = MetadataField.build_from_column(primary_column)
+          query = Query.find_items(metadata_field, metadatum_value)
+          query.results.map(&:id)
+        end
+
+        def self.build_with_column_id(primary_column, update)
+          values = update.to_h.dup
+          metadata = values.except(:primary_column)
+
+          metadatum_value = metadata.send(primary_column.to_sym)
+          item_ids = find_item_ids(primary_column, metadatum_value)
+          binding.pry
+
+          new(item_ids, metadata)
+        end
+
+        def self.build_from_csv(file_path:)
+          update = CSVUpdate.build_from_file(path: file_path)
+          build_with_column_id(update)
+        end
+
         def initialize(item_ids, metadata)
           @item_ids = item_ids
 
@@ -35,6 +57,7 @@ module DSpace
         def perform
           items.each do |item|
             metadata.each do |_metadatum|
+              binding.pry
               @logger.info("Updating the Item #{item.id} with the metadatum #{@metadata}...")
 
               item.add_metadata(

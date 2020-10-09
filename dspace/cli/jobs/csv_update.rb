@@ -11,7 +11,7 @@ module DSpace
           csv_table
         end
 
-        def self.build_from_file(path:)
+        def self.build_from_file(path:, primary_column:)
           relative_path = if !File.exist?(path)
                             File.join(File.dirname(__FILE__), '..', '..', '..', 'imports', 'metadata', path)
                           else
@@ -25,7 +25,8 @@ module DSpace
           table_values = csv_table.to_a
           rows = table_values[1..-1]
           rows.each do |row|
-            value = {}
+            value = { primary_column: primary_column }
+
             csv_table.headers.each do |column|
               column_index = csv_table.headers.find_index(column)
               cell = row[column_index] || ''
@@ -47,6 +48,11 @@ module DSpace
 
         def update_handles
           job = BatchUpdateHandleJob.build(self)
+          job.perform
+        end
+
+        def update_metadata
+          job = BatchUpdateMetadataJob.build(self)
           job.perform
         end
       end

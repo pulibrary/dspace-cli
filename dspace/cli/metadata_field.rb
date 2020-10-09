@@ -14,6 +14,11 @@ module DSpace
         Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema_id)
       end
 
+      def self.build_from_column(primary_column)
+        schema, element, qualifier = primary_column.split('.')
+        new(schema, element, qualifier)
+      end
+
       def self.build(model:)
         schema_model = find_schema_model(model: model)
         element = model.getElement

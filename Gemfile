@@ -7,6 +7,7 @@ gem 'lumberjack'
 gem 'rack'
 gem 'roo'
 gem 'rsolr'
+gem 'thor'
 gem 'xml-simple'
 gem 'yard'
 
