@@ -22,13 +22,6 @@ module DSpace
         DSpace::CLI::Collection
       end
 
-      # This isn't really specific to a ResultSet
-      # This should be moved to Update
-      def update_handles_from_file(csv_file_path:)
-        job = DSpace::CLI::Jobs::BatchUpdateHandleJob.build_from_csv(file_path: csv_file_path)
-        job.perform
-      end
-
       def export_metadata_to_file(csv_file_path:)
         value = if !File.exist?(csv_file_path)
                   File.join(File.dirname(__FILE__), '..', '..', 'exports', 'metadata', csv_file_path)

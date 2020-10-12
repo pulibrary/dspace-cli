@@ -19,6 +19,9 @@ module DSpace
             id
             handle
             state
+            title
+            author
+            collection
           ]
         end
 
