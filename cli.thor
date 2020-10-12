@@ -1,6 +1,6 @@
 ROOT_PATH = File.dirname(__FILE__)
 
-require File.join(ROOT_PATH, 'dspace')
+require File.join(ROOT_PATH, 'dspace', 'cli')
 
 class Dataspace < Thor
   desc "import_metadata", "Import the metadata from a CSV file"

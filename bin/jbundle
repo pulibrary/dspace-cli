@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# These should be properly installed as Gems
+PARENT_DIR="$PWD"
+SRC_DIR=`dirname "$PARENT_DIR"`
+
+export DSPACE_JRUBY_DIR=$SRC_DIR/dspace-jruby
+export DSPACE_CLI_DIR=$PARENT_DIR
+export JRUBY_OPTS="--debug"
+
+/usr/bin/env jruby -I $DSPACE_JRUBY_DIR/lib -I $DSPACE_CLI_DIR/ -e 'require "dspace"; require "dspace/cli"; require "bundler"; Bundler.require(:default); Kernel.exec( "$GEM_HOME/bin/bundle " + ARGV.join(" ") )' $*
