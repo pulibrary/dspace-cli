@@ -67,6 +67,20 @@ module DSpace
         self
       end
 
+      def find_children
+        if !@results.empty?
+          selected_results = @results.map do |dspace_object|
+            if dspace_object.respond_to?(:members)
+              dspace_object.members
+            else
+              []
+            end
+          end
+
+          return self.class.new(selected_results.flatten, self)
+        end
+      end
+
       def find_items(metadata_field, value)
         if @results.empty?
           found_objs = self.class.kernel.findByMetadataValue(metadata_field.to_s, value, Java::OrgDspaceCore::Constants::ITEM)

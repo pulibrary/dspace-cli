@@ -1,56 +1,47 @@
 require 'csv'
-require 'pathname'
 require 'logger'
+require 'ostruct'
+require 'pathname'
+require 'yaml'
 
 module DSpace
   module CLI
     class SeniorThesisCommunity < DSpace::Core::Community
+
+      class Configuration < OpenStruct
+        def self.build_from_file(file_path)
+          fh = File.new(file_path, 'rb')
+          file_content = fh.read
+          yaml_values = YAML.load(file_content)
+          values = if yaml_values.is_a?(Hash)
+                     yaml_values
+                   else
+                     yaml_values.to_ruby
+                   end
+
+          built = self.new(values)
+          fh.close
+
+          built
+        end
+      end
+
+      def self.configuration_file
+        File.join( File.dirname(__FILE__), '..', '..', 'config', 'senior_theses.yml' )
+      end
+
+      def self.configuration
+        @configuration ||= Configuration.build_from_file(configuration_file)
+      end
+
       # This needs to be restructured to parse from a configuration file
       def self.certificate_program_titles
-        [
-          'Creative Writing Program'
-        ]
+        configuration.certificate_programs
       end
 
       # This needs to be restructured to parse from a configuration file
       def self.collection_titles
-        [
-          'African American Studies',
-          'Anthropology',
-          'Architecture School',
-          'Art and Archaeology',
-          'Astrophysical Sciences',
-          'Chemical and Biological Engineering',
-          'Chemistry',
-          'Civil and Environmental Engineering',
-          'Classics',
-          'Comparative Literature',
-          'Computer Science',
-          'East Asian Studies',
-          'Ecology and Evolutionary Biology',
-          'Economics',
-          'Electrical Engineering',
-          'English',
-          'French and Italian',
-          'Geosciences',
-          'German',
-          'History',
-          'Independent Concentration',
-          'Mathematics',
-          'Mechanical and Aerospace Engineering',
-          'Molecular Biology',
-          'Near Eastern Studies',
-          'Neuroscience',
-          'Operations Research and Financial Engineering',
-          'Philosophy',
-          'Physics',
-          'Politics',
-          'Woodrow Wilson School', # This needs to be renamed to the Princeton School
-          'Psychology',
-          'Slavic Languages and Literature',
-          'Sociology',
-          'Spanish and Portuguese'
-        ]
+        configuration.departments
       end
 
       def self.kernel

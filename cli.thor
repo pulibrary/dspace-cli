@@ -1,5 +1,8 @@
-ROOT_PATH = File.dirname(__FILE__)
-require File.join(ROOT_PATH, 'dspace', 'cli')
+Dir['/dspace/lib/**/*.jar'].each { |jar_path| require(jar_path) }
+
+DSPACE_JRUBY_PATH = File.join(File.dirname(__FILE__), '..', 'dspace-jruby')
+require File.join(DSPACE_JRUBY_PATH, 'lib', 'dspace')
+require File.join(File.dirname(__FILE__), 'dspace', 'cli')
 
 class Dataspace < Thor
   desc "import_metadata", "Import the metadata from a CSV file"
@@ -16,7 +19,6 @@ class Dataspace < Thor
 
   desc "export_metadata", "Export the metadata to a CSV file"
   method_option :file, type: :string, aliases: 'f'
-
   method_option :class_year, type: :string, aliases: 'y'
   method_option :department, type: :string, aliases: 'd'
   method_option :certificate_program, type: :string, aliases: 'p'
@@ -30,9 +32,33 @@ class Dataspace < Thor
     query.find_by_class_year(class_year) unless class_year.nil?
     query = query.find_by_department(department) unless department.nil?
     query = query.find_by_certificate_program(certificate_program) unless certificate_program.nil?
+    query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
+  end
 
-    sub_query = query.find_children
-    sub_query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
+  desc "export_theses_metadata", "Export the metadata to a CSV file"
+  method_option :class_year, type: :string, aliases: 'y'
+  def export_theses_metadata
+    class_year = options[:class_year]
+
+    DSpace::CLI::SeniorThesisCommunity.certificate_program_titles.each do |certificate_program|
+      segment = certificate_program.downcase.gsub(/\s/, '_')
+      export_file_path = "#{segment}.csv"
+
+      query = DSpace::CLI::SeniorThesisQuery.new
+      query.find_by_class_year(class_year) unless class_year.nil?
+      query = query.find_by_certificate_program(certificate_program) unless certificate_program.nil?
+      query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
+    end
+
+    DSpace::CLI::SeniorThesisCommunity.collection_titles.each do |department|
+      segment = department.downcase.gsub(/\s/, '_')
+      export_file_path = "#{segment}.csv"
+
+      query = DSpace::CLI::SeniorThesisQuery.new
+      query.find_by_class_year(class_year) unless class_year.nil?
+      query = query.find_by_department(department) unless department.nil?
+      query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
+    end
   end
 
   desc "update_handles", "Import the handles from a CSV"
