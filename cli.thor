@@ -1,5 +1,4 @@
 ROOT_PATH = File.dirname(__FILE__)
-
 require File.join(ROOT_PATH, 'dspace', 'cli')
 
 class Dataspace < Thor
@@ -27,12 +26,12 @@ class Dataspace < Thor
     department = options[:department]
     certificate_program = options[:certificate_program]
 
-    query = Query.new
+    query = DSpace::CLI::SeniorThesisQuery.new
     query.find_by_class_year(class_year) unless class_year.nil?
     query = query.find_by_department(department) unless department.nil?
     query = query.find_by_certificate_program(certificate_program) unless certificate_program.nil?
 
-    sub_query = query.find_members
+    sub_query = query.find_children
     sub_query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
   end
 

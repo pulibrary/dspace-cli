@@ -4,7 +4,7 @@ require 'logger'
 
 module DSpace
   module CLI
-    class SeniorThesisCommunity < ::DCommunity
+    class SeniorThesisCommunity < DSpace::Core::Community
       # This needs to be restructured to parse from a configuration file
       def self.certificate_program_titles
         [
@@ -79,6 +79,14 @@ module DSpace
 
       def self.query
         query_class.new
+      end
+
+      def find_children
+        if !@results.empty?
+          selected_results = @results.map(&:members)
+
+          return self.class.new(selected_results.flatten, self)
+        end
       end
 
       def self.find_items(metadata_field, value)

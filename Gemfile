@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'highline'
 gem 'http'
+gem 'jruby-openssl'
 gem 'json'
 gem 'lumberjack'
 gem 'rack'
