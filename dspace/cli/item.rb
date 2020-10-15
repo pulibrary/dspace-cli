@@ -27,7 +27,6 @@ module DSpace
       end
 
       def update
-        # DO NOT ENABLE THIS
         @metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
@@ -44,49 +43,16 @@ module DSpace
         new_metadatum
       end
 
+      def self.resource_type_id
+        Java::OrgDspaceCore::Constants::ITEM
+      end
+
       def self.select_all_metadata_value_query
         <<-SQL
           SELECT * FROM metadatavalue
             WHERE resource_id = ?
-            AND resource_type_id = #{Java::OrgDspaceCore::Constants::ITEM}
+            AND resource_type_id = #{resource_type_id}
         SQL
-      end
-
-      def metadata_database_rows
-        return [] if @obj.nil?
-
-        row_iterator = Java::OrgDspaceStorageRdbms::DatabaseManager.query(self.class.kernel.context, self.class.select_all_metadata_value_query, id.to_java)
-
-        rows = []
-        rows << row_iterator.next while row_iterator.hasNext
-        rows
-      end
-
-      def find_metadata_objects
-        values = metadata_database_rows.map do |row|
-          metadata_field_id = row.getIntColumn('metadata_field_id')
-          metadata_field = Java::OrgDspaceContent::MetadataField.find(self.class.kernel.context, metadata_field_id)
-
-          schema_id = metadata_field.getSchemaID
-          schema_model = Java::OrgDspaceContent::MetadataSchema.find(self.class.kernel.context, schema_id)
-
-          schema = schema_model.getName
-          element = metadata_field.getElement
-          qualifier = metadata_field.getQualifier
-          value = row.getStringColumn('text_value')
-          language = row.getStringColumn('text_lang')
-
-          new_metadatum = build_metadatum(schema, element, qualifier, language)
-
-          new_metadatum.value = value unless new_metadatum.nil?
-          new_metadatum
-        end
-
-        values.reject(&:nil?)
-      end
-
-      def build_metadata
-        @metadata = find_metadata_objects
       end
 
       def remove_metadata(schema, element, value, qualifier = nil, language = nil)
@@ -134,19 +100,19 @@ module DSpace
       end
 
       def self.author_field
-        MetadataField.new('dc', 'contributor', 'author')
+        metadata_field_class.new('dc', 'contributor', 'author')
       end
 
       def self.uri_field
-        MetadataField.new('dc', 'identifier', 'uri')
+        metadata_field_class.new('dc', 'identifier', 'uri')
       end
 
       def self.date_accessioned_field
-        MetadataField.new('dc', 'date', 'accessioned')
+        metadata_field_class.new('dc', 'date', 'accessioned')
       end
 
       def self.date_issued_field
-        MetadataField.new('dc', 'date', 'issued')
+        metadata_field_class.new('dc', 'date', 'issued')
       end
 
       def authors
@@ -239,10 +205,6 @@ module DSpace
 
       def remove_task_pool_user(email)
         remove_task_pool_users([email])
-      end
-
-      def collections
-        @obj.getCollections.map { |collection_obj| self.class.collection_class.new(collection_obj) }
       end
 
       def self.find_collection_by_title(title)
@@ -419,6 +381,11 @@ module DSpace
       def move_collection_by_handles(from_handle, to_handle, _inherit_default_policies = false)
         add_to_collection(to_handle)
         remove_from_collection(from_handle)
+      end
+
+      def bundles
+        bundle_models = @model.getBundles
+        bundle_models.map { |bundle_model| Bundle.new(bundle_model) }
       end
     end
   end

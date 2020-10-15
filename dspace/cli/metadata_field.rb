@@ -21,7 +21,7 @@ module DSpace
       def self.build_from_column(primary_column)
         schema_name, element, qualifier = primary_column.split('.')
         schema_model = model_class.findByNamespace(kernel.context, schema_name)
-        new(schema_name, element, qualifier, schema_model: schema_model)
+        new(schema_name, element, qualifier, nil, schema_model)
       end
 
       def self.build(model:)
@@ -29,10 +29,10 @@ module DSpace
         element = model.getElement
         qualifier = model.getQualifier
 
-        new(schema_model.getName, element, qualifier, model, schema_model: schema_model)
+        new(schema_model.getName, element, qualifier, model, schema_model)
       end
 
-      def initialize(schema, element, qualifier = nil, model = nil, schema_model: nil)
+      def initialize(schema, element, qualifier = nil, model = nil, schema_model = nil)
         @schema = schema
         @element = element
         @qualifier = qualifier

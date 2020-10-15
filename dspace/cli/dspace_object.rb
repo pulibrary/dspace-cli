@@ -43,6 +43,66 @@ module DSpace
         database_manager.query(kernel.context, database_query, *params)
       end
 
+      def self.select_all_metadata_value_query
+        <<-SQL
+          SELECT * FROM metadatavalue
+            WHERE resource_id = ?
+        SQL
+      end
+
+      def self.database_query
+        Java::OrgDspaceStorageRdbms::DatabaseManager
+      end
+
+      def self.metadata_field_model
+        Java::OrgDspaceContent::MetadataField
+      end
+
+      def self.metadata_schema_model
+        Java::OrgDspaceContent::MetadataSchema
+      end
+
+      def metadata_database_rows
+        return [] if @obj.nil?
+
+        row_iterator = self.class.database_manager.query(self.class.kernel.context, self.class.select_all_metadata_value_query, id.to_java)
+
+        rows = []
+        rows << row_iterator.next while row_iterator.hasNext
+        rows
+      end
+
+      def find_metadata_objects
+        values = metadata_database_rows.map do |row|
+          metadata_field_id = row.getIntColumn('metadata_field_id')
+          metadata_field = self.class.metadata_field_model.find(self.class.kernel.context, metadata_field_id)
+
+          schema_id = metadata_field.getSchemaID
+          schema_model = self.class.metadata_schema_model.find(self.class.kernel.context, schema_id)
+
+          schema = schema_model.getName
+          element = metadata_field.getElement
+          qualifier = metadata_field.getQualifier
+          value = row.getStringColumn('text_value')
+          language = row.getStringColumn('text_lang')
+
+          new_metadatum = build_metadatum(schema, element, qualifier, language)
+
+          new_metadatum.value = value unless new_metadatum.nil?
+          new_metadatum
+        end
+
+        values.reject(&:nil?)
+      end
+
+      def build_metadata
+        @metadata = find_metadata_objects
+      end
+
+      def metadata
+        @metadata ||= build_metadata
+      end
+
       def update_handle(value)
         statement = self.class.update_handle_statement
 
@@ -125,15 +185,21 @@ module DSpace
       end
 
       def self.community_class
-        Community
+        CLI::Community
       end
 
       def self.collection_class
-        Collection
+        CLI::Collection
+      end
+
+      def self.metadata_field_class
+        CLI::MetadataField
       end
 
       def initialize(obj)
         @obj = obj
+        # obj is ambiguous, and I would like to see this deprecated
+        @model = obj
       end
 
       def id
@@ -176,6 +242,20 @@ module DSpace
 
       def type_text
         @obj.getTypeText
+      end
+
+      def collections
+        @obj.getCollections.map { |collection_obj| self.class.collection_class.new(collection_obj) }
+      end
+
+      def first_collection
+        collections.first
+      end
+
+      def first_collection_title
+        return if first_collection.nil?
+
+        first_collection.title
       end
 
       # rubocop:disable Naming/MethodName

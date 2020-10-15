@@ -34,6 +34,18 @@ module DSpace
         job.perform
       end
 
+      def export_policies_to_file(csv_file_path:)
+        value = if !File.exist?(csv_file_path)
+                  File.join(File.dirname(__FILE__), '..', '..', 'exports', 'policies', csv_file_path)
+                else
+                  csv_file_path
+                end
+        absolute_file_path = Pathname.new(value)
+
+        job = DSpace::CLI::Jobs::BatchExportPoliciesJob.build(file_path: absolute_file_path, dspace_objects: members)
+        job.perform
+      end
+
       def add_to_collection(handle)
         obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(self.class.kernel.context, handle)
         return if obj.nil?

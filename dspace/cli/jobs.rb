@@ -15,6 +15,9 @@ module DSpace
       autoload(:ExportMetadataJob, File.join(File.dirname(__FILE__), 'jobs', 'export_metadata_job'))
       autoload(:BatchExportMetadataJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_export_metadata_job'))
 
+      autoload(:ExportPoliciesJob, File.join(File.dirname(__FILE__), 'jobs', 'export_policies_job'))
+      autoload(:BatchExportPoliciesJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_export_policies_job'))
+
       autoload(:BatchUpdateStateJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_update_state_job'))
 
       autoload(:UpdateHandleJob, File.join(File.dirname(__FILE__), 'jobs', 'update_handle_job'))

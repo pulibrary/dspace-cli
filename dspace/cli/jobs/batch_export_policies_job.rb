@@ -1,9 +1,9 @@
 module DSpace
   module CLI
     module Jobs
-      class BatchExportMetadataJob < BatchJob
+      class BatchExportPoliciesJob < BatchJob
         def self.child_job_class
-          ExportMetadataJob
+          ExportPoliciesJob
         end
 
         def self.build(file_path:, dspace_objects: [], **job_args)

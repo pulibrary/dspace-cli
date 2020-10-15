@@ -9,6 +9,10 @@ module DSpace
     autoload(:Metadatum, File.join(File.dirname(__FILE__), 'cli', 'metadatum'))
     autoload(:MetadataField, File.join(File.dirname(__FILE__), 'cli', 'metadata_field'))
 
+    autoload(:ResourcePolicy, File.join(File.dirname(__FILE__), 'cli', 'resource_policy'))
+    autoload(:Bitstream, File.join(File.dirname(__FILE__), 'cli', 'bitstream'))
+    autoload(:Bundle, File.join(File.dirname(__FILE__), 'cli', 'bundle'))
+
     autoload(:ExportJob, File.join(File.dirname(__FILE__), 'cli', 'export_job'))
 
     autoload(:BrowseIndex, File.join(File.dirname(__FILE__), 'cli', 'browse_index'))
