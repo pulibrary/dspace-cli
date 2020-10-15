@@ -17,12 +17,12 @@ class Dataspace < Thor
     update.update_metadata
   end
 
-  desc "export_metadata", "Export the metadata to a CSV file"
+  desc "export_theses_metadata", "Export the metadata to a CSV file"
   method_option :file, type: :string, aliases: 'f'
   method_option :class_year, type: :string, aliases: 'y'
   method_option :department, type: :string, aliases: 'd'
   method_option :certificate_program, type: :string, aliases: 'p'
-  def export_metadata
+  def export_theses_metadata
     export_file_path = options[:file]
     class_year = options[:class_year]
     department = options[:department]
@@ -35,9 +35,9 @@ class Dataspace < Thor
     query.result_set.export_metadata_to_file(csv_file_path: export_file_path)
   end
 
-  desc "export_theses_metadata", "Export the metadata to a CSV file"
+  desc "export_theses_community_metadata", "Export the metadata to a CSV file"
   method_option :class_year, type: :string, aliases: 'y'
-  def export_theses_metadata
+  def export_theses_community_metadata
     class_year = options[:class_year]
 
     DSpace::CLI::SeniorThesisCommunity.certificate_program_titles.each do |certificate_program|
@@ -63,10 +63,12 @@ class Dataspace < Thor
 
   desc "update_handles", "Import the handles from a CSV"
   method_option :file, type: :string, aliases: 'f'
+  method_option :primary_column, type: :string, aliases: 'k'
   def update_handles
     csv_file_path = options[:file]
+    primary_column = options[:primary_column]
 
-    job = DSpace::CLI::Jobs::BatchUpdateHandleJob.build_from_csv(file_path: csv_file_path)
+    job = DSpace::CLI::Jobs::BatchUpdateHandleJob.build_from_csv(file_path: csv_file_path, primary_column: primary_column)
     job.perform
   end
 end

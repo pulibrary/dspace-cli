@@ -9,14 +9,19 @@ module DSpace
         ::DSpace
       end
 
+      def self.model_class
+        Java::OrgDspaceContent::MetadataSchema
+      end
+
       def self.find_schema_model(model:)
         schema_id = model.getSchemaID
-        Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema_id)
+        model_class.find(kernel.context, schema_id)
       end
 
       def self.build_from_column(primary_column)
-        schema, element, qualifier = primary_column.split('.')
-        new(schema, element, qualifier)
+        schema_name, element, qualifier = primary_column.split('.')
+        schema_model = model_class.findByNamespace(kernel.context, schema_name)
+        new(schema_name, element, qualifier, schema_model: schema_model)
       end
 
       def self.build(model:)
@@ -24,14 +29,16 @@ module DSpace
         element = model.getElement
         qualifier = model.getQualifier
 
-        new(schema_model, element, qualifier, model)
+        new(schema_model.getName, element, qualifier, model, schema_model: schema_model)
       end
 
-      def initialize(schema, element, qualifier = nil, model = nil)
+      def initialize(schema, element, qualifier = nil, model = nil, schema_model: nil)
         @schema = schema
         @element = element
         @qualifier = qualifier
         @model = model
+
+        @schema_model = schema_model
       end
 
       def to_s
@@ -43,7 +50,7 @@ module DSpace
       end
 
       def schema_id
-        schema.getSchemaID
+        @schema_model.getSchemaID
       end
     end
   end

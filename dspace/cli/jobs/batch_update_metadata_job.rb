@@ -26,7 +26,6 @@ module DSpace
 
           metadatum_value = metadata.send(primary_column.to_sym)
           item_ids = find_item_ids(primary_column, metadatum_value)
-          binding.pry
 
           new(item_ids, metadata)
         end
@@ -57,7 +56,6 @@ module DSpace
         def perform
           items.each do |item|
             metadata.each do |_metadatum|
-              binding.pry
               @logger.info("Updating the Item #{item.id} with the metadatum #{@metadata}...")
 
               item.add_metadata(
