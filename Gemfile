@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+DSPACE_JRUBY_PATH = File.join(File.dirname(__FILE__), '..', 'dspace-jruby')
+gem 'dspace-jruby', path: DSPACE_JRUBY_PATH
+
 gem 'highline'
 gem 'http'
 gem 'jruby-openssl'

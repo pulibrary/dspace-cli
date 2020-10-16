@@ -1,3 +1,9 @@
+PATH
+  remote: /opt/dspace-jruby
+  specs:
+    dspace-jruby (0.1.0)
+      json
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -84,6 +90,7 @@ PLATFORMS
   java
 
 DEPENDENCIES
+  dspace-jruby!
   faker
   highline
   http

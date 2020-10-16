@@ -1,8 +1,4 @@
-Dir['/dspace/lib/**/*.jar'].each { |jar_path| require(jar_path) }
-
-DSPACE_JRUBY_PATH = File.join(File.dirname(__FILE__), '..', 'dspace-jruby')
-require File.join(DSPACE_JRUBY_PATH, 'lib', 'dspace')
-require File.join(File.dirname(__FILE__), 'dspace', 'cli')
+require File.join(File.dirname(__FILE__), 'dspace')
 
 class Dataspace < Thor
   desc "import_metadata", "Import the metadata from a CSV file"
