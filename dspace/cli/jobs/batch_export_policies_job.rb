@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for exporting ResourcePolicy metadata from a set of Items
       class BatchExportPoliciesJob < BatchJob
         def self.child_job_class
           ExportPoliciesJob

@@ -1,5 +1,6 @@
 module DSpace
   module CLI
+    # Class modeling a set of results from a DSpace database query
     class ResultSet
       java_import(org.dspace.content.Collection)
       java_import(org.dspace.eperson.EPerson)
@@ -92,7 +93,7 @@ module DSpace
         remove_task_pool_users([email])
       end
 
-      def move_collection(from_handle, to_handle, inherit_default_policies = false)
+      def move_collection(from_handle, to_handle, inherit_default_policies: false)
         members.each do |member|
           member.move_collection_by_handles(from_handle, to_handle, inherit_default_policies)
           self.class.kernel.commit

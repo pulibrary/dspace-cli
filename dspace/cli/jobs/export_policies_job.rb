@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for exporting ResourcePolicy metadata for an Item
       class ExportPoliciesJob
         def self.build_logger
-          logger = Logger.new(STDOUT)
+          logger = Logger.new($stdout)
           logger.level = Logger::INFO
           logger
         end
@@ -79,13 +82,11 @@ module DSpace
         end
 
         def resource_policies
-          children = []
-
           bundle_children = bundles.map(&:resource_policies)
           children = bundle_children.flatten
 
           bitstream_children = bitstreams.map(&:resource_policies)
-          children += bitstream_children.flatten
+          children + bitstream_children.flatten
         end
 
         def headers
@@ -137,7 +138,7 @@ module DSpace
             metadata_values[key] = metadata_value
           end
 
-          metadata_values.values.each do |value|
+          metadata_values.each_value do |value|
             row << value.join(';')
           end
 

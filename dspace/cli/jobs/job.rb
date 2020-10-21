@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module DSpace
   module CLI
     module Jobs
+      # Base Class modeling synchronous and asynchronous jobs
       class Job
         def self.build_logger(level)
-          logger = Logger.new(STDOUT)
+          logger = Logger.new($stdout)
           logger.level = level
           logger
         end

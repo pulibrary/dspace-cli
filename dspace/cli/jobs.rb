@@ -2,6 +2,7 @@
 
 module DSpace
   module CLI
+    # Classes modeling synchronous or asynchronous jobs
     module Jobs
       autoload(:Update, File.join(File.dirname(__FILE__), 'jobs', 'update'))
       autoload(:BatchUpdate, File.join(File.dirname(__FILE__), 'jobs', 'batch_update'))

@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for exporting metadata from a set of DSpace Objects
       class BatchExportMetadataJob < BatchJob
         def self.child_job_class
           ExportMetadataJob

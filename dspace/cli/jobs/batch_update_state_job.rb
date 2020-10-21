@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for updating the workflow state for a set of Items
       class BatchUpdateStateJob
         java_import org.dspace.eperson.EPerson
         java_import(org.dspace.workflow.WorkflowManager)
@@ -10,7 +13,7 @@ module DSpace
         end
 
         def self.build_logger
-          logger = Logger.new(STDOUT)
+          logger = Logger.new($stdout)
           logger.level = Logger::INFO
           logger
         end

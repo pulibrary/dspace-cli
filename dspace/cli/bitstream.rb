@@ -2,6 +2,8 @@
 
 module DSpace
   module CLI
+    # Class Modeling the Java Class org.dspace.content.Bitstream
+    # @see https://github.com/DSpace/DSpace/blob/dspace-5.5/dspace-api/src/main/java/org/dspace/content/Bitstream.java
     class Bitstream < DSpaceObject
       def self.resource_type_id
         Core::Constants::BITSTREAM

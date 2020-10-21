@@ -2,6 +2,8 @@
 
 module DSpace
   module CLI
+    # Class Modeling the Java Class for org.dspace.browse.BrowseIndex
+    # @see https://github.com/DSpace/DSpace/blob/dspace-5.5/dspace-api/src/main/java/org/dspace/browse/BrowseIndex.java
     class BrowseIndex
       java_import(org.dspace.core.ConfigurationManager)
       java_import(org.dspace.browse.BrowseIndex)

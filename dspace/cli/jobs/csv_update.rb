@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'csv'
 
 module DSpace
   module CLI
     module Jobs
+      # Class modeling the updates mapping CSV row values to Item metadata fields
       class CSVUpdate < FileUpdate
         def self.parse_csv(file_path)
           file = File.new(file_path, 'r:UTF-8')

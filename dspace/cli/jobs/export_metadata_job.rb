@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for exporting metadata from a DSpace Object
       class ExportMetadataJob
         def self.build_logger
-          logger = Logger.new(STDOUT)
+          logger = Logger.new($stdout)
           logger.level = Logger::INFO
           logger
         end
@@ -56,7 +59,7 @@ module DSpace
             metadata_values[key] = metadata_value
           end
 
-          metadata_values.values.each do |value|
+          metadata_values.each_value do |value|
             row << value.join(';')
           end
 

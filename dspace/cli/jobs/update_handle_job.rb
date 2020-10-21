@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module DSpace
   module CLI
     module Jobs
+      # Job for updating the handle for a given DSpace Item
       class UpdateHandleJob < Job
         def initialize(id:, handle:, **args)
           super(**args)

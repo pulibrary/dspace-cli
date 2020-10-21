@@ -184,3 +184,15 @@ Naming/VariableName:
   Exclude:
     - 'dspace/cli/legacy/**/*rb'
 
+Metrics/AbcSize:
+  Exclude:
+    - 'cli.thor'
+    - 'dspace/cli/dspace_object.rb'
+    - 'dspace/cli/jobs/csv_update.rb'
+    - 'dspace/cli/jobs/export_policies_job.rb'
+
+Metrics/ParameterLists:
+  Exclude:
+    - 'dspace/cli/browse_index.rb'
+
+

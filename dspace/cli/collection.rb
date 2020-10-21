@@ -28,6 +28,7 @@ module DSpace
         addItem(item)
       end
 
+      # rubocop:disable Naming/AccessorMethodName
       def get_all_items
         member_objs = []
 
@@ -36,6 +37,7 @@ module DSpace
 
         member_objs
       end
+      # rubocop:enable Naming/AccessorMethodName
 
       def members
         @members ||= get_all_items.map { |member_obj| Item.new(member_obj) }

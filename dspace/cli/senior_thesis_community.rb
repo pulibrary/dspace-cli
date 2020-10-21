@@ -6,12 +6,13 @@ require 'yaml'
 
 module DSpace
   module CLI
+    # Class modeling Communities containing Senior Thesis Items as members
     class SeniorThesisCommunity < DSpace::Core::Community
       class Configuration < OpenStruct
         def self.build_from_file(file_path)
           fh = File.new(file_path, 'rb')
           file_content = fh.read
-          yaml_values = YAML.load(file_content)
+          yaml_values = YAML.safe_load(file_content)
           values = if yaml_values.is_a?(Hash)
                      yaml_values
                    else
@@ -63,20 +64,15 @@ module DSpace
         MetadataField.new('pu', 'mudd', 'walkin')
       end
 
-      def initialize(obj)
-        @obj = obj
-      end
-
       def self.query
         query_class.new
       end
 
       def find_children
-        unless @results.empty?
-          selected_results = @results.map(&:members)
+        return if @results.empty?
 
-          self.class.new(selected_results.flatten, self)
-        end
+        selected_results = @results.map(&:members)
+        self.class.new(selected_results.flatten, self)
       end
 
       def self.find_items(metadata_field, value)

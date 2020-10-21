@@ -2,6 +2,8 @@
 
 module DSpace
   module CLI
+    # Class Modeling the Java Class org.dspace.content.DSpaceObject
+    # @see https://github.com/DSpace/DSpace/blob/dspace-5.5/dspace-api/src/main/java/org/dspace/content/DSpaceObject.java
     class DSpaceObject
       java_import(org.dspace.content.DSpaceObject)
       attr_reader :obj

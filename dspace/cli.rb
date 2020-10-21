@@ -3,6 +3,7 @@
 require 'pry-debugger-jruby'
 
 module DSpace
+  # Classes specific to command-line operations
   module CLI
     autoload(:DSpaceObject, File.join(File.dirname(__FILE__), 'cli', 'dspace_object'))
 

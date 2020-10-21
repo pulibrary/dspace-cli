@@ -2,7 +2,7 @@ module DSpace
   module CLI
     class ExportJob
       def self.build_logger
-        logger = Logger.new(STDOUT)
+        logger = Logger.new($stdout)
         logger.level = Logger::INFO
         logger
       end

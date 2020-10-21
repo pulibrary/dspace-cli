@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require File.join(File.dirname(__FILE__), 'dspace')
 
+# Thor CLI tasks for general DSpace Item management
 class Dspace < Thor
   desc 'import_metadata', 'Import Item metadata from a CSV file'
   method_option :file, type: :string, aliases: 'f'
@@ -26,6 +29,7 @@ class Dspace < Thor
 end
 
 class Dataspace < Thor
+  # Thor CLI tasks for Senior Thesis Item management
   class SeniorTheses < Thor
     desc 'export_metadata', 'Export Item metadata to a CSV file'
     method_option :file, type: :string, aliases: 'f'

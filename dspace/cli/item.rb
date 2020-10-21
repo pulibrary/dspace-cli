@@ -306,9 +306,11 @@ module DSpace
         self.state = new_state
       end
 
+      # rubocop:disable Naming/AccessorMethodName
       def set_workflow_with_submitter(new_state:)
         set_workflow(new_state: new_state, eperson: submitter)
       end
+      # rubocop:enable Naming/AccessorMethodName
 
       def self.archived_state
         Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_ARCHIVE
@@ -373,12 +375,12 @@ module DSpace
         export_job.perform
       end
 
-      def move_collection(from, to, _inherit_default_policies = false)
+      def move_collection(from, to)
         add_to_collection(to.handle)
         remove_from_collection(from.handle)
       end
 
-      def move_collection_by_handles(from_handle, to_handle, _inherit_default_policies = false)
+      def move_collection_by_handles(from_handle, to_handle)
         add_to_collection(to_handle)
         remove_from_collection(from_handle)
       end

@@ -2,6 +2,7 @@
 
 module DSpace
   module CLI
+    # Class modeling the Java Class org.dspace.authorize.ResourcePolicy
     class ResourcePolicy
       def self.kernel
         ::DSpace

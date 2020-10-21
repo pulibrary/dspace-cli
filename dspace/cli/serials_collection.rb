@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 module DSpace
+  # rubocop:disable Style/Documentation
   module CLI
+    # rubocop:enable Style/Documentation
+    # Class modelings Collections containing Library Serials Item members
     class SerialsCollection < Collection
       # This needs to be restructured to parse a configuration file
       def self.private_community_handle

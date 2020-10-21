@@ -2,6 +2,7 @@
 
 module DSpace
   module CLI
+    # Class modeling database queries for DSpace tables
     class Query
       java_import org.dspace.content.Item
       java_import org.dspace.core.Constants
@@ -52,11 +53,10 @@ module DSpace
       end
 
       def find_children
-        unless @results.empty?
-          selected_results = @results.map(&:members)
+        return if @results.empty?
 
-          self.class.new(selected_results.flatten, self)
-        end
+        selected_results = @results.map(&:members)
+        self.class.new(selected_results.flatten, self)
       end
 
       def find_items(metadata_field, value)
