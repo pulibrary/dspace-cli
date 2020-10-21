@@ -12,7 +12,7 @@ module DSpace
       end
 
       def self.find(id)
-        model = model_class.find(self.kernel.context, id)
+        model = model_class.find(kernel.context, id)
         new(model)
       end
 
@@ -39,4 +39,3 @@ module DSpace
     end
   end
 end
-

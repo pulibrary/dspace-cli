@@ -57,6 +57,7 @@ module DSpace
 
       def eperson_email
         return if eperson.nil?
+
         eperson.email
       end
 
@@ -73,6 +74,7 @@ module DSpace
 
       def group_name
         return if group.nil?
+
         group.name
       end
 
@@ -105,4 +107,3 @@ module DSpace
     end
   end
 end
-

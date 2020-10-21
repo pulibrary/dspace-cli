@@ -152,8 +152,7 @@ module DSpace
           return if File.empty?(@file_path)
 
           existing_file = build_existing_file
-          value = CSV.parse(existing_file, headers: true)
-          value
+          CSV.parse(existing_file, headers: true)
         end
 
         def existing_rows

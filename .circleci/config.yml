@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set JRuby version to 9.1.7.0
+          name: Set JRuby version to 9.2.13.0
           command: |
             rvm install cli-9.2.13.0
             echo . $(rvm cli-9.2.13.0 do rvm env --path) >> $BASH_ENV
@@ -27,7 +27,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set JRuby version to 9.1.7.0
+          name: Set JRuby version to 9.2.13.0
           command: |
             rvm install cli-9.2.13.0
             echo . $(rvm cli-9.2.13.0 do rvm env --path) >> $BASH_ENV
@@ -38,8 +38,9 @@ jobs:
           name: Install the dependencies
           command: bundle install
       - run:
-          name: Valide the code formatting and style
-          command: bundle exec rubocop cli/dspace
+          name: Validate the code formatting and style
+          command: bundle exec rubocop cli.thor dspace.rb dspace/cli/**/*rb
+
 workflows:
   ci:
     jobs:

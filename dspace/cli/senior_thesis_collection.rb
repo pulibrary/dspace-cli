@@ -9,7 +9,7 @@ module DSpace
       # This needs to be restructured to parse a configuration file
       def self.certificate_to_collection_map
         {
-          'Creative Writing Program' => '88435/dsp01gx41mh91n',
+          'Creative Writing Program' => '88435/dsp01gx41mh91n'
         }
       end
 

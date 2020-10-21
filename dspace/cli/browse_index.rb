@@ -81,9 +81,9 @@ module DSpace
 
       def browse_item_results
         @browse_item_results ||= begin
-                                   values = browse_info.getResults
-                                   values.to_a
-                                 end
+          values = browse_info.getResults
+          values.to_a
+        end
       end
 
       def results

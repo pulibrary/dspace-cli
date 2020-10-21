@@ -68,7 +68,7 @@ module DSpace
       end
 
       def find_children
-        if !@results.empty?
+        unless @results.empty?
           selected_results = @results.map do |dspace_object|
             if dspace_object.respond_to?(:members)
               dspace_object.members
@@ -77,7 +77,7 @@ module DSpace
             end
           end
 
-          return self.class.new(selected_results.flatten, self)
+          self.class.new(selected_results.flatten, self)
         end
       end
 

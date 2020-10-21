@@ -7,7 +7,6 @@ require 'yaml'
 module DSpace
   module CLI
     class SeniorThesisCommunity < DSpace::Core::Community
-
       class Configuration < OpenStruct
         def self.build_from_file(file_path)
           fh = File.new(file_path, 'rb')
@@ -19,7 +18,7 @@ module DSpace
                      yaml_values.to_ruby
                    end
 
-          built = self.new(values)
+          built = new(values)
           fh.close
 
           built
@@ -27,7 +26,7 @@ module DSpace
       end
 
       def self.configuration_file
-        File.join( File.dirname(__FILE__), '..', '..', 'config', 'senior_theses.yml' )
+        File.join(File.dirname(__FILE__), '..', '..', 'config', 'senior_theses.yml')
       end
 
       def self.configuration
@@ -73,10 +72,10 @@ module DSpace
       end
 
       def find_children
-        if !@results.empty?
+        unless @results.empty?
           selected_results = @results.map(&:members)
 
-          return self.class.new(selected_results.flatten, self)
+          self.class.new(selected_results.flatten, self)
         end
       end
 

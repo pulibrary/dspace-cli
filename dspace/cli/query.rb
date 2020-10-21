@@ -52,10 +52,10 @@ module DSpace
       end
 
       def find_children
-        if !@results.empty?
+        unless @results.empty?
           selected_results = @results.map(&:members)
 
-          return self.class.new(selected_results.flatten, self)
+          self.class.new(selected_results.flatten, self)
         end
       end
 
@@ -93,7 +93,6 @@ module DSpace
         find_collections(self.class.title_field.to_s, value)
       end
 
-      
       def self.item_class
         DSpace::CLI::Item
       end

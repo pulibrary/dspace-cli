@@ -6,9 +6,7 @@ module DSpace
       class CSVUpdate < FileUpdate
         def self.parse_csv(file_path)
           file = File.new(file_path, 'r:UTF-8')
-          csv_table = CSV.parse(file, headers: true)
-
-          csv_table
+          CSV.parse(file, headers: true)
         end
 
         def self.build_from_file(path:, primary_column:)

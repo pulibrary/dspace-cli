@@ -132,7 +132,7 @@ module DSpace
       end
 
       def handle_uris
-        uris.select { |uri| uri =~ /ark\:/ }
+        uris.select { |uri| uri =~ /ark:/ }
       end
 
       def submission_ids

@@ -3,7 +3,6 @@
 module DSpace
   module CLI
     class Bitstream < DSpaceObject
-
       def self.resource_type_id
         Core::Constants::BITSTREAM
       end
@@ -13,7 +12,7 @@ module DSpace
       end
 
       def self.find(id)
-        model = model_class.find(self.kernel.context, id)
+        model = model_class.find(kernel.context, id)
         new(model)
       end
 
@@ -39,4 +38,3 @@ module DSpace
     end
   end
 end
-

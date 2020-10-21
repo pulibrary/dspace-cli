@@ -2,6 +2,30 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
+  Exclude:
+    - admin/**/*rb
+    - batch_imports/**/*rb
+    - bitstreams/**/*rb
+    - cli/**/*rb
+    - cli.rb
+    - collection/**/*rb
+    - community/**/*rb
+    - config/**/*rb
+    - data/**/*rb
+    - java/**/*rb
+    - library/**/*rb
+    - list/**/*rb
+    - metadata/**/*rb
+    - netid/**/*rb
+    - pppl/**/*rb
+    - print.rb
+    - reports/**/*rb
+    - seniorTheses/**/*rb
+    - statistics/**/*rb
+    - symplectic/**/*rb
+    - templates/**/*rb
+    - unfinished/**/*rb
+    - vireo/**/*rb
 
 Layout/BeginEndAlignment: # (new in 0.91)
   Enabled: true
