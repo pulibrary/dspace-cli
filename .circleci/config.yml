@@ -2,8 +2,9 @@ version: 2.1
 jobs:
   documentation:
     working_directory: ~/dspace-cli
-    machine:
-      image: ubuntu-1604:201903-01
+    docker:
+      - image: circleci/ruby:2.6.6
+      - image: jrgriffiniii/dspace-docker:testing
     steps:
       - checkout
       - run:
@@ -22,8 +23,9 @@ jobs:
           command: bundle exec yardoc
   lint:
     working_directory: ~/dspace-cli
-    machine:
-      image: ubuntu-1604:201903-01
+    docker:
+      - image: circleci/ruby:2.6.6
+      - image: jrgriffiniii/dspace-docker:testing
     steps:
       - checkout
       - run:
