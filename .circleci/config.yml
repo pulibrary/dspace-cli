@@ -14,6 +14,11 @@ jobs:
             \curl -sSL https://get.rvm.io | bash -s stable
             source /home/circleci/.rvm/scripts/rvm
       - run:
+          name: Install the deb package dependencies
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install -y gawk openjdk-8-jre-headless
+      - run:
           name: Set JRuby version to 9.2.13.0
           command: |
             source /home/circleci/.rvm/scripts/rvm
@@ -41,6 +46,11 @@ jobs:
             gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
             \curl -sSL https://get.rvm.io | bash -s stable
             source /home/circleci/.rvm/scripts/rvm
+      - run:
+          name: Install the deb package dependencies
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install -y gawk openjdk-8-jre-headless
       - run:
           name: Set JRuby version to 9.2.13.0
           command: |
