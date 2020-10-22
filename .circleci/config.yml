@@ -16,6 +16,7 @@ jobs:
       - run:
           name: Set JRuby version to 9.2.13.0
           command: |
+            source /home/circleci/.rvm/scripts/rvm
             rvm install 9.2.13.0
             echo . $(rvm 9.2.13.0 do rvm env --path) >> $BASH_ENV
       - run:
@@ -43,6 +44,7 @@ jobs:
       - run:
           name: Set JRuby version to 9.2.13.0
           command: |
+            source /home/circleci/.rvm/scripts/rvm
             rvm install 9.2.13.0
             echo . $(rvm 9.2.13.0 do rvm env --path) >> $BASH_ENV
       - run:
