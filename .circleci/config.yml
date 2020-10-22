@@ -8,10 +8,16 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install the RVM
+          command: |
+            gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+            \curl -sSL https://get.rvm.io | bash -s stable
+            source /home/circleci/.rvm/scripts/rvm
+      - run:
           name: Set JRuby version to 9.2.13.0
           command: |
-            rvm install cli-9.2.13.0
-            echo . $(rvm cli-9.2.13.0 do rvm env --path) >> $BASH_ENV
+            rvm install 9.2.13.0
+            echo . $(rvm 9.2.13.0 do rvm env --path) >> $BASH_ENV
       - run:
           name: Install bundler
           command: gem install -v 2.1.4 bundler
@@ -29,10 +35,16 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install the RVM
+          command: |
+            gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+            \curl -sSL https://get.rvm.io | bash -s stable
+            source /home/circleci/.rvm/scripts/rvm
+      - run:
           name: Set JRuby version to 9.2.13.0
           command: |
-            rvm install cli-9.2.13.0
-            echo . $(rvm cli-9.2.13.0 do rvm env --path) >> $BASH_ENV
+            rvm install 9.2.13.0
+            echo . $(rvm 9.2.13.0 do rvm env --path) >> $BASH_ENV
       - run:
           name: Install bundler
           command: gem install -v 2.1.4 bundler
