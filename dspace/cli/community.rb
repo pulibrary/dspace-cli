@@ -92,9 +92,9 @@ module DSpace
 
       def sub_communities
         @sub_communities ||= begin
-                               obj_iterator = @obj.getSubcommunities
-                               objs << obj_iterator.next while obj_iterator.hasNext
-                               objs.map { |o| self.class.community_class.new(o) }
+                               community_obj_arr = @obj.getSubcommunities
+                               community_obj = community_obj.to_ruby
+                               self.class.community_class.new(community_obj)
                              end
       end
 
