@@ -190,6 +190,10 @@ module DSpace
         CLI::Community
       end
 
+      def self.item_class
+        CLI::Item
+      end
+
       def self.collection_class
         CLI::Collection
       end
@@ -301,6 +305,13 @@ module DSpace
 
       def self.indexing_service
         get_service_by_name('org.dspace.discovery.SearchService', Java::OrgDspaceDiscovery::IndexingService)
+      end
+
+      def self.find_by_handle(handle)
+        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(kernel.context, handle)
+        return if obj.nil?
+
+        new(obj)
       end
 
       def index

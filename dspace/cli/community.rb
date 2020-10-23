@@ -56,6 +56,52 @@ module DSpace
           report.write
         end
       end
+
+      def collections
+        @obj.getCollections.map { |collection_obj| self.class.collection_class.new(collection_obj) }
+      end
+
+      def index
+        super
+        members.map(&:index)
+      end
+
+      def browse_index
+        @browse_index ||= BrowseIndex.new(container: @obj, per_page: 1_000_000)
+      end
+
+      def remove_from_index
+        super
+        browse_index.delete_all_documents
+      end
+
+      # rubocop:disable Naming/AccessorMethodName
+      def get_all_items
+        member_objs = []
+
+        member_iterator = @obj.getAllItems
+        member_objs << member_iterator.next while member_iterator.hasNext
+
+        member_objs
+      end
+      # rubocop:enable Naming/AccessorMethodName
+
+      def item_members
+        @item_members ||= get_all_items.map { |member_obj| Item.new(member_obj) }
+      end
+
+      def sub_communities
+        @sub_communities ||= begin
+                               obj_iterator = @obj.getSubCommunities
+                               objs << obj_iterator.next while obj_iterator.hasNext
+                               objs.map { |o| self.class.community_class.new(o) }
+                             end
+      end
+
+      def members
+        @members ||= sub_communities + collections + item_members
+      end
+
     end
   end
 end
