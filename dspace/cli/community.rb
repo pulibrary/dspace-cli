@@ -92,7 +92,7 @@ module DSpace
 
       def sub_communities
         @sub_communities ||= begin
-                               obj_iterator = @obj.getSubCommunities
+                               obj_iterator = @obj.getSubcommunities
                                objs << obj_iterator.next while obj_iterator.hasNext
                                objs.map { |o| self.class.community_class.new(o) }
                              end
