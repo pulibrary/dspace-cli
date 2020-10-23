@@ -94,7 +94,9 @@ module DSpace
         @sub_communities ||= begin
                                community_obj_arr = @obj.getSubcommunities
                                community_obj = community_obj.to_ruby
-                               self.class.community_class.new(community_obj)
+                               return [] if community_obj.nil?
+
+                               [self.class.community_class.new(community_obj)]
                              end
       end
 
