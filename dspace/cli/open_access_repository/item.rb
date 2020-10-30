@@ -5,26 +5,12 @@ module DSpace
         def self.author_uniqueid_field
           metadata_field_class.new('pu', 'author', 'uniqueid')
         end
-
-        def author_uniqueids
-          get_metadata_value(self.class.author_uniqueid_field.to_s)
-        end
-
-        def author_uniqueid
-          author_uniqueids.first
-        end
+        register_metadata_field(field: author_uniqueid_field, label: 'author_uniqueid')
 
         def self.department_field
           metadata_field_class.new('pu', 'author', 'department')
         end
-
-        def departments
-          get_metadata_value(self.class.department_field.to_s)
-        end
-
-        def department
-          departments.first
-        end
+        register_metadata_field(field: department_field, label: 'department')
 
         def self.symplectic_type_field
           metadata_field_class.new('pu', 'type', 'symplectic')
@@ -41,14 +27,7 @@ module DSpace
         def self.workflow_state_field
           metadata_field_class.new('pu', 'workflow', 'state')
         end
-
-        def workflow_states
-          get_metadata_value(self.class.workflow_state_field.to_s)
-        end
-
-        def workflow_state
-          symplectic_types.first
-        end
+        register_metadata_field(field: workflow_state_field, label: 'workflow_state')
 
         def self.author_url_field
           metadata_field_class.new('pubs', 'author-url')
@@ -117,6 +96,7 @@ module DSpace
         def self.organisational_group_field
           metadata_field_class.new('pubs', 'organisational-group')
         end
+        register_metadata_field(field: organisational_group_field, label: 'organisational_group')
 
         def self.patent_status_field
           metadata_field_class.new('pubs', 'patent-status')

@@ -49,6 +49,10 @@ module DSpace
         end
       end
 
+      def to_sym
+        to_s.to_sym
+      end
+
       def schema_id
         @schema_model.getSchemaID
       end

@@ -272,11 +272,27 @@ module DSpace
       # rubocop:enable Naming/MethodName
 
       def get_metadata_value(field)
-        @obj.getMetadataByMetadataString(field.to_s).collect { |v| v.value }
+        @obj.getMetadataByMetadataString(field.to_s).collect(&:value)
+      end
+
+      def self.register_metadata_field(field:, label:, plural_label: nil)
+        # This should have pluralizer
+        plural_label ||= "#{label}s"
+        plural_method = plural_label.to_sym
+
+        define_method(plural_method) do
+          get_metadata_value(field)
+        end
+
+        define_method(label.to_sym) do
+          values = send(plural_method)
+          values.first
+        end
       end
 
       def titles
-        @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect(&:value)
+        get_metadata_value(self.class.title_field)
+        get_metadata_value(self.class.title_field)
       end
 
       def title
