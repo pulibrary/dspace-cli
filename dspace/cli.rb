@@ -29,6 +29,8 @@ module DSpace
     autoload(:ResultSet, File.join(File.dirname(__FILE__), 'cli', 'result_set'))
     autoload(:Query, File.join(File.dirname(__FILE__), 'cli', 'query'))
 
+    autoload(:OpenAccessRepository, File.join(File.dirname(__FILE__), 'cli', 'open_access_repository'))
+
     autoload(:SeniorThesisQuery, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_query'))
     autoload(:SeniorThesisItem, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_item'))
     autoload(:SeniorThesisCollection, File.join(File.dirname(__FILE__), 'cli', 'senior_thesis_collection'))
