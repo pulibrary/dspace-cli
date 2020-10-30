@@ -6,6 +6,7 @@ module DSpace
     # @see https://github.com/DSpace/DSpace/blob/dspace-5.5/dspace-api/src/main/java/org/dspace/content/DSpaceObject.java
     class DSpaceObject
       java_import(org.dspace.content.DSpaceObject)
+      java_import(org.dspace.handle.HandleManager)
       attr_reader :obj
 
       def self.kernel
@@ -270,6 +271,10 @@ module DSpace
       end
       # rubocop:enable Naming/MethodName
 
+      def get_metadata_value(field)
+        @obj.getMetadataByMetadataString(field.to_s).collect { |v| v.value }
+      end
+
       def titles
         @obj.getMetadataByMetadataString(self.class.title_field.to_s).collect(&:value)
       end
@@ -307,8 +312,12 @@ module DSpace
         get_service_by_name('org.dspace.discovery.SearchService', Java::OrgDspaceDiscovery::IndexingService)
       end
 
+      def self.handle_manager
+        org.dspace.handle.HandleManager
+      end
+
       def self.find_by_handle(handle)
-        obj = Java::OrgDspaceHandle::HandleManager.resolveToObject(kernel.context, handle)
+        obj = handle_manager.resolveToObject(kernel.context, handle)
         return if obj.nil?
 
         new(obj)

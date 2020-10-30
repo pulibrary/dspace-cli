@@ -92,12 +92,12 @@ module DSpace
 
       def sub_communities
         @sub_communities ||= begin
-                               community_obj_arr = @obj.getSubcommunities
-                               return [] if community_obj_arr.nil?
+          community_obj_arr = @obj.getSubcommunities
+          return [] if community_obj_arr.nil?
 
-                               community_objs = community_obj_arr.to_ary
-                               community_objs.map { |community_obj| self.class.community_class.new(community_obj) }
-                             end
+          community_objs = community_obj_arr.to_ary
+          community_objs.map { |community_obj| self.class.community_class.new(community_obj) }
+        end
       end
 
       def members

@@ -1,5 +1,5 @@
 PATH
-  remote: /Users/griffinj/src/github.com/pulibrary/workspace1/dspace-jruby
+  remote: /Users/griffinj/src/github.com/pulibrary/dspace-jruby
   specs:
     dspace-jruby (0.1.0)
       json

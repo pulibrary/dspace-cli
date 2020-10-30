@@ -4,8 +4,8 @@ module DSpace
   module CLI
     # Class modeling database queries for DSpace tables
     class Query
-      java_import org.dspace.content.Item
-      java_import org.dspace.core.Constants
+      java_import(org.dspace.content.Item)
+      java_import(org.dspace.core.Constants)
 
       attr_reader :results, :parent
 
@@ -13,12 +13,16 @@ module DSpace
         ::DSpace
       end
 
+      def self.metadata_field_class
+        DSpace::CLI::MetadataField
+      end
+
       def self.title_field
-        MetadataField.new('dc', 'title')
+        metadata_field_class.new('dc', 'title')
       end
 
       def self.author_field
-        MetadataField.new('dc', 'contributor', 'author')
+        metadata_field_class.new('dc', 'contributor', 'author')
       end
 
       def initialize(results = [], parent = nil)
