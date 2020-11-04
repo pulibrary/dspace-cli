@@ -126,8 +126,6 @@ module DSpace
           metadata_field_class.new('pubs', 'volume')
         end
 
-        # Accessors
-
         def self.collection_class
           CLI::OpenAccessRepository::Collection
         end
@@ -139,6 +137,17 @@ module DSpace
             collections << collection unless collection.nil?
           end
           collections
+        end
+
+        def archive
+          # workflow_item.set_state(self.class.workflow_manager.WFSTATE_STEP3)
+          workflow_item.state = self.class.workflow_manager::WFSTATE_STEP3
+          workflow_item.update
+          self.class.workflow_manager.advance(self.class.kernel.context, workflow_item, self.class.kernel.current_user)
+          # pu.workflow.state
+          # setMetadataSingleValue(String schema, String element, String qualifier, String language, String value)
+          @model.setMetadataSingleValue('pu', 'workflow', 'state', nil, 'archive_without_email')
+          update
         end
       end
     end
