@@ -23,6 +23,10 @@ module DSpace
         @obj.getID
       end
 
+      def model
+        @obj
+      end
+
       def update
         # Please note, this updates the related Item object
         @obj.update
