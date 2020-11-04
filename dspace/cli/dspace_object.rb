@@ -7,7 +7,7 @@ module DSpace
     class DSpaceObject
       java_import(org.dspace.content.DSpaceObject)
       java_import(org.dspace.handle.HandleManager)
-      attr_reader :obj
+      attr_reader :model, :obj
 
       def self.kernel
         ::DSpace
