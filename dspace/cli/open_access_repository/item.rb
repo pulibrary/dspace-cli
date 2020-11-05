@@ -156,6 +156,8 @@ module DSpace
         end
 
         def archive
+          return if archived?
+
           workflow_item.state = self.class.workflow_manager::WFSTATE_STEP3
           workflow_item.update
 
