@@ -9,7 +9,7 @@ module DSpace
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.workflow.WorkflowManager
 
-      attr_reader :obj
+      attr_reader :obj, :state
 
       def self.kernel
         ::DSpace
@@ -17,6 +17,7 @@ module DSpace
 
       def initialize(obj)
         @obj = obj
+        @state = @obj.getState
       end
 
       def id
@@ -38,10 +39,6 @@ module DSpace
         @obj.deleteWrapper
         self.class.kernel.commit
         @obj = nil
-      end
-
-      def state
-        @state = @obj.getState
       end
 
       def self.update_statement
@@ -71,6 +68,7 @@ module DSpace
 
         @state = value
         update_state
+        self.class.kernel.commit
         state
       end
 

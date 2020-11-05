@@ -160,7 +160,7 @@ module DSpace
         end
 
         def find_workspace_item
-          workspace_item_model = self.class.workspace_item_class.model_class.findByItem(kernel.context, @model)
+          workspace_item_model = self.class.workspace_item_class.model_class.findByItem(self.class.kernel.context, @model)
           return if workspace_item_model.nil?
 
           self.class.workspace_item_class.new(workspace_item_model)
@@ -177,7 +177,7 @@ module DSpace
         end
 
         def create_workflow_item
-          workflow_item_model = self.class.workflow_manager.start(self.class.kernel.context, workspace_item)
+          workflow_item_model = self.class.workflow_manager.start(self.class.kernel.context, workspace_item.model)
           self.class.workflow_item_class.new(workflow_item_model)
         end
 
