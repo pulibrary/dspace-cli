@@ -2,9 +2,10 @@
 
 module DSpace
   module CLI
-    # This models the DSpace entity org.dspace.workflow.WorkspaceItem
+    # This models the DSpace entity org.dspace.content.WorkspaceItem
     class WorkspaceItem
       java_import(org.dspace.storage.rdbms.DatabaseManager)
+      java_import(org.dspace.content.WorkspaceItem)
 
       attr_reader :model
 
@@ -13,7 +14,7 @@ module DSpace
       end
 
       def self.model_class
-        org.dspace.workflow.WorkspaceItem
+        org.dspace.content.WorkspaceItem
       end
 
       def self.build_model(row:)
