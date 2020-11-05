@@ -159,7 +159,7 @@ module DSpace
           workflow_item.state = self.class.workflow_manager::WFSTATE_STEP3
           workflow_item.update
 
-          self.class.workflow_manager.advance(self.class.kernel.context, workflow_item.model, self.class.kernel.current_user)
+          self.class.workflow_manager.advance(self.class.kernel.context, workflow_item.model, ::DSpace.context.current_user)
 
           add_metadata(schema: 'pu', element: 'workflow', value: 'archive_without_email', qualifier: 'state')
           update
