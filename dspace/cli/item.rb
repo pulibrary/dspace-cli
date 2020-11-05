@@ -27,24 +27,16 @@ module DSpace
       end
 
       def update
-        @metadata.each(&:update)
+        metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
-        build_metadata
+        @metadata = build_metadata
         self
-      end
-
-      def add_metadata(schema:, element:, value:, qualifier: nil, language: nil)
-        new_metadatum = build_metadatum(schema, element, qualifier, language)
-        return if new_metadatum.nil?
-
-        new_metadatum.value = value
-        @metadata << new_metadatum
-        new_metadatum
       end
 
       def self.resource_type_id
         Java::OrgDspaceCore::Constants::ITEM
+        org.dspace.core.Constants::ITEM
       end
 
       def self.select_all_metadata_value_query
@@ -55,6 +47,13 @@ module DSpace
         SQL
       end
 
+      # Removes all metadata fields matching metadata attributes
+      # @param schema [String]
+      # @param element [String]
+      # @param qualifier [String]
+      # @param language [String]
+      # @return [Array<Metadatum>]
+      # @see org.dspace.content.DSpaceObject#clearMetadata
       def remove_metadata(schema, element, value, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
         return if new_metadatum.nil?
@@ -74,16 +73,13 @@ module DSpace
         @metadata = updated_metadata
       end
 
-      # I am not certain that this is needed
-      # rubocop:disable Naming/AccessorMethodName
-      def set_metadata(values)
-        list = java.util.ArrayList.new(values)
-        cache = Java::OrgDspaceContent::DSpaceObject::MetadataCache.new(list)
-        @obj.metadataCache = cache
-        @obj.modifiedMetadata = true
-      end
-      # rubocop:enable Naming/AccessorMethodName
-
+      # Removes all metadata fields with matching field attributes
+      # @param schema [String]
+      # @param element [String]
+      # @param qualifier [String]
+      # @param language [String]
+      # @return [Array<Metadatum>]
+      # @see org.dspace.content.DSpaceObject#clearMetadata
       def clear_metadata(schema, element, qualifier = nil, language = nil)
         new_metadatum = build_metadatum(schema, element, qualifier, language)
         return if new_metadatum.nil?

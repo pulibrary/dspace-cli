@@ -55,14 +55,17 @@ module DSpace
 
       def self.database_query
         Java::OrgDspaceStorageRdbms::DatabaseManager
+        org.dspace.storage.rdbms.DatabaseManager
       end
 
       def self.metadata_field_model
         Java::OrgDspaceContent::MetadataField
+        org.dspace.content.MetadataField
       end
 
       def self.metadata_schema_model
         Java::OrgDspaceContent::MetadataSchema
+        org.dspace.content.MetadataSchema
       end
 
       def metadata_database_rows
@@ -75,7 +78,20 @@ module DSpace
         rows
       end
 
-      def find_metadata_objects
+      def build_metadatum(schema, element, qualifier = nil, language = nil)
+        metadata_field = self.class.find_metadata_field(schema, element, qualifier)
+
+        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
+      rescue StandardError => e
+        warn("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
+        warn e.message
+        warn e.backtrace.join("\n")
+        nil
+      end
+
+      # Construct the Metadatum objects from database rows
+      # @return [Array<Metadatum>]
+      def build_metadata
         values = metadata_database_rows.map do |row|
           metadata_field_id = row.getIntColumn('metadata_field_id')
           metadata_field = self.class.metadata_field_model.find(self.class.kernel.context, metadata_field_id)
@@ -96,10 +112,6 @@ module DSpace
         end
 
         values.reject(&:nil?)
-      end
-
-      def build_metadata
-        @metadata = find_metadata_objects
       end
 
       def metadata
@@ -169,22 +181,25 @@ module DSpace
         value.to_s
       end
 
+      def add_metadata(schema:, element:, value:, qualifier: nil, language: nil)
+        new_metadatum = build_metadatum(schema, element, qualifier, language)
+        return if new_metadatum.nil?
+
+        new_metadatum.value = value
+        @metadata << new_metadatum
+        new_metadatum
+      end
+
+      # This should be moved to DSpace::CLI::MetadataField
+      # @param schema [String]
+      # @param element [String]
+      # @param qualifier [String]
+      # @return [org.dspace.content.MetadataField]
       def self.find_metadata_field(schema, element, qualifier = nil)
         schema_model = Java::OrgDspaceContent::MetadataSchema.find(kernel.context, schema)
         raise "Failed to find the MetadataSchema record for #{schema} (#{schema.class})" if schema_model.nil?
 
-        Java::OrgDspaceContent::MetadataField.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
-      end
-
-      def build_metadatum(schema, element, qualifier = nil, language = nil)
-        metadata_field = self.class.find_metadata_field(schema, element, qualifier)
-
-        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
-      rescue StandardError => e
-        warn("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
-        warn e.message
-        warn e.backtrace.join("\n")
-        nil
+        metadata_field_model.findByElement(kernel.context, schema_model.getSchemaID, element, qualifier)
       end
 
       def self.community_class
@@ -206,7 +221,7 @@ module DSpace
       def initialize(obj)
         @obj = obj
         # obj is ambiguous, and I would like to see this deprecated
-        @model = obj
+        @model = @obj
       end
 
       def id
