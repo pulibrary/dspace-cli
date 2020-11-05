@@ -19,6 +19,7 @@ module DSpace
     autoload(:BrowseIndex, File.join(File.dirname(__FILE__), 'cli', 'browse_index'))
 
     autoload(:WorkflowItem, File.join(File.dirname(__FILE__), 'cli', 'workflow_item'))
+    autoload(:WorkspaceItem, File.join(File.dirname(__FILE__), 'cli', 'workspace_item'))
 
     autoload(:Item, File.join(File.dirname(__FILE__), 'cli', 'item'))
     autoload(:Community, File.join(File.dirname(__FILE__), 'cli', 'community'))
