@@ -175,10 +175,12 @@ module DSpace
       end
 
       def workflow_item
-        workflow_obj = Java::OrgDspaceWorkflow::WorkflowItem.findByItem(self.class.kernel.context, @obj)
-        return if workflow_obj.nil?
+        @workflow_item ||= begin
+          workflow_obj = Java::OrgDspaceWorkflow::WorkflowItem.findByItem(self.class.kernel.context, @obj)
+          return if workflow_obj.nil?
 
-        self.class.workflow_item_class.new(workflow_obj)
+          self.class.workflow_item_class.new(workflow_obj)
+        end
       end
 
       def add_task_pool_users(emails)

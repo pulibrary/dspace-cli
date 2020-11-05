@@ -155,7 +155,34 @@ module DSpace
           collections
         end
 
+        def self.workspace_item_class
+          ::DSpace::CLI::WorkspaceItem
+        end
+
+        def find_workspace_item
+          workspace_item_model = self.class.workspace_item_class.model_class.findByItem(kernel.context, @model)
+          return if workspace_item_model.nil?
+
+          self.class.workspace_item_class.new(workspace_item_model)
+        end
+
+        def create_workspace_item
+          self.class.workspace_item_class.create(collection: collection, item: self)
+        end
+
+        def workspace_item
+          @workspace_item ||= begin
+            find_workspace_item || create_workflow_item
+          end
+        end
+
+        def create_workflow_item
+          workflow_item_model = self.class.workflow_manager.start(self.class.kernel.context, workspace_item)
+          self.class.workflow_item_class.new(workflow_item_model)
+        end
+
         def archive
+          @workflow_item = create_workflow_item if workflow_item.nil?
           return if archived?
 
           workflow_item.state = self.class.workflow_manager::WFSTATE_STEP3
