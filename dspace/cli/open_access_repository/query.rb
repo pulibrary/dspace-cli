@@ -124,8 +124,16 @@ module DSpace
           item_class.collection_class
         end
 
+        def find_by_workflow_state(value)
+          find_items(self.class.workflow_state_field.to_s, value)
+        end
+
         def find_by_department(value)
           find_items(self.class.department_field.to_s, value)
+        end
+
+        def find_by_organizational_group(value)
+          find_items(self.class.organisational_group_field.to_s, value)
         end
       end
     end

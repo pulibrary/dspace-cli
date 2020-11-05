@@ -130,6 +130,22 @@ module DSpace
           CLI::OpenAccessRepository::Collection
         end
 
+        def workflow_states
+          @model.getMetadataByMetadataString(self.class.workflow_state_field.to_s).collect(&:value)
+        end
+
+        def workflow_state
+          workflow_states.first
+        end
+
+        def organisational_groups
+          @model.getMetadataByMetadataString(self.class.organisational_group_field.to_s).collect(&:value)
+        end
+
+        def organisational_group
+          organisational_groups.first
+        end
+
         def find_collections_for_departments
           collections = []
           departments.each do |department|
