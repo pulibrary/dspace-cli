@@ -74,7 +74,7 @@ module DSpace
           end
         end
 
-        @metadata = updated_metadata
+        @metadata = MetadataArray.new(updated_metadata)
       end
 
       # Removes all metadata fields with matching field attributes
@@ -96,7 +96,7 @@ module DSpace
             updated_metadata << metadatum
           end
         end
-        @metadata = updated_metadata
+        @metadata = MetadataArray.new(updated_metadata)
       end
 
       def self.author_field
@@ -175,7 +175,7 @@ module DSpace
       end
 
       def self.workflow_item_class
-        DSpace::CLI::WorkflowItem
+        CLI::WorkflowItem
       end
 
       def workflow_item

@@ -53,6 +53,10 @@ module DSpace
         to_s.to_sym
       end
 
+      def ==(other)
+        to_s == other.to_s
+      end
+
       def schema_id
         @schema_model.getSchemaID
       end

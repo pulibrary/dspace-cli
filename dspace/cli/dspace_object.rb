@@ -108,7 +108,8 @@ module DSpace
           new_metadatum
         end
 
-        values.reject(&:nil?)
+        new_elements = values.reject(&:nil?)
+        MetadataArray.new(new_elements)
       end
 
       def metadata

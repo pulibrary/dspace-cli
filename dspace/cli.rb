@@ -9,6 +9,7 @@ module DSpace
 
     autoload(:Metadatum, File.join(File.dirname(__FILE__), 'cli', 'metadatum'))
     autoload(:MetadataField, File.join(File.dirname(__FILE__), 'cli', 'metadata_field'))
+    autoload(:MetadataArray, File.join(File.dirname(__FILE__), 'cli', 'metadata_array'))
 
     autoload(:ResourcePolicy, File.join(File.dirname(__FILE__), 'cli', 'resource_policy'))
     autoload(:Bitstream, File.join(File.dirname(__FILE__), 'cli', 'bitstream'))
