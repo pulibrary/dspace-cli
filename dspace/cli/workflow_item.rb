@@ -9,36 +9,48 @@ module DSpace
       java_import org.dspace.storage.rdbms.DatabaseManager
       java_import org.dspace.workflow.WorkflowManager
 
-      attr_reader :obj, :state
+      attr_reader :model, :state
 
       def self.kernel
         ::DSpace
       end
 
-      def initialize(obj)
-        @obj = obj
-        @state = @obj.getState
+      def self.model_class
+        org.dspace.workflow.WorkflowItem
+      end
+
+      def self.workflow_manager
+        org.dspace.workflow.WorkflowManager
+      end
+
+      # Constructor
+      # @param model [org.dspace.workflow.WorkflowItem]
+      def initialize(model)
+        @model = model
+        # Synchronize the initial state (otherwise this gets cached)
+        @state = @model.getState
       end
 
       def id
-        @obj.getID
+        @model.getID
       end
 
-      def model
-        @obj
+      # Deprecated alias
+      def obj
+        @model
       end
 
       def update
         # Please note, this updates the related Item object
-        @obj.update
+        @model.update
         self.class.kernel.commit
         self
       end
 
       def delete
-        @obj.deleteWrapper
+        @model.deleteWrapper
         self.class.kernel.commit
-        @obj = nil
+        @model = nil
       end
 
       def self.update_statement
@@ -57,14 +69,9 @@ module DSpace
         database_manager.updateQuery(kernel.context, statement, *params)
       end
 
-      def update_state
-        statement = self.class.update_statement
-        self.class.update_query(statement, @state, id)
-      end
-
       def state=(value)
         # This does not work
-        # @obj.setState(value)
+        # @model.setState(value)
 
         @state = value
         update_state
@@ -73,11 +80,11 @@ module DSpace
       end
 
       def owner
-        @obj.getOwner
+        @model.getOwner
       end
 
       def owner=(value)
-        @obj.setOwner(value)
+        @model.setOwner(value)
         update
       end
 
@@ -113,14 +120,14 @@ module DSpace
 
       def create_workflow_tasks(epeople)
         epeople.each do |eperson|
-          table_row = Java::OrgDspaceStorageRdbms::DatabaseManager.row('tasklistitem')
+          table_row = self.class.database_manager.row('tasklistitem')
           table_row.setColumn('eperson_id', eperson.getID)
           table_row.setColumn('workflow_id', id)
-          Java::OrgDspaceStorageRdbms::DatabaseManager.insert(self.class.kernel.context, table_row)
 
+          self.class.database_manager.insert(self.class.kernel.context, table_row)
           self.class.kernel.commit
 
-          self.state = Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP1POOL
+          self.state = self.class.workflow_manager::WFSTATE_STEP1POOL
           update
         end
       end
@@ -155,6 +162,13 @@ module DSpace
 
       def add_task_pool_user(email)
         add_task_pool_users([email])
+      end
+
+      private
+
+      def update_state
+        statement = self.class.update_statement
+        self.class.update_query(statement, @state, id)
       end
     end
   end

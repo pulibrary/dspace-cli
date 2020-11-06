@@ -27,9 +27,13 @@ module DSpace
       end
 
       def update
+        # Ensure that all previous transactions are committed
+        self.class.kernel.commit
+
         metadata.each(&:update)
         @obj.update
         self.class.kernel.commit
+
         @metadata = build_metadata
         self
       end

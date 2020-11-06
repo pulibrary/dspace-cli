@@ -7,7 +7,7 @@ module DSpace
     class DSpaceObject
       java_import(org.dspace.content.DSpaceObject)
       java_import(org.dspace.handle.HandleManager)
-      attr_reader :model, :obj
+      attr_reader :model
 
       def self.kernel
         ::DSpace
@@ -54,17 +54,14 @@ module DSpace
       end
 
       def self.database_query
-        Java::OrgDspaceStorageRdbms::DatabaseManager
         org.dspace.storage.rdbms.DatabaseManager
       end
 
       def self.metadata_field_model
-        Java::OrgDspaceContent::MetadataField
         org.dspace.content.MetadataField
       end
 
       def self.metadata_schema_model
-        Java::OrgDspaceContent::MetadataSchema
         org.dspace.content.MetadataSchema
       end
 
@@ -81,7 +78,7 @@ module DSpace
       def build_metadatum(schema, element, qualifier = nil, language = nil)
         metadata_field = self.class.find_metadata_field(schema, element, qualifier)
 
-        DSpace::CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
+        CLI::Metadatum.build(self, metadata_field, element, qualifier, language)
       rescue StandardError => e
         warn("Failed to find the MetadataField record for #{schema}.#{element}.#{qualifier}")
         warn e.message
@@ -218,10 +215,17 @@ module DSpace
         CLI::MetadataField
       end
 
-      def initialize(obj)
-        @obj = obj
-        # obj is ambiguous, and I would like to see this deprecated
-        @model = @obj
+      # Constructor
+      # @param model [org.dspace.content.DSpaceObject]
+      def initialize(model)
+        @model = model
+        # @obj is ambiguous, and I would like to see this deprecated
+        @obj = @model
+      end
+
+      # This needs to be deprecated
+      def obj
+        @model
       end
 
       def id
@@ -259,7 +263,7 @@ module DSpace
       end
 
       def delete_handle
-        nil
+        raise NotImplementedError
       end
 
       def type_text
@@ -282,12 +286,13 @@ module DSpace
 
       # rubocop:disable Naming/MethodName
       def getMetadataByMetadataString(metadata_field)
-        @obj.getMetadataByMetadataString(metadata_field)
+        @model.getMetadataByMetadataString(metadata_field)
       end
       # rubocop:enable Naming/MethodName
 
       def get_metadata_value(field)
-        @obj.getMetadataByMetadataString(field.to_s).collect(&:value)
+        metadata_models = @model.getMetadataByMetadataString(field.to_s)
+        metadata_models.collect(&:value)
       end
 
       def self.register_metadata_field(field:, label:, plural_label: nil)
@@ -323,7 +328,7 @@ module DSpace
       end
 
       def update
-        @obj.update
+        @model.update
         self.class.kernel.commit
       end
 

@@ -196,7 +196,6 @@ module DSpace
       end
 
       # This is where there is duplication
-      # I suspect that explicitly writing INSERT statements here is where they are create
       def update
         if persisted?
           self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
