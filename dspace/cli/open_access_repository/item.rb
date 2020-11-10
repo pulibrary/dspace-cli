@@ -171,9 +171,7 @@ module DSpace
         end
 
         def workspace_item
-          @workspace_item ||= begin
-            find_workspace_item || create_workflow_item
-          end
+          find_workspace_item || create_workflow_item
         end
 
         def create_workflow_item
