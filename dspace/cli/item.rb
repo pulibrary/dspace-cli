@@ -391,6 +391,15 @@ module DSpace
         bundle_models = @model.getBundles
         bundle_models.map { |bundle_model| Bundle.new(bundle_model) }
       end
+
+      def bitstreams
+        values = bundles.map(&:bitstreams)
+        values.flatten
+      end
+
+      def export_bitstreams
+        bitstreams.map(&:export)
+      end
     end
   end
 end

@@ -37,6 +37,14 @@ module DSpace
         policies = parent.bitstream_resource_policies
         policies.select { |policy| policy.resource_type_id == self.class.resource_type_id && policy.resource_id == id }
       end
+
+      def export_job
+        BitstreamExportJob.new(self)
+      end
+
+      def export
+        export_job.perform
+      end
     end
   end
 end
