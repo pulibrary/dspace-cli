@@ -55,7 +55,7 @@ module DSpace
 
         elements.each do |element|
           subset = select_by_element(element)
-          new_elements += subset.elements.first unless subset.elements.empty?
+          new_elements << subset.elements.first unless subset.elements.empty?
         end
 
         self.class.new(new_elements)
