@@ -18,7 +18,11 @@ module DSpace
       end
 
       def self.build_model(row:)
-        model_class.new(kernel.context, row)
+        constructors = model_class.java_class.declared_constructors
+        constructors.each do |c|
+          c.accessible = true
+          return c.new_instance(kernel.context, row).to_java
+        end
       end
 
       def self.database_manager

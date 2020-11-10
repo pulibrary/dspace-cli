@@ -167,11 +167,11 @@ module DSpace
         end
 
         def create_workspace_item
-          self.class.workspace_item_class.create(collection: collection, item: self)
+          self.class.workspace_item_class.create(collection: first_collection, item: self)
         end
 
         def workspace_item
-          find_workspace_item || create_workflow_item
+          @workspace_item ||= find_workspace_item || create_workflow_item
         end
 
         def create_workflow_item
