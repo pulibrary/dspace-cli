@@ -184,7 +184,7 @@ module DSpace
         return if new_metadatum.nil?
 
         new_metadatum.value = value
-        @metadata << new_metadatum
+        @metadata.elements << new_metadatum
         new_metadatum
       end
 

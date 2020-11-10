@@ -221,6 +221,11 @@ module DSpace
         @metadata_field ||= build_metadata_field
       end
 
+      # This should not be an alias
+      def field
+        metadata_field
+      end
+
       def item_id
         @item_id ||= database_row.getIntColumn('item_id')
       end

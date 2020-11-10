@@ -30,7 +30,10 @@ module DSpace
         # Ensure that all previous transactions are committed
         self.class.kernel.commit
 
-        metadata.each(&:update)
+        uniq_metadata = metadata.uniq
+        metadata_elements = uniq_metadata.elements
+        metadata_elements.each(&:update)
+
         @obj.update
         self.class.kernel.commit
 
