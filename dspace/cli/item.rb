@@ -34,7 +34,7 @@ module DSpace
         # Ensure that all previous transactions are committed
         # self.class.kernel.commit
 
-        metadata_elements.update
+        @metadata.update
         @obj.update
         self.class.kernel.commit
 

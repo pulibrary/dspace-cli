@@ -313,7 +313,6 @@ module DSpace
 
       def titles
         get_metadata_value(self.class.title_field)
-        get_metadata_value(self.class.title_field)
       end
 
       def title
