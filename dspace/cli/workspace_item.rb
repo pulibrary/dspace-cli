@@ -30,10 +30,10 @@ module DSpace
       end
 
       def self.create(collection:, item:)
-        workspace_item_row = database_manager.row("workspaceitem")
+        workspace_item_row = database_manager.row('workspaceitem')
 
-        workspace_item_row.setColumn("item_id", item.id)
-        workspace_item_row.setColumn("collection_id", collection.id)
+        workspace_item_row.setColumn('item_id', item.id)
+        workspace_item_row.setColumn('collection_id', collection.id)
 
         database_manager.insert(kernel.context, workspace_item_row)
 

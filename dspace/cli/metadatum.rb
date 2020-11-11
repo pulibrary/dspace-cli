@@ -113,7 +113,7 @@ module DSpace
         'INSERT INTO MetadataValue (resource_id, resource_type_id, metadata_field_id, text_value) VALUES (?, ?, ?, ?)'
       end
 
-      def self.delete_language_query
+      def self.delete_language_query_limit
         <<-SQL
           DELETE FROM MetadataValue AS t1
             WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ? AND t1.text_lang = ?
@@ -125,7 +125,14 @@ module DSpace
         SQL
       end
 
-      def self.delete_value_query
+      def self.delete_language_query
+        <<-SQL
+          DELETE FROM MetadataValue AS t1
+            WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ? AND t1.text_lang = ?
+        SQL
+      end
+
+      def self.delete_value_query_limit
         <<-SQL
           DELETE FROM MetadataValue AS t1
             WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ?
@@ -135,6 +142,30 @@ module DSpace
               LIMIT 1
             )
         SQL
+      end
+
+      def self.delete_all_from_database(item_id, metadata_field_id, text_value, text_lang)
+        lang = text_lang.nil? ? '' : text_lang
+        connection = kernel.context.getDBConnection
+
+        if lang.empty?
+          database_query = delete_value_query
+          statement = connection.prepareStatement(database_query)
+          statement.setInt(1.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(2.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(3.to_java.intValue, text_value)
+        else
+          database_query = delete_language_query
+          statement = connection.prepareStatement(database_query)
+          statement.setInt(1.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(2.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(3.to_java.intValue, text_value)
+          statement.setString(4.to_java.intValue, lang)
+        end
+
+        statement.executeUpdate
+        statement.close
+        connection.commit
       end
 
       def self.update_table(query, *params)
@@ -184,19 +215,36 @@ module DSpace
       def self.delete_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
 
+        connection = kernel.context.getDBConnection
+
         if lang.empty?
-          database_query = delete_value_query
-          # database_manager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
-          database_manager.updateQuery(kernel.context, database_query,
-                                       item_id.to_java, metadata_field_id.to_java, text_value,
-                                       item_id.to_java, metadata_field_id.to_java, text_value)
+          database_query = delete_value_query_limit
+          statement = connection.prepareStatement(database_query)
+
+          statement.setInt(1.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(2.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(3.to_java.intValue, text_value)
+          statement.setInt(4.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(5.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(6.to_java.intValue, text_value)
         else
-          database_query = delete_language_query
-          # database_manager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
-          database_manager.updateQuery(kernel.context, database_query,
-                                       item_id.to_java, metadata_field_id.to_java, text_value, lang,
-                                       item_id.to_java, metadata_field_id.to_java, text_value, lang)
+          database_query = delete_language_query_limit
+
+          statement = connection.prepareStatement(database_query)
+          statement.setInt(1.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(2.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(3.to_java.intValue, text_value)
+          statement.setString(4.to_java.intValue, lang)
+
+          statement.setInt(5.to_java.intValue, item_id.to_java.intValue)
+          statement.setInt(6.to_java.intValue, metadata_field_id.to_java.intValue)
+          statement.setString(7.to_java.intValue, text_value)
+          statement.setString(8.to_java.intValue, lang)
         end
+
+        statement.executeUpdate
+        statement.close
+        connection.commit
       end
 
       def database_row
@@ -220,17 +268,22 @@ module DSpace
         !database_row.nil?
       end
 
-      # This is where there is duplication
+      def create
+        self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
+      end
+
       def update
-        if persisted?
-          self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
-        else
-          self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
-        end
+        return unless persisted?
+
+        self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
       end
 
       def delete
         self.class.delete_from_database(item_id, metadata_field_id, @text_value, @text_lang)
+      end
+
+      def delete_all_models
+        self.class.delete_all_from_database(item_id, metadata_field_id, @text_value, @text_lang)
       end
 
       def metadata_field_id

@@ -39,9 +39,7 @@ module DSpace
         output_file = File.open(output_file_path, 'wb')
         @logger.info("Exporting #{bitstream_id} to #{output_file_path}...")
 
-        while input_stream.read(output_bytes) > 0
-          output_file << output_bytes
-        end
+        output_file << output_bytes while input_stream.read(output_bytes) > 0
 
         input_stream.close
         output_file.close

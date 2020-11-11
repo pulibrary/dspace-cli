@@ -55,12 +55,7 @@ module DSpace
       end
 
       def uniq
-        new_elements = []
-
-        elements.each do |element|
-          subset = select_by_element(element)
-          new_elements << subset.elements.first unless subset.elements.empty?
-        end
+        new_elements = elements.uniq { |e| [e.schema, e.element, e.qualifier, e.value, e.language] }
 
         self.class.new(new_elements)
       end
@@ -76,19 +71,17 @@ module DSpace
         self.class.new(new_elements)
       end
 
-      def update_elements
-        elements.map(&:update)
-        self.class.kernel.commit
+      def create
+        elements.map(&:create)
       end
 
-      def delete
-        elements.map(&:delete)
-        self.class.kernel.commit
+      def delete_all
+        elements.map(&:delete_all_models)
       end
 
       def update
-        uniq.update_elements
-        duplicate_elements.delete
+        delete_all
+        create
       end
     end
   end

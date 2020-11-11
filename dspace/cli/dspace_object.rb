@@ -48,7 +48,7 @@ module DSpace
 
       def self.select_all_metadata_value_query
         <<-SQL
-          SELECT * FROM metadatavalue
+          SELECT metadata_field_id, text_value, text_lang FROM metadatavalue
             WHERE resource_id = ?
         SQL
       end
