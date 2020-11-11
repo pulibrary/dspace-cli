@@ -114,11 +114,27 @@ module DSpace
       end
 
       def self.delete_language_query
-        'DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ? AND text_lang = ?'
+        <<-SQL
+          DELETE FROM MetadataValue AS t1
+            WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ? AND t1.text_lang = ?
+            AND t1.ctid = (
+              SELECT t2.ctid FROM MetadataValue AS t2
+              WHERE t2.resource_id = ? AND t2.metadata_field_id = ? AND t2.text_value = ? AND t2.text_lang = ?
+              LIMIT 1
+            )
+        SQL
       end
 
       def self.delete_value_query
-        'DELETE FROM MetadataValue WHERE resource_id = ? AND metadata_field_id = ? AND text_value = ?'
+        <<-SQL
+          DELETE FROM MetadataValue AS t1
+            WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ?
+            AND t1.ctid = (
+              SELECT t2.ctid FROM MetadataValue AS t2
+              WHERE t2.resource_id = ? AND t2.metadata_field_id = ? AND t2.text_value = ?
+              LIMIT 1
+            )
+        SQL
       end
 
       def self.update_table(query, *params)
@@ -130,7 +146,6 @@ module DSpace
 
         if lang.empty?
           database_query = select_value_query
-
           Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
         else
           database_query = select_language_query
@@ -162,15 +177,25 @@ module DSpace
         end
       end
 
+      def self.database_manager
+        org.dspace.storage.rdbms.DatabaseManager
+      end
+
       def self.delete_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
 
         if lang.empty?
           database_query = delete_value_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
+          # database_manager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value)
+          database_manager.updateQuery(kernel.context, database_query,
+                                       item_id.to_java, metadata_field_id.to_java, text_value,
+                                       item_id.to_java, metadata_field_id.to_java, text_value)
         else
           database_query = delete_language_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+          # database_manager.updateQuery(kernel.context, database_query, item_id.to_java, metadata_field_id.to_java, text_value, lang)
+          database_manager.updateQuery(kernel.context, database_query,
+                                       item_id.to_java, metadata_field_id.to_java, text_value, lang,
+                                       item_id.to_java, metadata_field_id.to_java, text_value, lang)
         end
       end
 

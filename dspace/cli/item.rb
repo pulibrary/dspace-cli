@@ -19,21 +19,22 @@ module DSpace
         @metadata = build_metadata
       end
 
-      def self.find(id)
-        obj = Java::OrgDspaceContent::Item.find(kernel.context, id)
-        return if obj.nil?
+      def self.model_class
+        org.dspace.content.Item
+      end
 
-        new(obj)
+      def self.find(id)
+        model = model_class.find(kernel.context, id)
+        return if model.nil?
+
+        new(model)
       end
 
       def update
         # Ensure that all previous transactions are committed
-        self.class.kernel.commit
+        # self.class.kernel.commit
 
-        uniq_metadata = metadata.uniq
-        metadata_elements = uniq_metadata.elements
-        metadata_elements.each(&:update)
-
+        metadata_elements.update
         @obj.update
         self.class.kernel.commit
 
@@ -42,7 +43,6 @@ module DSpace
       end
 
       def self.resource_type_id
-        Java::OrgDspaceCore::Constants::ITEM
         org.dspace.core.Constants::ITEM
       end
 

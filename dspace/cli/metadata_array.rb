@@ -5,6 +5,10 @@ module DSpace
     class MetadataArray
       attr_reader :elements
 
+      def self.kernel
+        ::DSpace
+      end
+
       def initialize(elements)
         @elements = elements
       end
@@ -59,6 +63,32 @@ module DSpace
         end
 
         self.class.new(new_elements)
+      end
+
+      def duplicate_elements
+        new_elements = []
+
+        elements.each do |element|
+          subset = select_by_element(element)
+          new_elements += subset.elements[1..-1] unless subset.elements.length > 1
+        end
+
+        self.class.new(new_elements)
+      end
+
+      def update_elements
+        elements.map(&:update)
+        self.class.kernel.commit
+      end
+
+      def delete
+        elements.map(&:delete)
+        self.class.kernel.commit
+      end
+
+      def update
+        uniq.update_elements
+        duplicate_elements.delete
       end
     end
   end
