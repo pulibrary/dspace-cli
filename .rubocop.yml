@@ -190,6 +190,7 @@ Metrics/AbcSize:
     - 'dspace/cli/dspace_object.rb'
     - 'dspace/cli/jobs/csv_update.rb'
     - 'dspace/cli/jobs/export_policies_job.rb'
+    - 'dspace/cli/metadatum.rb'
 
 Metrics/ParameterLists:
   Exclude:

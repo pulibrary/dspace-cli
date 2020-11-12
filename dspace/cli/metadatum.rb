@@ -144,6 +144,13 @@ module DSpace
         SQL
       end
 
+      def self.delete_value_query
+        <<-SQL
+          DELETE FROM MetadataValue AS t1
+            WHERE t1.resource_id = ? AND t1.metadata_field_id = ? AND t1.text_value = ?
+        SQL
+      end
+
       def self.delete_all_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
         connection = kernel.context.getDBConnection
