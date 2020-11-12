@@ -83,6 +83,11 @@ module DSpace
         delete_all
         create
       end
+
+      def deduplicate
+        delete_all
+        uniq.create
+      end
     end
   end
 end
