@@ -2,6 +2,7 @@
 
 module DSpace
   module CLI
+    # Class modeling ordered sets of Metadatum elements
     class MetadataArray
       attr_reader :elements
 
@@ -13,7 +14,7 @@ module DSpace
         @elements = elements
       end
 
-      def select_by(schema:, element:, value: nil, language: nil)
+      def select_by(value: nil, language: nil)
         field = MetadataField.new
         selected = select_by_field(field)
         return selected if value.nil?
@@ -75,18 +76,12 @@ module DSpace
         elements.map(&:create)
       end
 
-      def delete_all
-        elements.map(&:delete_all_models)
-      end
-
       def update
-        delete_all
-        create
+        elements.map(&:update)
       end
 
       def deduplicate
-        delete_all
-        uniq.create
+        duplicate_elements.map(&:delete)
       end
     end
   end

@@ -10,10 +10,14 @@ module DSpace
       java_import org.dspace.content.Metadatum
       java_import org.dspace.core.Constants
 
-      def initialize(obj, metadata_field, item)
-        @obj = obj
-        @text_value = @obj.value
-        @text_lang = @obj.language
+      attr_reader :model
+
+      def initialize(model, metadata_field, item)
+        @model = model
+        @obj = @model
+
+        @text_value = @model.value
+        @text_lang = @model.language
 
         @metadata_field_id = metadata_field.getFieldID unless metadata_field.nil?
 
@@ -21,9 +25,13 @@ module DSpace
         @item_id = item.id
       end
 
+      def id
+        @model.getValueId
+      end
+
       def value=(val)
         @text_value = val
-        @obj.value = val
+        @model.value = val
       end
 
       def value
@@ -32,7 +40,7 @@ module DSpace
 
       def language=(val)
         @text_lang = val
-        @obj.language = val
+        @model.language = val
       end
 
       def language
@@ -87,6 +95,10 @@ module DSpace
       # This cannot be used due to some issues between the splat operator and Java varargs
       def self.query_table(query, *params)
         Java::OrgDspaceStorageRdbms::DatabaseManager.query(kernel.context, query, *params)
+      end
+
+      def self.select_query
+        'SELECT * FROM metadatavalue AS v WHERE v.metadata_value_id = ?'
       end
 
       def self.select_language_query
@@ -151,6 +163,13 @@ module DSpace
         SQL
       end
 
+      def self.delete_query
+        <<-SQL
+          DELETE FROM metadatavalue AS v
+            WHERE v.metadata_value_id = ?
+        SQL
+      end
+
       def self.delete_all_from_database(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
         connection = kernel.context.getDBConnection
@@ -179,7 +198,11 @@ module DSpace
         Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, query, *params)
       end
 
-      def self.select_from_database(item_id, metadata_field_id, text_value, text_lang)
+      def self.select_from_database(id:)
+        database_manager.query(kernel.context, select_query, id)
+      end
+
+      def self.select_from_database_dep(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
 
         if lang.empty?
@@ -191,35 +214,40 @@ module DSpace
         end
       end
 
-      def self.update_in_database(text_value, text_lang, item_id, metadata_field_id)
-        lang = text_lang.nil? ? '' : text_lang
+      def self.update_in_database(id:, text_value:, resource_id:, metadata_field_id:, text_lang: nil)
+        update_params = [id.to_java, resource_id.to_java, metadata_field_id.to_java, text_value]
+        database_statement = if text_lang.nil? || text_lang.empty?
+                               update_value_query
+                             else
+                               update_language_query
+                               update_params << text_lang
+                             end
 
-        if lang.empty?
-          database_query = update_value_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, text_value, item_id.to_java, metadata_field_id.to_java)
-        else
-          database_query = update_language_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, text_value, lang, item_id.to_java, metadata_field_id.to_java)
-        end
+        database_manager.updateQuery(kernel.context, database_statement, *update_params)
       end
 
-      def self.create_in_database(item_id, metadata_field_id, text_value, text_lang)
-        lang = text_lang.nil? ? '' : text_lang
+      def self.create_in_database(resource_id:, metadata_field_id:, text_value:, text_lang:)
+        update_params = [resource_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value]
+        database_statement = if text_lang.nil? || text_lang.empty?
+                               insert_value_query
+                             else
+                               insert_language_query
+                               update_params << text_lang
+                             end
 
-        if lang.empty?
-          database_query = insert_value_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value)
-        else
-          database_query = insert_language_query
-          Java::OrgDspaceStorageRdbms::DatabaseManager.updateQuery(kernel.context, database_query, item_id.to_java, Java::OrgDspaceCore::Constants::ITEM, metadata_field_id.to_java, text_value, lang)
-        end
+        database_manager.updateQuery(kernel.context, database_statement, *update_params)
       end
 
       def self.database_manager
         org.dspace.storage.rdbms.DatabaseManager
       end
 
-      def self.delete_from_database(item_id, metadata_field_id, text_value, text_lang)
+      def self.delete_from_database(id:)
+        database_statement = delete_query
+        database_manager.updateQuery(kernel.context, database_statement, id)
+      end
+
+      def self.delete_from_database_deprecated(item_id, metadata_field_id, text_value, text_lang)
         lang = text_lang.nil? ? '' : text_lang
 
         connection = kernel.context.getDBConnection
@@ -255,7 +283,7 @@ module DSpace
       end
 
       def database_row
-        row_iterator = self.class.select_from_database(item_id, metadata_field_id, @text_value, @text_lang)
+        row_iterator = self.class.select_from_database(id: id)
         return if row_iterator.nil?
 
         # This does not disambiguate between the "dc" and "dcterms" schema
@@ -276,17 +304,19 @@ module DSpace
       end
 
       def create
-        self.class.create_in_database(item_id, metadata_field_id, @text_value, @text_lang)
+        return if persisted?
+
+        self.class.create_in_database(resource_id: item_id, metadata_field_id: metadata_field_id, text_value: value, text_lang: language)
       end
 
       def update
-        return unless persisted?
+        return create unless persisted?
 
-        self.class.update_in_database(@text_value, @text_lang, item_id, metadata_field_id)
+        self.class.update_in_database(id: id, text_value: value, text_lang: language, resource_id: item_id, metadata_field_id: metadata_field_id)
       end
 
       def delete
-        self.class.delete_from_database(item_id, metadata_field_id, @text_value, @text_lang)
+        self.class.delete_from_database(id: id)
       end
 
       def delete_all_models
