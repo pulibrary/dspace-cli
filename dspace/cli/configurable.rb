@@ -21,7 +21,7 @@ module DSpace
       # rubocop:disable Style/Documentation
       module ClassMethods
         def config_file_path
-          value = File.join(File.dirname(__FILE__), '..', 'config', 'dspace.yml')
+          value = File.join(File.dirname(__FILE__), '..', '..', 'config', 'dspace.yml')
           Pathname.new(value)
         end
 
