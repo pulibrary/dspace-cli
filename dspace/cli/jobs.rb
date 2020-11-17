@@ -26,7 +26,7 @@ module DSpace
 
       autoload(:BatchUpdateMetadataJob, File.join(File.dirname(__FILE__), 'jobs', 'batch_update_metadata_job'))
 
-      autoload(:BitstreamExportJob, File.join(File.dirname(__FILE__), 'cli', 'bitstream_export_job'))
+      autoload(:BitstreamExportJob, File.join(File.dirname(__FILE__), 'jobs', 'bitstream_export_job'))
     end
   end
 end
