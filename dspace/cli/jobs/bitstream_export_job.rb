@@ -28,12 +28,12 @@ module DSpace
 
         # This should be configurable
         def self.destination_path
-          Pathname.new("#{__FILE__}/../../../exports/bitstreams")
+          Pathname.new("#{File.dirname(__FILE__)}/../../../exports/bitstreams")
         end
 
         # This should include the file extension
         def output_file_path
-          File.join(self.class.destination_path, bitstream_id)
+          File.join(self.class.destination_path, bitstream_id.to_s)
         end
 
         def self.block_size
@@ -41,7 +41,7 @@ module DSpace
         end
 
         def perform
-          output_bytes_class = Java::int[self.class.block_size]
+          output_bytes_class = Java::byte[self.class.block_size]
           output_bytes = output_bytes_class.new
           input_stream = @bitstream.retrieve
           output_file = File.open(output_file_path, 'wb')

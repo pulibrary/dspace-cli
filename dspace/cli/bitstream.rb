@@ -42,6 +42,7 @@ module DSpace
         CLI::Jobs::BitstreamExportJob.new(self)
       end
 
+      # @return [edu.sdsc.grid.io.local.LocalFileInputStream]
       def retrieve
         @model.retrieve
       end
