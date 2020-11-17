@@ -6,6 +6,7 @@ jr_dspace
 doc/
 
 !exports/.keep
+!exports/bitstreams/.keep
 exports/
 
 !reports/item_state/.keep

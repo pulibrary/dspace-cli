@@ -16,7 +16,6 @@ module DSpace
     autoload(:Bundle, File.join(File.dirname(__FILE__), 'cli', 'bundle'))
 
     autoload(:ExportJob, File.join(File.dirname(__FILE__), 'cli', 'export_job'))
-    autoload(:BitstreamExportJob, File.join(File.dirname(__FILE__), 'cli', 'bitstream_export_job'))
 
     autoload(:BrowseIndex, File.join(File.dirname(__FILE__), 'cli', 'browse_index'))
 

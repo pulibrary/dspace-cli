@@ -39,7 +39,7 @@ module DSpace
       end
 
       def export_job
-        BitstreamExportJob.new(self)
+        CLI::Jobs::BitstreamExportJob.new(self)
       end
 
       def export
