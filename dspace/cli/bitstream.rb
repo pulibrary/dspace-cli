@@ -47,6 +47,26 @@ module DSpace
         @model.retrieve
       end
 
+      # @return [org.dspace.content.BitstreamFormat]
+      def format_model
+        @model.getFormat
+      end
+
+      # @return [String]
+      def mime_type
+        format_model.getMIMEType
+      end
+
+      # @return [Array<String>]
+      def file_extensions
+        format_model.getExtensions
+      end
+
+      # @return [String]
+      def file_extension
+        file_extensions.first
+      end
+
       def export
         export_job.perform
       end

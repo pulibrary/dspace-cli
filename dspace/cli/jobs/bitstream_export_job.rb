@@ -31,9 +31,15 @@ module DSpace
           Pathname.new("#{File.dirname(__FILE__)}/../../../exports/bitstreams")
         end
 
+        def output_file_name
+          return "#{bitstream_id}.bin" unless @bitstream.file_extension
+
+          "#{bitstream_id}.#{@bitstream.file_extension}"
+        end
+
         # This should include the file extension
         def output_file_path
-          File.join(self.class.destination_path, bitstream_id.to_s)
+          File.join(self.class.destination_path, output_file_name)
         end
 
         def self.block_size
