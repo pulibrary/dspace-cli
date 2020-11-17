@@ -7,6 +7,8 @@ module DSpace
     module Jobs
       # This implements an asynchronous, blocking job for exporting the content of Bitstreams
       class BitstreamExportJob
+        include Configurable
+
         def self.build_logger
           logger = Logger.new($stdout)
           logger.level = Logger::INFO
@@ -26,9 +28,9 @@ module DSpace
           @bitstream.type_text
         end
 
-        # This should be configurable
-        def self.destination_path
+        def self.export_path
           Pathname.new("#{File.dirname(__FILE__)}/../../../exports/bitstreams")
+          config.jobs.bitstream_export_job.export_path
         end
 
         def output_file_name
@@ -39,7 +41,7 @@ module DSpace
 
         # This should include the file extension
         def output_file_path
-          File.join(self.class.destination_path, output_file_name)
+          File.join(self.class.export_path, output_file_name)
         end
 
         def self.block_size
