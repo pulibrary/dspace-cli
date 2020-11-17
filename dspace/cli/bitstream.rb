@@ -42,6 +42,10 @@ module DSpace
         CLI::Jobs::BitstreamExportJob.new(self)
       end
 
+      def retrieve
+        @model.retrieve
+      end
+
       def export
         export_job.perform
       end
