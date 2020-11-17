@@ -115,6 +115,18 @@ module DSpace
 
         self
       end
+
+      def find_by_handle(handle)
+        objs = []
+        obj = self.class.item_class.find_by_handle(handle)
+        objs << obj unless obj.nil?
+
+        return self.class.new(objs, self) unless @results.empty?
+
+        @results = objs
+
+        self
+      end
     end
   end
 end
