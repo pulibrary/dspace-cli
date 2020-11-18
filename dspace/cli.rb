@@ -21,6 +21,8 @@ module DSpace
 
     autoload(:BrowseIndex, File.join(File.dirname(__FILE__), 'cli', 'browse_index'))
 
+    autoload(:EPerson, File.join(File.dirname(__FILE__), 'cli', 'eperson'))
+
     autoload(:WorkflowItem, File.join(File.dirname(__FILE__), 'cli', 'workflow_item'))
     autoload(:WorkspaceItem, File.join(File.dirname(__FILE__), 'cli', 'workspace_item'))
 

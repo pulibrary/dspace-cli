@@ -23,6 +23,17 @@ module DSpace
         org.dspace.workflow.WorkflowManager
       end
 
+      def self.find_by_submitter(eperson)
+        models = model_class.findByEPerson(kernel.context, eperson.model)
+        models.map { |m| new(m) }
+      end
+
+      def self.find_by_submitter_email(email)
+        epeople = CLI::EPerson.find_by_email(email)
+        results = epeople.map { |eperson| find_by_owner(eperson) }
+        results.flatten
+      end
+
       # Constructor
       # @param model [org.dspace.workflow.WorkflowItem]
       def initialize(model)
