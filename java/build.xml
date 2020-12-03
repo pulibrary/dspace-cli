@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+        This build configuration compiles the Java code that processes graduate dissertations
+        delivered by ProQuest.
+
+        Author:  Mark Ratliff
+        Date: March 29, 2012
+-->
+
+<!-- Define the project -->
+<project name="ETDProcessor" basedir="." default="help">
+
+    <property environment="env"/>
+
+    <!-- Initialize build environment. -->
+    <target description="Create build directories and set CLASSPATH" name="init">
+        <path id="project.class.path">
+            <fileset dir="./lib"/>
+            <fileset dir="${env.DSPACE_HOME}/lib"/>
+            <!-- fileset dir="/dspace/lib"/ -->
+        </path>
+    </target>
+
+    <!-- Compile the code. -->
+    <target description="Compile source files" name="compile" depends="init">
+
+        <echo message="==== Compiling source files. ===="/>
+
+        <mkdir dir="build"/>
+
+        <javac destdir="build" srcdir="src" debug="false" deprecation="false"
+               includeantruntime="false">
+            <classpath refid="project.class.path"/>
+            <classpath>
+                <pathelement location=""/>
+            </classpath>
+            <include name="**/*.java"/>
+            <!-- include name="**/*.java"/ -->
+        </javac>
+
+    </target>
+
+    <!-- Help for targets -->
+    <target name="help" description="List all targets for the project">
+
+        <java classname="org.apache.tools.ant.Main">
+            <arg value="-projecthelp"/>
+            <arg value="-buildfile"/>
+            <arg value="${ant.file}"/>
+        </java>
+
+    </target>
+
+
+</project>
