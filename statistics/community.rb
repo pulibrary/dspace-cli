@@ -5,7 +5,7 @@ require 'yaml'
 require 'rack'
 require 'optparse'
 
-require 'dspace'
+require File.join(File.dirname(__FILE__), '..', 'dspace')
 
 # Given handles for communities on the command line, develop basic reports
 
@@ -48,7 +48,7 @@ module Statistics
                        { '-ip' => "(#{exclude_ips.join(' OR ')})" }
                      end
 
-      @solrCoreBase = options['solrStatiticsServer'] || ConfigurationManager.getProperty('solr-statistics', 'server')
+      @solrCoreBase = options['solrStatisticsServer'] || ConfigurationManager.getProperty('solr-statistics', 'server')
       @time_slots = options['time_slots'] || ['']
       raise 'must have at least one time_slot definition' if @time_slots.empty?
 
@@ -61,7 +61,7 @@ module Statistics
 
       $stdout.puts to_yaml if @verbose
 
-      DSpace.load(options['dspaceHome'])
+      DSpace.load(dspace_root_path: options['dspaceHome'])
       @context = DSpace.context
 
       java_import org.dspace.content.Community
@@ -181,12 +181,13 @@ module Statistics
           else
             line << item << item.getHandle << item.getName.gsub(/\s+/, ' ')
             prtcolname = true
-            DSpace.create(item).parents.each do |p|
-              line << p << p.getHandle
+            cli_item = DSpace::CLI::Item.new(item)
+            cli_item.collections.each do |p|
+              line << p.id << p.model.getHandle
               next unless prtcolname
 
-              puts "NAME #{p.getName}"
-              line << p.getName
+              puts "NAME #{p.model.getName}"
+              line << p.model.getName
               prtcolname = false
             end
             outfile.puts line.join("\t")
@@ -208,7 +209,8 @@ module Statistics
                          'facet.limit' => -1,
                          'facet.sort' => 'count',
                          'facet.field' => facet_field)
-      query += "&fq=time:[#{Rack::Utils.escape(timeRange)}]" unless timeRange.empty?
+      escaped_time_range = Rack::Utils.escape("[#{timeRange}]")
+      query += "&fq=time:#{escaped_time_range}" unless timeRange.empty?
       query = query + '&q=' + Rack::Utils.escape('NOT epersonid:["" TO *]')
 
       props = { '-isBot' => 'true' }.merge(community).merge(type).merge(@exclude_ips)

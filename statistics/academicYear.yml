@@ -1,43 +1,23 @@
-#         "gsa-crawler (Enterprise; T3-HLS7YQP3RYWQZ; google@princeton.edu)",595,
-
-solrStatiticsServer: http://localhost:18082/solr/statistics
+solrStatisticsServer: http://localhost:8080/solr/statistics
 verbose: true
 
-exclude_ips: [
-# princeton google appliance
-  10.6.61.26,
-# monikam.princeton.edu
-  128.112.66.66
-]
+exclude_ips: []
 
 all_match:  {
   isBot: "false"
 }
 
 communities: [
-  {id: 267, name: "Princeton University Senior Theses" }
-#  {id: 67, name: "Princeton University Doctoral Dissertations" }
+  { id: 1, name: "Root Community" }
 ]
-
 
 top_bitstreams: {
   number: 20,
-  time_slot: { name: "2016/07-2017/07", slot: '2016-07-01T00:00:00.000Z TO  2017-08-01T00:00:00.000Z' }
+  time_slot: { name: "2019-2020", slot: '2019-01-01T00:00:00.000Z TO 2019-12-31T23:59:59.999Z' },
+  time_slot: { name: "2020-NOW", slot: '2020-01-01T00:00:00.000Z TO NOW' }
 }
 
 time_slots: [
-  { name: "2016/08", slot: '2016-08-01T00:00:00.000Z TO 2016-09-01T00:00:00.000Z'},
-  { name: "2016/09", slot: '2016-09-01T00:00:00.000Z TO 2016-10-01T00:00:00.000Z'},
-  { name: "2016/10", slot: '2016-10-01T00:00:00.000Z TO 2016-11-01T00:00:00.000Z'},
-  { name: "2016/11", slot: '2016-11-01T00:00:00.000Z TO 2016-12-01T00:00:00.000Z'},
-  { name: "2016/12", slot: '2016-12-01T00:00:00.000Z TO 2017-01-01T00:00:00.000Z'},
-  { name: "2017/01", slot: '2017-01-01T00:00:00.000Z TO 2017-02-01T00:00:00.000Z'},
-  { name: "2017/02", slot: '2017-02-01T00:00:00.000Z TO 2017-03-01T00:00:00.000Z'},
-  { name: "2017/03", slot: '2017-03-01T00:00:00.000Z TO 2017-04-01T00:00:00.000Z'},
-  { name: "2017/04", slot: '2017-04-01T00:00:00.000Z TO 2017-05-01T00:00:00.000Z'},
-  { name: "2017/05", slot: '2017-05-01T00:00:00.000Z TO 2017-06-01T00:00:00.000Z'},
-  { name: "2017/06", slot: '2017-06-01T00:00:00.000Z TO 2017-07-01T00:00:00.000Z'},
-  { name: "2017/07", slot: '2017-07-01T00:00:00.000Z TO 2017-08-01T00:00:00.000Z'}
-
+  { name: "2019-2020", slot: '2019-01-01T00:00:00.000Z TO 2019-12-31T23:59:59.999Z' },
+  { name: "2020-NOW", slot: '2020-01-01T00:00:00.000Z TO NOW' }
 ]
-

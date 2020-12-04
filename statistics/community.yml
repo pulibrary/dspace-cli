@@ -1,34 +1,28 @@
-
-# this overwrites the setting in dspace.cfg
-# useful when tunneling to solr server from development computer
-solrStatiticsServer: http://localhost:8080/solr/statistics
+solrStatisticsServer: http://localhost:8080/solr/statistics
 verbose: true
 
 communities: [
-  { id: 153  ,  name: "Community 153" },
-  { id: 145  ,  name: "Multi Media (COMMUNITY.145)" } 
+  { id: 41, name: "Open Access Repository (COMMUNITY.41)" }
 ]
 
 time_slots: [
-  { name: "2015", slot: '2015-01-01T00:00:00.000Z TO 2016-01-01T00:00:00.000Z'},
-  { name: "2016", slot: '2015-01-01T00:00:00.000Z TO NOW'}
+  { name: "2019-2020", slot: '2019-07-01T00:00:00.000Z TO 2020-06-30T00:00:00.000Z' },
+  { name: "2019", slot: '2019-07-01T00:00:00.000Z TO 2019-12-31T23:59:59.999Z' },
+  { name: "2020", slot: '2020-01-01T00:00:00.000Z TO 2020-06-30T00:00:00.000Z' }
 ]
 
-# number; -1  ---> all with download at leats 1 
-# number; 20  ---> top 20 
+# In order to query for all Bitstream downloads with at least 1 occurrence:
+# number: -1
+#
+# In order to query for all Bitstream downloads with at least 1 occurrence:
+# number: 20
 top_bitstreams: {
   number: -1,
   time_slot: {
-    name: "2015", slot: '2015-01-01T00:00:00.000Z TO NOW'
+    name: "2019-2020", slot: '2019-07-01T00:00:00.000Z TO 2020-06-30T00:00:00.000Z',
+    name: "2019", slot: '2019-07-01T00:00:00.000Z TO 2019-12-31T23:59:59.999Z',
+    name: "2020", slot: '2020-01-01T00:00:00.000Z TO 2020-06-30T00:00:00.000Z'
   }
 }
 
-exclude_ips: [
-# princeton google appliance
-  10.6.61.26,
-# IP of administrator
-  128.112.66.66
-]
-
-
-
+exclude_ips: []
