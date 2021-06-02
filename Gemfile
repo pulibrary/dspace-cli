@@ -2,8 +2,9 @@
 
 source 'https://rubygems.org'
 
-DSPACE_JRUBY_PATH = File.join(File.dirname(__FILE__), '..', 'dspace-jruby')
-gem 'dspace-jruby', path: DSPACE_JRUBY_PATH
+#gem 'dspace-jruby', path: DSPACE_JRUBY_PATH
+gem "dspace-jruby", git: "git://github.com/pulibrary/dspace-jruby.git"
+#DSPACE_JRUBY_PATH = File.join(File.dirname(__FILE__), '..', 'dspace-jruby')
 
 gem 'highline'
 gem 'http'
