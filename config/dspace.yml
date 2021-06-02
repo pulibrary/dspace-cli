@@ -1,0 +1,5 @@
+---
+
+jobs:
+  bitstream_export_job:
+    export_path: 'exports/bitstreams'

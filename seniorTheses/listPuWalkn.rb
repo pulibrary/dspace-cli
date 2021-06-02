@@ -1,4 +1,4 @@
-#!/usr/bin/env jruby  
+#!/usr/bin/env jruby
 
 # List items with the "walkin" policy
 
@@ -8,7 +8,7 @@ require 'cli/dconstants'
 
 DSpace.load
 
-#postgres
+# postgres
 # fromString = "COMMUNITY.145"
 
 # dataspace
@@ -16,21 +16,26 @@ fromString = DConstants::SENIOR_THESIS_HANDLE
 
 com = DSpace.fromString(fromString)
 
-def pu_walkin()
-  handle, col, klass, nAuthor, embargo = ['handle', 'collection', 'year', '#author', 'embargo']
+def pu_walkin
+  handle = 'handle'
+  col = 'collection'
+  klass = 'year'
+  nAuthor = '#author'
+  embargo = 'embargo'
   items = DSpace.findByMetadataValue('pu.mudd.walkin', nil, nil)
-  ihash= []
+  ihash = []
   items.each do |i|
     next unless i.getHandle
-    nAuth = i.getMetadataByMetadataString("dc.contributor.author").length
-    if (nAuth > 1)
-      h = {handle => i.getHandle}
-      h[col] = i.getParentObject.getName
-      h[klass] = year
-      h[nAuthor] = nAuth
-      h[embargo] = i.getMetadataByMetadataString("pu.embargo.terms").collect { |v| v.value }
-      ihash << h
-    end
+
+    nAuth = i.getMetadataByMetadataString('dc.contributor.author').length
+    next unless nAuth > 1
+
+    h = { handle => i.getHandle }
+    h[col] = i.getParentObject.getName
+    h[klass] = year
+    h[nAuthor] = nAuth
+    h[embargo] = i.getMetadataByMetadataString('pu.embargo.terms').collect { |v| v.value }
+    ihash << h
   end
 
   csv_out(ihash, ['embargo', 'year', '#author', 'handle', 'collection'])
@@ -44,4 +49,4 @@ def csv_out(ihash, fields)
   end
 end
 
-pu_walkin()
+pu_walkin

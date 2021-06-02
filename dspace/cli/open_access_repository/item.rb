@@ -1,0 +1,197 @@
+module DSpace
+  module CLI
+    module OpenAccessRepository
+      class Item < CLI::Item
+        def self.author_uniqueid_field
+          metadata_field_class.new('pu', 'author', 'uniqueid')
+        end
+        register_metadata_field(field: author_uniqueid_field, label: 'author_uniqueid')
+
+        def self.department_field
+          metadata_field_class.new('pu', 'author', 'department')
+        end
+        register_metadata_field(field: department_field, label: 'department')
+
+        def self.symplectic_type_field
+          metadata_field_class.new('pu', 'type', 'symplectic')
+        end
+
+        def symplectic_types
+          get_metadata_value(self.class.symplectic_type_field.to_s)
+        end
+
+        def symplectic_type
+          symplectic_types.first
+        end
+
+        def self.workflow_state_field
+          metadata_field_class.new('pu', 'workflow', 'state')
+        end
+        register_metadata_field(field: workflow_state_field, label: 'workflow_state')
+
+        def self.author_url_field
+          metadata_field_class.new('pubs', 'author-url')
+        end
+
+        def self.awarded_date_field
+          metadata_field_class.new('pubs', 'awarded-date')
+        end
+
+        def self.begin_page_field
+          metadata_field_class.new('pubs', 'begin-page')
+        end
+
+        def self.book_author_type_field
+          metadata_field_class.new('pubs', 'book-author-type')
+        end
+
+        def self.commissioning_body_field
+          metadata_field_class.new('pubs', 'commissioning-body')
+        end
+
+        def self.confidential_field
+          metadata_field_class.new('pubs', 'confidential')
+        end
+
+        def self.declined_field
+          metadata_field_class.new('pubs', 'declined')
+        end
+
+        def self.deleted_field
+          metadata_field_class.new('pubs', 'deleted')
+        end
+
+        def self.edition_field
+          metadata_field_class.new('pubs', 'edition')
+        end
+
+        def self.elements_source_field
+          metadata_field_class.new('pubs', 'elements-source')
+        end
+
+        def self.end_page_field
+          metadata_field_class.new('pubs', 'end-page')
+        end
+
+        def self.finished_date_field
+          metadata_field_class.new('pubs', 'finish-date')
+        end
+
+        def self.issue_field
+          metadata_field_class.new('pubs', 'issue')
+        end
+
+        def self.merge_from_field
+          metadata_field_class.new('pubs', 'merge-from')
+        end
+
+        def self.merge_to_field
+          metadata_field_class.new('pubs', 'merge-to')
+        end
+
+        def self.notes_field
+          metadata_field_class.new('pubs', 'notes')
+        end
+
+        def self.organisational_group_field
+          metadata_field_class.new('pubs', 'organisational-group')
+        end
+        register_metadata_field(field: organisational_group_field, label: 'organisational_group')
+
+        def self.patent_status_field
+          metadata_field_class.new('pubs', 'patent-status')
+        end
+
+        def self.place_of_publication_field
+          metadata_field_class.new('pubs', 'place-of-publication')
+        end
+
+        def self.publication_status_field
+          metadata_field_class.new('pubs', 'publication-status')
+        end
+
+        def self.publisher_url_field
+          metadata_field_class.new('pubs', 'publisher-url')
+        end
+
+        def self.start_date_field
+          metadata_field_class.new('pubs', 'start-date')
+        end
+
+        def self.version_field
+          metadata_field_class.new('pubs', 'version')
+        end
+
+        def self.volume_field
+          metadata_field_class.new('pubs', 'volume')
+        end
+
+        def self.collection_class
+          CLI::OpenAccessRepository::Collection
+        end
+
+        def workflow_states
+          @model.getMetadataByMetadataString(self.class.workflow_state_field.to_s).collect(&:value)
+        end
+
+        def workflow_state
+          workflow_states.first
+        end
+
+        def organisational_groups
+          @model.getMetadataByMetadataString(self.class.organisational_group_field.to_s).collect(&:value)
+        end
+
+        def organisational_group
+          organisational_groups.first
+        end
+
+        def find_collections_for_departments
+          collections = []
+          departments.each do |department|
+            collection = self.class.collection_class.find_for_department(department)
+            collections << collection unless collection.nil?
+          end
+          collections
+        end
+
+        def self.workspace_item_class
+          ::DSpace::CLI::WorkspaceItem
+        end
+
+        def find_workspace_item
+          workspace_item_model = self.class.workspace_item_class.model_class.findByItem(self.class.kernel.context, @model)
+          return if workspace_item_model.nil?
+
+          self.class.workspace_item_class.new(workspace_item_model)
+        end
+
+        def create_workspace_item
+          self.class.workspace_item_class.create(collection: first_collection, item: self)
+        end
+
+        def workspace_item
+          @workspace_item ||= find_workspace_item || create_workspace_item
+        end
+
+        def create_workflow_item
+          workflow_item_model = self.class.workflow_manager.start(self.class.kernel.context, workspace_item.model)
+          self.class.workflow_item_class.new(workflow_item_model)
+        end
+
+        def archive
+          @workflow_item = create_workflow_item if workflow_item.nil?
+          return if archived?
+
+          workflow_item.state = self.class.workflow_manager::WFSTATE_STEP3
+          workflow_item.update
+
+          self.class.workflow_manager.advance(self.class.kernel.context, workflow_item.model, ::DSpace.context.current_user)
+
+          add_metadata(schema: 'pu', element: 'workflow', value: 'archive_without_email', qualifier: 'state')
+          update
+        end
+      end
+    end
+  end
+end

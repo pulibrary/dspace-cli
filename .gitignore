@@ -5,4 +5,17 @@ jr_dspace
 .yardoc/
 doc/
 
+!exports/.keep
+!exports/bitstreams/.keep
+exports/
+
+!reports/item_state/.keep
+!reports/item_authors/.keep
+!reports/item_certificate_programs/.keep
+!reports/.keep
+reports/
+
+!batch_imports/.keep
+batch_imports/
+
 .DS_Store

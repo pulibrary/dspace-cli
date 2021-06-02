@@ -2,7 +2,7 @@
 
 # Add standardized workflow steps to all collections
 
-require "highline/import"
+require 'highline/import'
 require 'dspace'
 require 'cli/dcollection'
 require 'cli/dconstants'
@@ -11,7 +11,7 @@ DSpace.load
 DSpace.login DConstants::LOGIN
 puts "\n"
 
-com_name =  'All Content'
+com_name = 'All Content'
 com = DSpace.findByMetadataValue('dc.title', com_name, DConstants::COMMUNITY)[0]
 puts "no such community #{com_name}" unless com
 
@@ -20,7 +20,7 @@ all_groups = DGroup.find(all_groups_name)
 puts "no such group #{all_groups_name}" unless all_groups
 puts "adding workflows steps 2,3 to collections in #{com.getName} #{com.getHandle}"
 puts "adding group #{all_groups.getName} to step 2,3 "
-puts ""
+puts ''
 
 com.getCollections.each do |col|
   dcol = DSpace.create(col)
@@ -32,7 +32,5 @@ com.getCollections.each do |col|
   end
 end
 
-doit = ask "commit ? (Y/N) "
-if (doit == "Y") then
-  DSpace.commit
-end
+doit = ask 'commit ? (Y/N) '
+DSpace.commit if doit == 'Y'

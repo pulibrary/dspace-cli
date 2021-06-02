@@ -5,7 +5,7 @@
 require 'optparse'
 require 'dspace'
 
-require "cli"
+require 'cli'
 
 DSpace.load
 
@@ -16,29 +16,29 @@ end
 
 # Print sorted hash of DSO
 def list_metadata(dso_or_str)
-    dso = if dso_or_str.is_a? String then
-              DSpace.fromString(dso_or_str)
-          else
-            dso_or_str
-          end
+  dso = if dso_or_str.is_a? String
+          DSpace.fromString(dso_or_str)
+        else
+          dso_or_str
+        end
 
-    puts "# #{dso}"
-    if dso then
-      # LATER: I think we have a to hash function specifically for this.
-      hsh = {};
-      DSpace.create(dso).getMetaDataValues.each do |m|
-        hsh[m[0].inspect] = m[1]
-      end
-      hsh.keys.sort.each do |k|
-        puts "#{k}\t=#{hsh[k]}"
-      end
-      puts ""
+  puts "# #{dso}"
+  if dso
+    # LATER: I think we have a to hash function specifically for this.
+    hsh = {}
+    DSpace.create(dso).getMetaDataValues.each do |m|
+      hsh[m[0].inspect] = m[1]
     end
+    hsh.keys.sort.each do |k|
+      puts "#{k}\t=#{hsh[k]}"
+    end
+    puts ''
+  end
 end
 
 begin
   parser.parse!
-  raise "must give at least one collection/community/item parameter" if ARGV.empty?
+  raise 'must give at least one collection/community/item parameter' if ARGV.empty?
 
   DSpace.load
 
@@ -46,6 +46,6 @@ begin
     list_metadata(str)
   end
 rescue Exception => e
-  puts e.message;
-  puts parser.help();
+  puts e.message
+  puts parser.help
 end

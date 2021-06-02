@@ -5,7 +5,7 @@
 require 'optparse'
 require 'dspace'
 
-require "cli"
+require 'cli'
 
 options = {}
 parser = OptionParser.new do |opts|
@@ -14,11 +14,11 @@ end
 
 # TODO: Add this function as .to_h to our DBitstream object
 def bitstream_to_hash(bit)
-  return {"name" => bit.getName,
-          "format" => bit.getFormat.getDescription,
-          "checksum" => bit.getChecksum,
-          "size" => bit.getSize,
-          "parents" => DSpace.create(bit).parents.collect{ |p| p.getHandle }}
+  { 'name' => bit.getName,
+    'format' => bit.getFormat.getDescription,
+    'checksum' => bit.getChecksum,
+    'size' => bit.getSize,
+    'parents' => DSpace.create(bit).parents.collect { |p| p.getHandle } }
 end
 
 def doit(str)
@@ -27,12 +27,12 @@ def doit(str)
   DSpace.create(dso).bitstreams.each do |bit|
     puts bitstream_to_hash(bit)
   end
-  puts ""
+  puts ''
 end
 
 begin
   parser.parse!
-  raise "must give at least one collection/community/item parameter" if ARGV.empty?
+  raise 'must give at least one collection/community/item parameter' if ARGV.empty?
 
   DSpace.load
 
@@ -40,6 +40,6 @@ begin
     doit(str)
   end
 rescue Exception => e
-  puts e.message;
-  puts parser.help();
+  puts e.message
+  puts parser.help
 end

@@ -5,7 +5,7 @@
 require 'time'
 require 'dspace'
 
-require "cli"
+require 'cli'
 
 DSpace.load
 
@@ -20,53 +20,51 @@ p = 'Approved for entry into archive by Melissa Lohrey (mlohrey@princeton.edu) o
  princeton-oa-license.txt: 268 bytes, checksum: bf6a7d1b45566d473546ae941b49741b (MD5)
 '
 
-def list_items()
-    puts ['handle', 'approve_date', 'archive_date'].join("\t")
-    list_archived_items()
-    list_workflow_items()
+def list_items
+  puts %w[handle approve_date archive_date].join("\t")
+  list_archived_items
+  list_workflow_items
 end
 
-def list_workflow_items()
-    for wi in DWorkflowItem.findAll(nil) do
-      handle, approve_date, archive_date = do_item(wi.getItem)
-      if approve_date  != '' then
-        puts [handle, approve_date, archive_date].join("\t")
-      end
-    end
+def list_workflow_items
+  for wi in DWorkflowItem.findAll(nil) do
+    handle, approve_date, archive_date = do_item(wi.getItem)
+    puts [handle, approve_date, archive_date].join("\t") if approve_date != ''
+  end
 end
 
-def list_archived_items()
-    iter = DItem.iter
-    while (i = iter.next)
-      handle, approve_date, archive_date = do_item(i)
-      puts [handle, approve_date, archive_date].join("\t")
-    end
+def list_archived_items
+  iter = DItem.iter
+  while (i = iter.next)
+    handle, approve_date, archive_date = do_item(i)
+    puts [handle, approve_date, archive_date].join("\t")
+  end
 end
 
 def do_item(i)
-  handle = if i.getHandle then i.getHandle else "ITEM.#{i.getID()}" end
-  provenances =  i.getMetadataByMetadataString("dc.description.provenance").collect {|v| v.value}
-  approve_date, archive_date = '', ''
+  handle = i.getHandle || "ITEM.#{i.getID}"
+  provenances = i.getMetadataByMetadataString('dc.description.provenance').collect { |v| v.value}
+  approve_date = ''
+  archive_date = ''
   for p in provenances do
-    if p.start_with?("Approved for entry into archive") then
+    if p.start_with?('Approved for entry into archive')
       approve_date =  date_string(p.split(')')[1].split(' ')[1])
-    elsif (p.start_with?("Made available in")) then
-      archive_date =  date_string(p.split()[5])
+    elsif p.start_with?('Made available in')
+      archive_date =  date_string(p.split[5])
     end
   end
-  return handle, approve_date, archive_date
+  [handle, approve_date, archive_date]
 end
 
 def date_string(t)
   Time.parse(t).to_date.to_s
 end
 
-
 begin
-   dso = DSpace.fromString('88435/pr1jm4q')
-   #puts do_item(dso)
-   list_items()
+  dso = DSpace.fromString('88435/pr1jm4q')
+  # puts do_item(dso)
+  list_items
 rescue Exception => e
-  puts e.message;
-  puts parser.help();
+  puts e.message
+  puts parser.help
 end
