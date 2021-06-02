@@ -1,8 +1,9 @@
 GIT
   remote: git://github.com/pulibrary/dspace-jruby.git
-  revision: e5ff59330cd6327601f31cfab2d7c8bb26b8b740
+  revision: f7df5dc1ca6f465213bdd8e88788af0716df36b3
+  branch: 1.0.0-pre-rc1
   specs:
-    dspace-jruby (0.1.0-universal-java-1.8)
+    dspace-jruby (0.1.0)
       json
 
 GEM
@@ -103,6 +104,7 @@ GEM
     yard (0.9.26)
 
 PLATFORMS
+  java
   universal-java-1.8
 
 DEPENDENCIES
