@@ -29,8 +29,56 @@ class Dspace < Thor
 end
 
 class Dataspace < Thor
+  def self.exit_on_failure?
+    true
+  end
+
   # Thor CLI tasks for Senior Thesis Item management
   class SeniorTheses < Thor
+    desc 'batch_advance_workflow', 'Advances the WorkflowItem state for Department Items which have been imported'
+    method_option :user, type: :string, aliases: 'u'
+    method_option :year, type: :string, aliases: 'y'
+    method_option :department, type: :string, aliases: 'd'
+    method_option :editor, type: :string, aliases: 'e'
+
+    def batch_advance_workflow
+      user = options[:user]
+      DSpace.load
+      DSpace.login(user)
+
+      year = options[:year]
+      query = DSpace::CLI::SeniorThesisCommunity.find_by_class_year(year)
+      raise(StandardError, "Unable to find any Items for the academic year #{year}") if query.results.empty?
+      shell.say_status(:ok, "Found #{query.results.length} Items for the academic year #{year}", :green)
+
+      department = options[:department]
+      sub_query = query.find_by_department(department)
+      raise(StandardError, "Unable to find any Items for the department #{department}") if sub_query.results.empty?
+      shell.say_status(:ok, "Found #{sub_query.results.length} Items for the department #{department}", :green)
+
+      pending = sub_query.results.reject { |i| i.workflow_item.nil? }.select { |i| i.workflow_item.state < Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3POOL }
+      shell.say_status(:ok, "Found #{pending.length} Items which need to be advanced to the pending editorial review workflow state", :green)
+      raise(StandardError, "Unable to find any Items which need to have the WorkflowItem state advanced") if pending.empty?
+
+      editor_email = options[:editor]
+      editor = Java::OrgDspaceEperson::EPerson.findByEmail(DSpace.context, editor_email)
+      raise(StandardError, "Unable to find any DSpace EPerson for the editor e-mail #{editor_email}") if editor.nil?
+
+      pending.each do |pending_item|
+        initial_state = pending_item.workflow_item.state + 1
+        (initial_state..Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3POOL).each do |new_state|
+          shell.say_status(:ok, "Advancing the WorkflowItem state for #{pending_item.id} to the state #{new_state}", :green)
+          pending_item.set_workflow_with_submitter(new_state: new_state)
+          DSpace.commit
+          pending_item.reload
+          shell.say_status(:ok, "Advanced the WorkflowItem state for #{pending_item.id} to the state #{pending_item.state}", :green)
+        end
+
+        pending_item.add_task_pool_user(editor_email)
+        shell.say_status(:ok, "Added the Task Pool entry for user #{editor_email}", :green)
+      end
+    end
+
     desc 'export_metadata', 'Export Item metadata to a CSV file'
     method_option :file, type: :string, aliases: 'f'
     method_option :class_year, type: :string, aliases: 'y'

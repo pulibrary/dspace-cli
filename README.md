@@ -6,16 +6,31 @@ CI](https://inch-ci.org/github/pulibrary/dspace-cli.svg?branch=master)](https://
 
 This repo contains command line scripts that report on as well as modify the content of a [DSpace](http://dspace.org/) instance. **Please be aware that this Gem is no longer actively maintained.**
 
-Scripts are implemented with the help of the [DSpace JRuby repository](https://github.com/pulibrary/dspace-jruby).
+Scripts are implemented with the help of the [dspace-jruby repository](https://github.com/pulibrary/dspace-jruby).
 
 Most of scripts here are actively used at the Princeton University Library; some are tailored to the specific Princeton needs.
 
-## Installation
+## Dependencies
 
-### Prerequisite
- * JRuby [Get Started](http://jruby.org/getting-started)
- * Package Manager [Bundler](http://bundler.io/)
- * [DSpace Installation](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.5 releases.**
+### Prerequisites
+ * [OpenJDK 8](https://adoptopenjdk.net/)
+ * [JRuby](https://www.jruby.org/)
+ * [DSpace 5.5](https://github.com/DSpace/DSpace) **Please note that this was developed only to support DSpace 5.5 releases.**
+
+#### asdf
+
+```bash
+$ asdf install java adoptopenjdk-8.0.282+8
+
+# For the BASH:
+$ . ~/.asdf/plugins/java/set-java-home.bash
+
+# For zsh:
+$ . ~/.asdf/plugins/java/set-java-home.zsh
+
+$ asdf install ruby jruby-9.2.13.0
+$ jgem install bundler
+```
 
 ### Installation
 
@@ -26,7 +41,7 @@ Install the gems used by the scripts:
 bundle install
 ```
 
-##  Usage 
+## Usage
 
 set the DSPACE_HOME environment variable to point to the installation directory of your DSpace repository 
 
