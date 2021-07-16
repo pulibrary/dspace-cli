@@ -63,17 +63,27 @@ class Dataspace < Thor
       editor_email = options[:editor]
       editor = Java::OrgDspaceEperson::EPerson.findByEmail(DSpace.context, editor_email)
       raise(StandardError, "Unable to find any DSpace EPerson for the editor e-mail #{editor_email}") if editor.nil?
+      workflow_items = Java::OrgDspaceWorkflow::WorkflowManager.getPooledTasks(DSpace.context, editor)
+      pool_items = workflow_items.to_a.map { |wfi| wfi.getItem }
+      existing_workflow_ids = pool_items.map { |item| item.getID }
 
       pending.each do |pending_item|
-        initial_state = pending_item.workflow_item.state + 1
-        (initial_state..Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3POOL).each do |new_state|
+        initial_state = pending_item.workflow_item.state
+	last_state = Java::OrgDspaceWorkflow::WorkflowManager::WFSTATE_STEP3POOL - 1
+
+        shell.say_status(:ok, "Initial state of #{pending_item.id} is #{initial_state}", :green)
+	
+        (initial_state..last_state).each do |state|
+	  new_state = state + 1
           shell.say_status(:ok, "Advancing the WorkflowItem state for #{pending_item.id} to the state #{new_state}", :green)
           pending_item.set_workflow_with_submitter(new_state: new_state)
           DSpace.commit
           pending_item.reload
-          shell.say_status(:ok, "Advanced the WorkflowItem state for #{pending_item.id} to the state #{pending_item.state}", :green)
+          shell.say_status(:ok, "Advanced the WorkflowItem state for #{pending_item.id} to the state #{pending_item.workflow_item.state}", :green)
         end
-
+        
+        shell.say_status(:ok, "Final state of #{pending_item.id} is #{pending_item.workflow_item.state}", :green)
+	next if existing_workflow_ids.include? pending_item.id # Do not add to the task pool if the item is already in the task pool
         pending_item.add_task_pool_user(editor_email)
         shell.say_status(:ok, "Added the Task Pool entry for user #{editor_email}", :green)
       end
